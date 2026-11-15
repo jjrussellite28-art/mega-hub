@@ -20,6 +20,7 @@ import { PAD_GLYPH_SETTINGS } from '../core/pad-glyphs.js';
 import { SOUND_SETS, setAudioMode, setMusicVolume, setSoundSet, setSoundVolume, sound } from '../sound.js';
 import { setHdrMode } from '../core/hdr.js';
 import { setPointer } from '../components/mouse.js';
+import { getLook, setLook } from '../core/look-prefs.js';
 import { askModeAtStart, setAskModeAtStart } from '../core/mode-ask.js';
 import { SCREENSAVER_STYLES, configureScreensaver, startScreensaver } from '../core/screensaver.js';
 import { chooseDialog, confirmDialog, openOverlay } from '../components/overlay.js';
@@ -797,6 +798,41 @@ async function choosePointer() {
   applyPointer();
 }
 
+// The three looks that only change how Mega Hub appears (core/look-prefs.js): the loading screen, the background style, the profile animation.
+const bootSceneOptions = () => [
+  { label: t('settings.bootScene.orbital'), detail: t('settings.bootScene.orbitalDetail'), value: 'orbital' },
+  { label: t('settings.bootScene.horizon'), detail: t('settings.bootScene.horizonDetail'), value: 'horizon' },
+  { label: t('settings.bootScene.core'), detail: t('settings.bootScene.coreDetail'), value: 'core' },
+  { label: t('settings.bootScene.pulse'), detail: t('settings.bootScene.pulseDetail'), value: 'pulse' },
+  { label: t('settings.bootScene.classic'), detail: t('settings.bootScene.classicDetail'), value: 'classic' }
+];
+const bgStyleOptions = () => [
+  { label: t('settings.bgStyle.classic'), detail: t('settings.bgStyle.classicDetail'), value: 'classic' },
+  { label: t('settings.bgStyle.purple'), value: 'neon-purple' },
+  { label: t('settings.bgStyle.blue'), value: 'neon-blue' },
+  { label: t('settings.bgStyle.red'), value: 'neon-red' },
+  { label: t('settings.bgStyle.green'), value: 'neon-green' }
+];
+const avatarAnimOptions = () => [
+  { label: t('settings.avatarAnim.float'), value: 'float' },
+  { label: t('settings.avatarAnim.bounce'), value: 'bounce' },
+  { label: t('settings.avatarAnim.pulse'), value: 'pulse' },
+  { label: t('settings.avatarAnim.wiggle'), value: 'wiggle' },
+  { label: t('settings.avatarAnim.glow'), value: 'glow' },
+  { label: t('settings.avatarAnim.off'), value: 'off' }
+];
+const lookLabel = (options, name) => options().find((o) => o.value === getLook(name))?.label;
+
+/** Opens the list for one look and applies the pick at once; `note` says when it shows (the loading screen only at the next start). */
+async function chooseLook(name, title, options, note = '') {
+  const current = getLook(name);
+  const v = await chooseDialog(title, options(), current);
+  if (v === undefined || v === current) return;
+  if (!setLook(name, v)) return;
+  if (note) toast(note, 4000);
+  render();
+}
+
 // Hidden: up up down down left right left right B A on the info page toggles the comic mouse.
 const EGG = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'];
 let eggStep = 0;
@@ -1499,11 +1535,11 @@ function windowsItems(s) {
         render();
       }
     }] : []),
-    security?.autoLogon || security?.autoLogonState === 'lost'
-      ? action(security.autoLogon ? t('settings.windows.autoOff') : t('settings.windows.deletePassword'), t('settings.windows.deletePasswordDesc'), disableAutoLogon)
-      : action(t('settings.windows.autoSetup'), t('settings.windows.autoSetupDesc'), setupAutoLogon),
-    ...((security?.autoLogon && (security.autoLogonState !== 'megahub' || security.autoLogonOtherUser)) || security?.autoLogonState === 'lost' ? [action(t('settings.windows.autoRedo'), t('settings.windows.autoRedoDesc'), setupAutoLogon)] : []),
-    action(t('settings.windows.netplwiz'), t('settings.windows.netplwizDesc'), async () => { await attempt(() => api.openAutoLogonDialog(), t('settings.windows.netplwizFailed')); }),
+    // Mega Hub no longer offers to skip the Windows sign-in (the Windows PIN, which works with a controller, is the lock). An automatic
+    // sign-in that is already on can still be turned off here.
+    ...(security?.autoLogon || security?.autoLogonState === 'lost'
+      ? [action(security.autoLogon ? t('settings.windows.autoOff') : t('settings.windows.deletePassword'), t('settings.windows.deletePasswordDesc'), disableAutoLogon)]
+      : []),
     toggle('suppressCompetitors', t('settings.windows.suppress'), t('settings.windows.suppressDesc')),
     toggle('killExplorerOnReturn', t('settings.windows.killExplorer'), t('settings.windows.killExplorerDesc')),
     ...(security?.autoLogon && security.autoLogonOtherUser ? [info(t('settings.windows.warning'), t('settings.windows.otherUser', { other: security.autoLogonUser, user: security.user }))] : []),
@@ -1626,6 +1662,9 @@ function categories() {
       items: [
         { kind: 'choice', label: t('settings.appearance.skin'), desc: state.skin.description, value: () => state.skin.name, run: async () => openOverlay(await skinMenu()) },
         { kind: 'choice', label: t('settings.pointer.title'), desc: t('settings.pointer.desc'), value: () => pointerModes(s.mouseUnlocked).find((m) => m.value === pointerMode(s))?.label, run: choosePointer },
+        { kind: 'choice', label: t('settings.appearance.bgStyle'), desc: t('settings.appearance.bgStyleDesc'), value: () => lookLabel(bgStyleOptions, 'bgStyle'), run: () => chooseLook('bgStyle', t('settings.appearance.bgStyle'), bgStyleOptions) },
+        { kind: 'choice', label: t('settings.appearance.bootScene'), desc: t('settings.appearance.bootSceneDesc'), value: () => lookLabel(bootSceneOptions, 'bootScene'), run: () => chooseLook('bootScene', t('settings.appearance.bootScene'), bootSceneOptions, t('settings.appearance.bootSceneNote')) },
+        { kind: 'choice', label: t('settings.appearance.avatarAnim'), desc: t('settings.appearance.avatarAnimDesc'), value: () => lookLabel(avatarAnimOptions, 'avatarAnim'), run: () => chooseLook('avatarAnim', t('settings.appearance.avatarAnim'), avatarAnimOptions) },
         action(t('settings.appearance.install'), t('settings.appearance.installDesc'), () => openPage(pluginsPage(1, { expert: !!settings?.expertMode }), t('settings.cat.appearance'))),
         toggle('trailerPreviews', t('settings.appearance.trailers'), t('settings.appearance.trailersDesc'), (on) => (state.info.trailerPreviews = on)),
         toggle('reduceMotion', t('settings.appearance.motion'), t('settings.appearance.motionDesc'), (on) => {

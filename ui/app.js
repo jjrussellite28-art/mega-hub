@@ -2,6 +2,8 @@
 
 // First: the boot screen's input shield has to listen before any other code of the page does.
 import { endBoot, inputOpen } from './core/boot-gate.js';
+// Second: the looks (loading screen, background, avatar animation) go on the page before anything is drawn.
+import './core/look-prefs.js';
 import { api } from './core/api.js';
 import { fmtTime, t } from './core/i18n.js';
 import { $, el } from './core/dom.js';

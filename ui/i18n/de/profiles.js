@@ -2,6 +2,10 @@
 export default {
   'profiles.switch': 'Profil wechseln',
   'profiles.pickerTitle': 'Wer spielt?',
+  'profiles.greeting.morning': 'Guten Morgen',
+  'profiles.greeting.afternoon': 'Guten Tag',
+  'profiles.greeting.evening': 'Guten Abend',
+  'profiles.greeting.late': 'Hallo',
   'profiles.pickerHint': 'Profil wählen',
   'profiles.gameRunningHint': 'Solange ein Spiel läuft, lässt sich das Profil nicht wechseln.',
   'profiles.exhaustedHint': 'Die Zeit ist um: ein anderes Profil nur mit dem Eltern-Code.',

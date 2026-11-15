@@ -15,6 +15,7 @@
 </head>
 <body>
   <div id="bg">
+    <div id="bg-theme" aria-hidden="true"></div>
     <div class="bg-layer"></div>
     <div class="bg-layer"></div>
     <div id="bg-hero" aria-hidden="true"></div>
@@ -53,8 +54,15 @@
   <div id="toast" hidden></div>
   <div id="shot-toast" role="status" hidden></div>
 
-  <div id="boot" aria-hidden="true">
+  <div id="boot" aria-hidden="true" data-scene="orbital">
     <div class="boot-logo">Mega<span> Hub</span></div>
+    <!-- The animated loading scenes (look-prefs.js picks one with data-scene; "classic" is the picture with the bar below). -->
+    <div class="boot-scenes">
+      <div class="bs-scene bs-orbital"><div class="bs-orbit"></div><div class="bs-orbit bs-o2"></div><div class="bs-orbit bs-o3"></div><div class="bs-brand">MEGA HUB</div></div>
+      <div class="bs-scene bs-horizon"><div class="bs-gridfloor"></div><div class="bs-scan"></div><div class="bs-brand">MEGA HUB</div><div class="bs-progress"><span></span></div></div>
+      <div class="bs-scene bs-core"><div class="bs-energy"></div><div class="bs-hex"></div><div class="bs-brand">MEGA HUB</div><div class="bs-particles"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="bs-scene bs-pulse"><div class="bs-particles"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="bs-bars"><i></i><i></i><i></i><i></i><i></i></div><div class="bs-brand">MEGA HUB</div><div class="bs-progress"><span></span></div></div>
+    </div>
     <div class="boot-bar"><div></div></div>
   </div>
 

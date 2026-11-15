@@ -34,6 +34,7 @@ export default {
   'unlockChip.lock': 'Lock',
   'unlockChip.unlockTitle': 'Unlock Mega Hub: Windows sign-in and Mega Hub code',
   'unlockChip.lockTitle': 'Lock Mega Hub again',
+  'unlockChip.openTitle': 'Unlocked',
   'unlockChip.locked': 'Locked',
   'unlockChip.unlocked': 'Unlocked: it stays open until the lid is closed for a while, or a shutdown or restart',
   'feedback.unlockNow': 'Unlock now',

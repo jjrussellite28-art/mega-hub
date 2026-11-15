@@ -45,7 +45,18 @@ async function refresh() {
 function avatarEl(p, big = false) {
   const node = el('span', { className: big ? 'profile-avatar big' : 'profile-avatar', textContent: avatarOf(p) });
   node.style.setProperty('--profile-color', colorOf(p));
+  // The big picture moves (Settings › Appearance › Profile animation); with "Reduce animations" it stands still.
+  if (big && state.info?.reduceMotion) node.classList.add('still');
   return node;
+}
+
+/** The greeting above the profile cards, by the time of day on this PC. */
+function greeting(now = new Date()) {
+  const hour = now.getHours();
+  if (hour >= 5 && hour < 12) return t('profiles.greeting.morning');
+  if (hour >= 12 && hour < 18) return t('profiles.greeting.afternoon');
+  if (hour >= 18 && hour < 22) return t('profiles.greeting.evening');
+  return t('profiles.greeting.late');
 }
 
 // ---------------------------------------------------------------------------
@@ -142,12 +153,18 @@ export async function showPicker({ required = false } = {}) {
     build(root) {
       this.list = profiles.data?.profiles ?? [];
       this.index = Math.min(this.index, Math.max(0, this.list.length - 1));
-      this.tiles = this.list.map((p) => el('li', { className: 'profile-tile' },
-        avatarEl(p, true),
-        el('strong', { className: 'profile-name', textContent: nameOf(p) }),
-        el('small', { className: 'profile-lock', textContent: p.hasCode ? '🔒' : kidProfile(p) ? '⏳' : '' })));
+      this.tiles = this.list.map((p) => {
+        const tile = el('li', { className: 'profile-tile' },
+          avatarEl(p, true),
+          el('strong', { className: 'profile-name', textContent: nameOf(p) }),
+          el('small', { className: 'profile-lock', textContent: p.hasCode ? '🔒' : kidProfile(p) ? '⏳' : '' }));
+        // The card takes the profile's color (one of the fixed presets, see colorOf).
+        tile.style.setProperty('--profile-color', colorOf(p));
+        return tile;
+      });
       const d = profiles.data;
       root.append(el('div', { className: 'profile-picker' },
+        el('p', { className: 'profile-greeting', textContent: greeting() }),
         el('h2', { textContent: t('profiles.pickerTitle') }),
         el('p', { className: 'meta', textContent: d?.gameRunning ? t('profiles.gameRunningHint') : d?.exhausted ? t('profiles.exhaustedHint') : t('profiles.pickerHint') }),
         el('ul', { className: 'profile-tiles' }, this.tiles)));

@@ -6,6 +6,21 @@ export { isBusy, markBusy, runBusy } from './busy.js';
 
 let toastTimer;
 
+/** How long the "Locked / Unlock now" note stays on screen. */
+export const UNLOCK_NOTE_MS = 5000;
+
+/** The code screen for a locked couch; after the unlock the page is built again, after a cancel the short note with the button follows. */
+export async function askToUnlock(reason = '') {
+  const { ensureUnlocked } = await import('../components/passcode.js');
+  if (await ensureUnlocked(reason)) {
+    const { render } = await import('./nav.js');
+    render();
+    return true;
+  }
+  toast(t('unlockChip.locked'), UNLOCK_NOTE_MS, { action: { label: t('feedback.unlockNow'), run: () => askToUnlock(reason) } });
+  return false;
+}
+
 /** `long`: a text of several lines; it sits low on the screen so it never covers the title of the page behind it. */
 export function toast(text, ms = 2500, { long = false, action = null } = {}) {
   const t = $('#toast');
@@ -50,14 +65,11 @@ export async function attempt(action, label, { quietLocked = false, lockedValue 
       return undefined;
     }
     console.error(err);
-    // A locked couch: the code screen opens right away (controller, keyboard or mouse), no message with a button to hunt for; after the
-    // unlock the page is built again. A cancel leaves everything as it was.
+    // A locked couch: the code screen opens right away (controller, keyboard or mouse); after the unlock the page is built again.
+    // A cancel leaves everything as it was and shows a short "Locked" note (5 seconds) with an "Unlock now" button: pressing it
+    // closes the note and opens the code screen again.
     if (err?.locked) {
-      const { ensureUnlocked } = await import('../components/passcode.js');
-      if (await ensureUnlocked(label ?? '')) {
-        const { render } = await import('./nav.js');
-        render();
-      }
+      await askToUnlock(label ?? '');
       return undefined;
     }
     toast(`${label ?? t('feedback.failed')}: ${err?.message || err}`, 5000);

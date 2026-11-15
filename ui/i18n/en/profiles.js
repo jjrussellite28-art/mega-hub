@@ -2,6 +2,10 @@
 export default {
   'profiles.switch': 'Switch profile',
   'profiles.pickerTitle': 'Who is playing?',
+  'profiles.greeting.morning': 'Good morning',
+  'profiles.greeting.afternoon': 'Good afternoon',
+  'profiles.greeting.evening': 'Good evening',
+  'profiles.greeting.late': 'Hello',
   'profiles.pickerHint': 'Choose a profile',
   'profiles.gameRunningHint': 'The profile cannot be switched while a game is running.',
   'profiles.exhaustedHint': 'Time is up: another profile only with the parent code.',

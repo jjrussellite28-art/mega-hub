@@ -3218,7 +3218,7 @@ assert.equal(chipsBlocked(null), false);
   const html = readFileSync(new URL('../ui/index.html', import.meta.url), 'utf8').replace(/\r/g, '');
   const bgBlock = html.slice(html.indexOf('<div id="bg">'), html.indexOf('<header'));
   const bgChildren = [...bgBlock.matchAll(/<div (?:id="([^"]+)"|class="([^"]+)")/g)].map((m) => (m[1] ? `#${m[1]}` : m[2] ? `.${m[2]}` : '#bg')).filter((c) => c !== '#bg');
-  assert.deepEqual(bgChildren, ['.bg-layer', '.bg-layer', '#bg-hero', '.bg-ambient', '.bg-shade']);
+  assert.deepEqual(bgChildren, ['#bg-theme', '.bg-layer', '.bg-layer', '#bg-hero', '.bg-ambient', '.bg-shade']);
   const held = new Set(['#bg-hero', '.bg-shade']);
   for (const child of bgChildren) {
     if (child === '.bg-ambient') continue; // a blurred radial glow with no visible edge
