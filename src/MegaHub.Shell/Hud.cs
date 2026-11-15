@@ -8501,6 +8501,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     /// </summary>
     public async Task ResetMegaHubAsync()
     {
+        RefuseWhileConfigFaulted();
         RequireUnlocked();
         if (ServiceCodes.Expected && !AdminService.DevMayRelax(dev))
         {

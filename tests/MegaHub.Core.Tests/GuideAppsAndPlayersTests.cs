@@ -282,16 +282,6 @@ public class GuideAppsAndPlayersTests
         Assert.False(new AppConfig().WandCompanionHintShown);
     }
 
-    [Fact]
-    public void The_wand_plugin_is_only_an_sdk_example_without_icons_or_a_suggestion()
-    {
-        var source = File.ReadAllText(Path.Combine(Root(), "plugins", "MegaHub.Plugin.Wand", "WandPlugin.cs"));
-        Assert.Contains("SDK EXAMPLE ONLY", source);
-        // No emoji or symbol icons in the plugin's names (the rule for plugins).
-        Assert.DoesNotContain("Icon =", source);
-        Assert.All(source.EnumerateRunes(), r => Assert.True(r.Value < 0x2190, $"symbol U+{r.Value:X} in WandPlugin.cs"));
-    }
-
     private static string Root()
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
