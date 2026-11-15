@@ -138,7 +138,67 @@ public sealed partial class Hud
     // News
 
     /// <summary>A news plugin is loaded (and not paused) and the News area is on.</summary>
-    private bool NewsAvailable => Areas.On(FeatureAreas.News) && plugins.NewsSource is not null;
+    private bool NewsAvailable => Areas.On(FeatureAreas.News);
+
+    // Mega Hub's own News tab: with no news plugin loaded, the feeds the person added are read here (RSS and Atom, plain text only).
+    private const int MaxOwnFeeds = 30;
+    private static readonly HttpClient NewsHttp = MakeNewsHttp();
+    private readonly object _ownNewsGate = new();
+    private List<PluginNewsItem> _ownNews = [];
+    private DateTimeOffset _ownNewsAt = DateTimeOffset.MinValue;
+
+    private static HttpClient MakeNewsHttp()
+    {
+        var http = new HttpClient(new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.All, MaxAutomaticRedirections = 4 }) { Timeout = TimeSpan.FromSeconds(12) };
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("MegaHub-News/1.0");
+        return http;
+    }
+
+    private IReadOnlyList<PluginNewsFeed> OwnFeeds() =>
+        (config.Current.OwnNewsFeeds ?? []).Where(f => f?.Url is not null && HttpUrl(f.Url) is not null)
+            .Select(f => new PluginNewsFeed(PlainText(f.Name, 60), HttpUrl(f.Url)!)).Take(MaxOwnFeeds).ToList();
+
+    private async Task<IReadOnlyList<PluginNewsItem>> GetOwnNewsAsync()
+    {
+        if (net.Offline) return [];
+        var feeds = OwnFeeds();
+        if (feeds.Count == 0) return [];
+        lock (_ownNewsGate)
+        {
+            if (DateTimeOffset.UtcNow - _ownNewsAt < TimeSpan.FromMinutes(10) && _ownNews.Count > 0) return _ownNews;
+        }
+        using var cts = new CancellationTokenSource(NewsTimeout);
+        var all = await Task.WhenAll(feeds.Select<PluginNewsFeed, Task<IReadOnlyList<PluginNewsItem>>>(async feed =>
+        {
+            try
+            {
+                using var response = await NewsHttp.GetAsync(feed.Url, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+                if (!response.IsSuccessStatusCode) return Array.Empty<PluginNewsItem>();
+                await using var stream = await response.Content.ReadAsStreamAsync(cts.Token);
+                using var memory = new MemoryStream();
+                var buffer = new byte[1 << 16];
+                int read;
+                while ((read = await stream.ReadAsync(buffer, cts.Token)) > 0)
+                {
+                    memory.Write(buffer, 0, read);
+                    if (memory.Length > 3 * 1024 * 1024) return Array.Empty<PluginNewsItem>();
+                }
+                return MegaHub.Core.Plugins.NewsFeedParser.Parse(System.Text.Encoding.UTF8.GetString(memory.ToArray()), feed.Name);
+            }
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or OperationCanceledException or IOException)
+            {
+                Console.Error.WriteLine($"[news] {feed.Name}: {ex.GetType().Name}");
+                return Array.Empty<PluginNewsItem>();
+            }
+        }));
+        var merged = all.SelectMany(x => x).OrderByDescending(i => i.Published).Take(MaxNewsItems).ToList();
+        lock (_ownNewsGate)
+        {
+            _ownNews = merged;
+            _ownNewsAt = DateTimeOffset.UtcNow;
+        }
+        return merged;
+    }
 
     private (string Plugin, IPluginNews Source) NewsSourceOrThrow()
     {
@@ -149,7 +209,8 @@ public sealed partial class Hud
     public async Task<IReadOnlyList<PluginNewsItem>> GetNewsAsync()
     {
         RequireArea(FeatureAreas.News);
-        if (plugins.NewsSource is not { } n) return [];
+        if (plugins.NewsSource is not { } n)
+            return (await GetOwnNewsAsync()).Select(CleanItem).Where(i => i is not null).Select(i => net.Offline ? i! with { Image = null } : i!).ToList();
         var items = await PluginManager.SafeAsync(n.Plugin, ct => n.Source.GetItemsAsync(ct), NewsTimeout);
         // The page loads the pictures straight from the web (the CSP allows https images), past the plugin's client: so while Offline is on, or when
         // every news service is switched off in Settings > Privacy, the pictures are dropped here and only the text is shown.
@@ -160,7 +221,7 @@ public sealed partial class Hud
     public IReadOnlyList<PluginNewsFeed> GetFeeds()
     {
         RequireArea(FeatureAreas.News);
-        if (plugins.NewsSource is not { } n) return [];
+        if (plugins.NewsSource is not { } n) return OwnFeeds();
         try
         {
             return (SlotCall(n.Plugin, () => n.Source.Feeds, null, soft: true) ?? []).Where(f => f is not null && HttpUrl(f.Url) is not null).Take(100)
@@ -175,8 +236,23 @@ public sealed partial class Hud
 
     public void AddFeed(string name, string url)
     {
-        var n = NewsSourceOrThrow();
+        RequireArea(FeatureAreas.News);
         if (HttpUrl(url) is not { } clean) throw new ArgumentException(Strings.Get("hud.needFeedAddress"));
+        if (plugins.NewsSource is null)
+        {
+            var feedName = PlainText(name, 60);
+            if (feedName.Length == 0) feedName = new Uri(clean).Host;
+            config.UpdateOrThrow(c =>
+            {
+                c.OwnNewsFeeds ??= new();
+                c.OwnNewsFeeds.RemoveAll(f => string.Equals(f.Url, clean, StringComparison.OrdinalIgnoreCase));
+                if (c.OwnNewsFeeds.Count >= MaxOwnFeeds) throw new ArgumentException(Strings.Get("hud.needFeedAddress"));
+                c.OwnNewsFeeds.Add(new LegacyNewsFeed { Name = feedName, Url = clean });
+            });
+            lock (_ownNewsGate) _ownNewsAt = DateTimeOffset.MinValue;
+            return;
+        }
+        var n = NewsSourceOrThrow();
         try
         {
             var feedName = PlainText(name, 60);
@@ -194,6 +270,13 @@ public sealed partial class Hud
 
     public void RemoveFeed(string url)
     {
+        RequireArea(FeatureAreas.News);
+        if (plugins.NewsSource is null)
+        {
+            config.UpdateOrThrow(c => c.OwnNewsFeeds?.RemoveAll(f => string.Equals(f.Url, url ?? "", StringComparison.OrdinalIgnoreCase)));
+            lock (_ownNewsGate) _ownNewsAt = DateTimeOffset.MinValue;
+            return;
+        }
         var n = NewsSourceOrThrow();
         try
         {

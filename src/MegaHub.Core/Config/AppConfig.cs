@@ -243,6 +243,9 @@ public sealed class AppConfig
     /// </summary>
     public List<LegacyNewsFeed>? NewsFeeds { get; set; }
 
+    /// <summary>The feeds the person added to Mega Hub's own News tab (no plugin needed). Empty until they add one.</summary>
+    public List<LegacyNewsFeed> OwnNewsFeeds { get; set; } = new();
+
     /// <summary>LEGACY, read only for the plugin's first settings. Entities shown in the guide menu for quick access.</summary>
     public List<string> HomeAssistantPinned { get; set; } = [];
 
