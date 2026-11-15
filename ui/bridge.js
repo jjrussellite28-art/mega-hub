@@ -333,6 +333,7 @@ window.megahub = {
   addProfile: (name, avatar, color, restricted) => call('addProfile', name, avatar, color, !!restricted),
   renameProfile: (id, name) => call('renameProfile', id, name),
   setProfileLook: (id, avatar, color) => call('setProfileLook', id, avatar, color),
+  profileAvatarFromFile: (path) => call('profileAvatarFromFile', path),
   setProfileRestricted: (id, restricted) => call('setProfileRestricted', id, !!restricted),
   setProfileCode: (id, code = null) => call('setProfileCode', id, code),
   removeProfile: (id) => call('removeProfile', id),

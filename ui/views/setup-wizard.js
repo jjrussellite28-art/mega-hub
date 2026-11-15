@@ -305,6 +305,13 @@ function steps(page) {
         ['go', false, decide(() => { ch.launchers = true; })]
       ]
     }),
+    winkey: explainStep('winkey', {
+      later: () => where('settings.cat.startup'),
+      choices: () => [
+        ['safe', true, decide(() => { ch.winkey = false; })],
+        ['go', false, decide(() => { ch.winkey = true; })]
+      ]
+    }),
     look: {
       icon: 'appearance',
       title: () => t('wizard.look.title'),
@@ -664,6 +671,7 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
       }
       // Game clients in the background: they start with a game and close after it (the host puts every client on "on demand").
       if (plan.changes.includes('launchers')) await run('launchers', async () => save('closeClientsAfterGame', true), { where: where('settings.cat.startup') });
+      if (plan.changes.includes('winkey')) await run('winkey', async () => save('blockWindowsKey', true), { where: where('settings.cat.startup') });
       // What the mode question counts as "set up" (the card says "Already set up" without a sign-in that was declined).
       if (this.intent === 'full' && applies('autologon', this.ctx())) await save('autoLogonDeclined', !this.choices.autologon);
       this.results = results;

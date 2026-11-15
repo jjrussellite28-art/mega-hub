@@ -55,7 +55,7 @@ public static class FeatureAreas
         ["musicVolume"] = Always, ["soundVolume"] = Always, ["soundSet"] = Always, ["uiHdr"] = Always, ["sounds"] = Always,
         ["expertMode"] = Always, ["developerMode"] = Always, ["language"] = Always, ["rumble"] = Always, ["padGlyphs"] = Always, ["runStartupApps"] = Always,
         ["killExplorerOnReturn"] = Always, ["nightMode"] = Always, ["nightModeStrength"] = Always,
-        ["closePcAppsOnReturn"] = Always, ["closeAllAppsOnReturn"] = Always, ["closeClientsAfterGame"] = Always, ["onlineArtwork"] = Always, ["clearArtworkCache"] = Always,
+        ["closePcAppsOnReturn"] = Always, ["closeAllAppsOnReturn"] = Always, ["closeClientsAfterGame"] = Always, ["blockWindowsKey"] = Always, ["onlineArtwork"] = Always, ["clearArtworkCache"] = Always,
         ["autoSwitchHeadphones"] = Always, ["returnHoldMs"] = Always, ["weatherLocation"] = Always,
         ["aiProvider"] = Always, ["aiModel"] = Always,
         ["aiApiKey"] = Always, ["mcpEnabled"] = Always, ["mirrorNotifications"] = Always,
@@ -121,7 +121,7 @@ public static class FeatureAreas
         "displayOn", "displayOff", "getSecurity", "getServiceStatus", "repairService", "resetCodeStore", "resetServiceState", "getParental", "setParental",
         "setParentalItemLock", "resetParentalAllChildrenLocks", "parentalCheck", "parentalExtend", "parentalAuth", "confirmWindowsUnlock", "parentalReset",
         "parentalAcceptClock", "parentalAdoptZone", "parentalCloseGame", "getProfiles", "switchProfile", "profileScreen", "profileIdle",
-        "addProfile", "renameProfile", "setProfileLook", "setProfileRestricted", "setProfileCode", "removeProfile", "getProfileRules",
+        "addProfile", "renameProfile", "setProfileLook", "profileAvatarFromFile", "setProfileRestricted", "setProfileCode", "removeProfile", "getProfileRules",
         "setProfileRule", "unlock", "windowsSignIn", "setPasscode", "setCouchLock", "setParentCode", "readClipboard",
         "holdUnlockForSetup", "setBlockTaskManager", "openAutoLogonDialog", "enableAutoLogon", "setAutoLogon",
         // Sound, controllers, batteries, display, performance, captures and screenshots.

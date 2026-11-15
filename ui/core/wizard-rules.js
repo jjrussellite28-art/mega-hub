@@ -9,7 +9,7 @@ import { lockStepStatus } from './lock-rules.js';
 /** All steps in the order they are asked. Which of them apply right now is decided by applies(). */
 export const SEQUENCE = [
   'welcome', 'terms', 'areas', 'updates', 'mode',
-  'revert', 'shell', 'lock', 'autologon', 'launchers',
+  'revert', 'shell', 'lock', 'autologon', 'launchers', 'winkey',
   'look', 'sound', 'soundset', 'startask', 'startup', 'clientsInfo', 'clients', 'tv',
   'summary', 'result'
 ];
@@ -21,6 +21,7 @@ export const EXPLAINS = {
   lock: { risks: 3, icon: 'shield' },
   autologon: { risks: 3, icon: 'shield', big: true },
   launchers: { risks: 3, icon: 'console' },
+  winkey: { risks: 2, icon: 'shield' },
   clientsInfo: { risks: 2, icon: 'library' },
   tv: { risks: 3, icon: 'tv' }
 };
@@ -61,7 +62,7 @@ export function parseResume(raw) {
 }
 
 /** Fresh decisions: everything off, every system change has to be asked for. */
-export const freshChoices = () => ({ autologon: false, launchers: false, services: false, lock: false, clients: 'keep', clientModes: {}, tv: 'off' });
+export const freshChoices = () => ({ autologon: false, launchers: false, winkey: false, services: false, lock: false, clients: 'keep', clientModes: {}, tv: 'off' });
 
 /** Shell mode as chosen here (set up at the end) or as it is now. */
 export const isFullNow = (ctx) => ctx.intent === 'full' || (!!ctx.full && ctx.intent !== 'light');
@@ -79,6 +80,8 @@ export function applies(id, ctx) {
     // The sign-in only makes sense with the shell and the lock; an account without a password signs in by itself already.
     case 'autologon': return ctx.intent === 'full' && ctx.accountPassword !== false && !ctx.autoLogonDone;
     case 'launchers': return ctx.intent === 'full';
+    // The Windows key block only works in Shell mode.
+    case 'winkey': return ctx.intent === 'full' || (full && ctx.intent !== 'light');
     case 'clientsInfo': return full && ctx.launchers > 0 && (ctx.areas ?? ['games']).includes('games');
     case 'clients': return full && ctx.launchers > 0 && (ctx.areas ?? ['games']).includes('games') && choices.clients === 'adjust';
     // The programs Windows starts at sign-in (Discord, EA, driver tools): only a console install starts them for Mega Hub.
@@ -147,6 +150,7 @@ export function summaryPlan(ctx) {
     if (!ctx.lockOn) changes.push('lockSetup');
     if (applies('autologon', ctx) && choices.autologon) changes.push('autologon');
     if (choices.launchers) changes.push('launchers');
+    if (choices.winkey) changes.push('winkey');
   } else if (ctx.intent === 'light') {
     changes.push('revert');
   } else if (isFullNow(ctx) && !ctx.lockOn && choices.lock) {
@@ -170,5 +174,6 @@ export const summaryFocus = (plan) => (plan.changes.length ? 'back' : 'apply');
 // i18n-used: wizard.x.launchers.title wizard.x.launchers.what wizard.x.launchers.changes wizard.x.launchers.risk1 wizard.x.launchers.risk2 wizard.x.launchers.risk3 wizard.x.launchers.undo wizard.x.launchers.detail wizard.x.launchers.safe wizard.x.launchers.safeSub wizard.x.launchers.go wizard.x.launchers.goSub
 // i18n-used: wizard.x.clientsInfo.title wizard.x.clientsInfo.what wizard.x.clientsInfo.changes wizard.x.clientsInfo.risk1 wizard.x.clientsInfo.risk2 wizard.x.clientsInfo.undo wizard.x.clientsInfo.detail wizard.x.clientsInfo.safe wizard.x.clientsInfo.safeSub wizard.x.clientsInfo.go wizard.x.clientsInfo.goSub
 // i18n-used: wizard.x.tv.title wizard.x.tv.what wizard.x.tv.changes wizard.x.tv.risk1 wizard.x.tv.risk2 wizard.x.tv.risk3 wizard.x.tv.undo wizard.x.tv.detail wizard.x.tv.safe wizard.x.tv.safeSub wizard.x.tv.go wizard.x.tv.goSub wizard.x.tv.goBoth wizard.x.tv.goBothSub
+// i18n-used: wizard.x.winkey.title wizard.x.winkey.what wizard.x.winkey.changes wizard.x.winkey.risk1 wizard.x.winkey.risk2 wizard.x.winkey.undo wizard.x.winkey.detail wizard.x.winkey.safe wizard.x.winkey.safeSub wizard.x.winkey.go wizard.x.winkey.goSub
 // i18n-used: wizard.x.lock.stay wizard.x.lock.staySub
-// i18n-used: wizard.sum.shell wizard.sum.lockSetup wizard.sum.lockNow wizard.sum.autologon wizard.sum.launchers wizard.sum.revert wizard.sum.clients wizard.sum.tvOn wizard.sum.tvBoth
+// i18n-used: wizard.sum.shell wizard.sum.lockSetup wizard.sum.lockNow wizard.sum.autologon wizard.sum.launchers wizard.sum.winkey wizard.sum.revert wizard.sum.clients wizard.sum.tvOn wizard.sum.tvBoth

@@ -416,7 +416,28 @@ public static class ProfileLooks
 
     public static readonly IReadOnlyList<string> Colors = ["#3fa9f5", "#ff8800", "#e5484d", "#30a46c", "#8e4ec6", "#f5d90a", "#e93d82", "#12a594"];
 
-    public static bool IsAvatar(string? id) => id is not null && Avatars.Contains(id);
+    /// <summary>The drawn pictures of the profile screen (art1 … art12; the UI draws them).</summary>
+    public static readonly IReadOnlyList<string> Pictures = Enumerable.Range(1, 12).Select(i => "art" + i).ToList();
+
+    private const string CustomPrefix = "data:image/jpeg;base64,";
+
+    /// <summary>
+    /// A custom picture made by Mega Hub itself from a file the person chose: a small JPEG as a data URL, base64 characters only,
+    /// short enough to live in the settings. Nothing else is taken as a picture.
+    /// </summary>
+    public static bool IsCustomPicture(string? value)
+    {
+        if (value is null || value.Length <= CustomPrefix.Length || value.Length > 70_000 || !value.StartsWith(CustomPrefix, StringComparison.Ordinal)) return false;
+        for (var i = CustomPrefix.Length; i < value.Length; i++)
+        {
+            var c = value[i];
+            var ok = c is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= '0' and <= '9' or '+' or '/' || (c == '=' && i >= value.Length - 2);
+            if (!ok) return false;
+        }
+        return true;
+    }
+
+    public static bool IsAvatar(string? id) => id is not null && (Avatars.Contains(id) || Pictures.Contains(id) || IsCustomPicture(id));
 
     public static bool IsColor(string? color) => color is not null && Colors.Contains(color);
 

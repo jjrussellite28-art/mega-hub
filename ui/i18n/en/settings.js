@@ -342,6 +342,8 @@ export default {
   'settings.cat.startup': 'Startup & services',
   'settings.startup.clientsAfter': 'Close game clients after a game',
   'settings.startup.clientsAfterDesc': 'Steam starts in the background with a game and closes after it, once your cloud saves had time to sync. Other clients stay as they are.',
+  'settings.startup.winKey': 'Block the Windows key',
+  'settings.startup.winKeyDesc': 'Shell mode only: the Windows keys do nothing while Mega Hub is in front. PC mode gives them back.',
   'settings.startup.closeAll': 'Close all my programs when returning',
   'settings.startup.closeAllDesc': 'Back on the couch, browsers and other programs close like a click on the X: browser tabs can be restored, programs with unsaved work ask first',
   'settings.startup.closePick': 'Choose programs to close',

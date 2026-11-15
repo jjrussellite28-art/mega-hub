@@ -335,6 +335,17 @@ public sealed partial class Hud
         return GetProfiles();
     }
 
+    /// <summary>
+    /// A picture file the person chose becomes a profile picture: read, cut to a square, made small and kept as a JPEG data URL (the
+    /// original file is not touched and not needed afterwards). Returns the value for <see cref="SetProfileLook"/>.
+    /// </summary>
+    public async Task<string> ProfileAvatarFromFileAsync(string path)
+    {
+        var value = await Task.Run(() => MegaHub.Shell.Services.ProfilePicture.FromFile(path));
+        if (!ProfileLooks.IsCustomPicture(value)) throw new InvalidOperationException(Strings.Get("profiles.lookInvalid"));
+        return value;
+    }
+
     public object SetProfileRestricted(string id, bool restricted)
     {
         RequireKnownProfile(id);

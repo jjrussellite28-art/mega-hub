@@ -1592,6 +1592,8 @@ function startupItems(s) {
       toggle('closeAllAppsOnReturn', t('settings.startup.closeAll'), t('settings.startup.closeAllDesc')),
       // Game clients start with a game and close after it (after the cloud save had time to sync).
       toggle('closeClientsAfterGame', t('settings.startup.clientsAfter'), t('settings.startup.clientsAfterDesc')),
+      // Shell mode only: the Windows keys do nothing while the couch is in front (PC mode gives them back).
+      toggle('blockWindowsKey', t('settings.startup.winKey'), t('settings.startup.winKeyDesc')),
       {
         kind: 'choice',
         label: t('settings.startup.closePick'),

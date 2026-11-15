@@ -2289,7 +2289,12 @@ body.quick-open #view {
   #view.enter-left, #view.enter-right, #view.enter-up, .boot-logo, .boot-bar div { animation: none; }
   .bs-scene *, .bs-scene *::before, .bs-scene *::after { animation: none !important; }
   #bg-theme::before { animation: none; }
-  .profile-avatar.big { animation: none !important; }
+  .profile-avatar.has-picture {
+  background-size: cover;
+  background-position: center;
+}
+
+.profile-avatar.big { animation: none !important; }
   .bg-video { transition: none; }
 }
 

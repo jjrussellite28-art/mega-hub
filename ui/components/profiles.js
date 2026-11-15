@@ -19,6 +19,8 @@ import { ensureParentGrant, formatRemaining, parental, refreshParental } from '.
 import { openKeyboard } from './keyboard.js';
 import { addQuickRows, closeQuickMenu } from './quick-menu.js';
 import { onScreensaverStop, screensaverShowing } from '../core/screensaver.js';
+import { ART_IDS, artUrl, pictureOf, randomArt } from '../core/avatar-art.js';
+import { openFileBrowser } from './file-browser.js';
 
 // The same presets as ProfileLooks in Core (the host refuses anything else).
 const AVATARS = { fox: '🦊', panda: '🐼', frog: '🐸', lion: '🦁', octopus: '🐙', rocket: '🚀', cat: '🐱', dog: '🐶', unicorn: '🦄', robot: '🤖', alien: '👽', star: '⭐' };
@@ -29,7 +31,7 @@ const MANAGE = 'profileManage';
 
 export const profiles = { data: null };
 
-const avatarOf = (p) => AVATARS[p?.avatar] ?? AVATARS.fox;
+const avatarOf = (p) => (pictureOf(p?.avatar) ? '🖼' : (AVATARS[p?.avatar] ?? AVATARS.fox));
 const colorOf = (p) => (COLORS.includes(p?.color) ? p.color : COLORS[0]);
 const many = () => (profiles.data?.profiles?.length ?? 0) > 1;
 /** The name to show: a default profile nobody named is "Standard" / "Default" (the parents can rename it). */
@@ -43,7 +45,12 @@ async function refresh() {
 
 /** A round avatar in the profile's color. */
 function avatarEl(p, big = false) {
-  const node = el('span', { className: big ? 'profile-avatar big' : 'profile-avatar', textContent: avatarOf(p) });
+  const picture = pictureOf(p?.avatar);
+  const node = el('span', { className: big ? 'profile-avatar big' : 'profile-avatar', textContent: picture ? '' : avatarOf(p) });
+  if (picture) {
+    node.classList.add('has-picture');
+    node.style.backgroundImage = `url("${picture}")`;
+  }
   node.style.setProperty('--profile-color', colorOf(p));
   // The big picture moves (Settings › Appearance › Profile animation); with "Reduce animations" it stands still.
   if (big && state.info?.reduceMotion) node.classList.add('still');
@@ -317,8 +324,25 @@ async function chooseName(title, value = '') {
   return clean;
 }
 
-const chooseAvatar = (current) => chooseDialog(t('profiles.avatarTitle'),
-  Object.entries(AVATARS).map(([id, emoji]) => ({ label: emoji, icon: emoji, value: id })), current);
+const PICK_OWN = '__own';
+const PICK_RANDOM = '__random';
+const PICTURE_FILES = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'];
+
+/** Random picture, one of the drawn pictures, an emoji, or the person's own picture file (the host makes it small and keeps it). */
+async function chooseAvatar(current) {
+  const picked = await chooseDialog(t('profiles.avatarTitle'), [
+    { label: t('profiles.avatarRandom'), icon: '🎲', value: PICK_RANDOM },
+    { label: t('profiles.avatarOwn'), detail: t('profiles.avatarOwnDetail'), icon: '🖼', value: PICK_OWN },
+    ...ART_IDS.map((id, i) => ({ label: t('profiles.avatarPicture', { n: i + 1 }), thumb: artUrl(id), value: id })),
+    ...Object.entries(AVATARS).map(([id, emoji]) => ({ label: emoji, icon: emoji, value: id }))
+  ], current);
+  if (picked === PICK_RANDOM) return randomArt();
+  if (picked !== PICK_OWN) return picked;
+  const path = await openFileBrowser({ title: t('profiles.avatarOwn'), mode: 'file', extensions: PICTURE_FILES });
+  if (!path) return undefined;
+  return (await attempt(() => api.profileAvatarFromFile(path), t('profiles.avatarOwnFailed'))) || undefined;
+}
+// i18n-used: profiles.avatarRandom profiles.avatarOwn profiles.avatarOwnDetail profiles.avatarPicture profiles.avatarOwnFailed
 
 // i18n-used: profiles.color.0 profiles.color.1 profiles.color.2 profiles.color.3 profiles.color.4 profiles.color.5 profiles.color.6 profiles.color.7
 const colorName = (i) => {

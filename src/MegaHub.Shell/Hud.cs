@@ -427,12 +427,14 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             _dialogGuard.Start();
         });
         // Without explorer nobody answers the volume keys.
-        if (_asShell && _audio is not null)
+        // The same keyboard hook also holds back the Windows keys when the setup switched that on (Shell mode only).
+        if (_asShell)
         {
             optional.Run("volume keys", () =>
             {
-                _mediaKeys = new MediaKeys(step => Ui(() => OnVolumeKey(step)));
+                _mediaKeys = new MediaKeys(step => Ui(() => OnVolumeKey(step)), handleVolume: _audio is not null);
                 _mediaKeys.Start();
+                ApplyWindowsKeyBlock();
             });
         }
         if (!Full && config.Current.CloseExplorerInLight) optional.Run("taskbar hiding", HideTaskbar);
@@ -474,6 +476,13 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     }
 
     private MediaKeys? _mediaKeys;
+
+    /// <summary>The Windows keys are blocked only in Shell mode, only when switched on, and never in PC mode.</summary>
+    private void ApplyWindowsKeyBlock()
+    {
+        var keys = _mediaKeys;
+        if (keys is not null) keys.BlockWindowsKey = _asShell && !_pcMode && config.Current.BlockWindowsKey;
+    }
 
     /// <summary>Volume key without explorer: step is +2 / -2, 0 toggles mute.</summary>
     private void OnVolumeKey(int step)
@@ -2802,6 +2811,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             closePcAppsOnReturn = c.ClosePcAppsOnReturn,
             closeAllAppsOnReturn = c.CloseAllAppsOnReturn,
             closeClientsAfterGame = c.CloseClientsAfterGame,
+            blockWindowsKey = c.BlockWindowsKey,
             closeAppsList = c.CloseAppsList,
             maximizeBrowser = c.MaximizeBrowser,
             browserHistory = c.BrowserHistory,
@@ -3178,6 +3188,10 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
                 break;
             case "closeAllAppsOnReturn":
                 config.UpdateOrThrow(c => c.CloseAllAppsOnReturn = Bool());
+                break;
+            case "blockWindowsKey":
+                config.UpdateOrThrow(c => c.BlockWindowsKey = Bool());
+                ApplyWindowsKeyBlock();
                 break;
             case "closeClientsAfterGame":
                 var closeAfter = Bool();
@@ -7890,6 +7904,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         if (on) _guard.Start();
         else _guard.Stop();
         TaskManagerPolicy.Apply(on && config.Current.BlockTaskManager);
+        ApplyWindowsKeyBlock();
         SyncLockState();
     }
 

@@ -342,6 +342,8 @@ export default {
   'settings.cat.startup': 'Autostart & Dienste',
   'settings.startup.clientsAfter': 'Spiele-Clients nach dem Spiel schließen',
   'settings.startup.clientsAfterDesc': 'Steam startet mit einem Spiel im Hintergrund und schließt danach, wenn die Cloud-Spielstände Zeit zum Abgleich hatten. Andere Clients bleiben, wie sie sind.',
+  'settings.startup.winKey': 'Windows-Taste sperren',
+  'settings.startup.winKeyDesc': 'Nur im Shell-Modus: Die Windows-Tasten tun nichts, solange Mega Hub vorne ist. Der PC-Modus gibt sie zurück.',
   'settings.startup.closeAll': 'Alle meine Programme beim Zurückkehren schließen',
   'settings.startup.closeAllDesc': 'Zurück auf der Couch schließen Browser und andere Programme wie mit einem Klick auf das X: Browser-Tabs lassen sich wiederherstellen, Programme mit ungespeicherter Arbeit fragen vorher',
   'settings.startup.closePick': 'Programme zum Schließen wählen',

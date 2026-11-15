@@ -60,11 +60,20 @@ public sealed class MediaKeys : IDisposable
     private Thread? _thread;
     private uint _threadId;
     private IntPtr _hook;
+    private readonly bool _handleVolume;
+    private const int VkLWin = 0x5B, VkRWin = 0x5C;
+
+    /// <summary>
+    /// The Windows keys are swallowed (both down and up, so nothing stays pressed) while this is true: Start menu and the Win+key
+    /// shortcuts stay out of the couch. Only set in Shell mode; PC mode, quitting and the hook ending give the keys back at once.
+    /// </summary>
+    public volatile bool BlockWindowsKey;
 
     /// <param name="onKey">Called on the hook thread with +2 / -2 for volume up / down and 0 for mute; hand over to the UI thread there.</param>
-    public MediaKeys(Action<int> onKey)
+    public MediaKeys(Action<int> onKey, bool handleVolume = true)
     {
         _onKey = onKey;
+        _handleVolume = handleVolume;
         _proc = Callback;
     }
 
@@ -109,7 +118,8 @@ public sealed class MediaKeys : IDisposable
         {
             // KBDLLHOOKSTRUCT starts with the virtual key code.
             var vk = Marshal.ReadInt32(lParam);
-            if (vk is VkVolumeMute or VkVolumeDown or VkVolumeUp && !ShellManager.IsDesktopShellRunning())
+            if (BlockWindowsKey && vk is VkLWin or VkRWin) return 1;
+            if (_handleVolume && vk is VkVolumeMute or VkVolumeDown or VkVolumeUp && !ShellManager.IsDesktopShellRunning())
             {
                 if ((int)wParam is WmKeyDown or WmSysKeyDown)
                 {
