@@ -19,7 +19,7 @@ internal sealed class ScreenOverlay
 
     public bool Active => _windows.Count > 0;
 
-    public void Show(IntPtr mainWindow, bool mirror = true)
+    public void Show(IntPtr mainWindow, bool mirror = true, bool labels = true)
     {
         Hide();
         var screens = Monitors();
@@ -32,7 +32,7 @@ internal sealed class ScreenOverlay
             try
             {
                 if (mirror && !isMain) AddMirror(mainWindow, bounds, screens.First(s => s.Monitor == mainMonitor).Bounds);
-                AddLabel(i + 1, bounds);
+                if (labels) AddLabel(i + 1, bounds);
             }
             catch (Exception ex) when (ex is InvalidOperationException or COMException or System.ComponentModel.Win32Exception)
             {

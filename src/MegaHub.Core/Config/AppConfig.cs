@@ -827,6 +827,9 @@ public sealed class AppConfig
     /// <summary>Shell mode only: the Windows keys do nothing, so nobody leaves the couch by accident. Off by default; the setup offers it.</summary>
     public bool BlockWindowsKey { get; set; }
 
+    /// <summary>With several screens: every other screen shows a live copy of Mega Hub, so the couch is usable whichever screen you face. On by default.</summary>
+    public bool MirrorScreens { get; set; } = true;
+
     /// <summary>Mega Hub: back on the couch, close the windows of all other programs (browsers, chat …) the way a click on the X does, so nothing is lost.</summary>
     public bool CloseAllAppsOnReturn { get; set; }
 

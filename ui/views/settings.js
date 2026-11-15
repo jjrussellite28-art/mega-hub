@@ -1375,6 +1375,8 @@ function displayCategoryItems(s) {
       out.push({ ...item, label: t('settings.display.hdrWindows'), desc: t('settings.display.hdrWindowsDesc') });
     } else out.push(item);
   }
+  // Several screens: the other screens show a live copy of Mega Hub.
+  out.push(toggle('mirrorScreens', t('settings.display.mirror'), t('settings.display.mirrorDesc')));
   const nightRows = nightModeItems(s, change);
   out.push(...nightRows.map((item) => (item === nightRows[0] ? item : { ...item, expert: true })));
   out.push(

@@ -225,6 +225,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     public void Start(MainWindow window)
     {
         _window = window;
+        StartScreenMirror();
         // What an administrator approves through UAC is said in the HUD first (P9 review M-c); a moment to read it before the prompt.
         AdminService.AnnounceApproval = async (ops, reason) =>
         {
@@ -2813,6 +2814,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             closeAllAppsOnReturn = c.CloseAllAppsOnReturn,
             closeClientsAfterGame = c.CloseClientsAfterGame,
             blockWindowsKey = c.BlockWindowsKey,
+            mirrorScreens = c.MirrorScreens,
             closeAppsList = c.CloseAppsList,
             maximizeBrowser = c.MaximizeBrowser,
             browserHistory = c.BrowserHistory,
@@ -3193,6 +3195,10 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             case "blockWindowsKey":
                 config.UpdateOrThrow(c => c.BlockWindowsKey = Bool());
                 ApplyWindowsKeyBlock();
+                break;
+            case "mirrorScreens":
+                config.UpdateOrThrow(c => c.MirrorScreens = Bool());
+                ApplyScreenMirror();
                 break;
             case "closeClientsAfterGame":
                 var closeAfter = Bool();
@@ -4201,13 +4207,56 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     /// <summary>The start choice on several screens: a live copy of Mega Hub and a "Screen N" label on every screen (off again with false).</summary>
     public void ShowScreenOverlay(bool on) => Ui(() =>
     {
+        _choosingScreen = on;
+        _mirrorKey = null;
         if (!on || _window is null)
         {
             _screenOverlay.Hide();
+            ApplyScreenMirror();
             return;
         }
         _screenOverlay.Show(new System.Windows.Interop.WindowInteropHelper(_window).Handle);
     });
+
+    private bool _choosingScreen;
+    private string? _mirrorKey;
+    private System.Windows.Threading.DispatcherTimer? _mirrorTimer;
+
+    /// <summary>
+    /// With several screens, every other screen keeps a live copy of Mega Hub (no labels), so nobody has to get up to change the screen.
+    /// Off in PC mode, while a game runs and while the Windows sign-in is asked; checked every two seconds (a screen plugged in, the window moved).
+    /// </summary>
+    private void StartScreenMirror()
+    {
+        if (_mirrorTimer is not null) return;
+        _mirrorTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+        _mirrorTimer.Tick += (_, _) => ApplyScreenMirror();
+        _mirrorTimer.Start();
+    }
+
+    private void ApplyScreenMirror() => Ui(() =>
+    {
+        if (_choosingScreen) return;
+        try
+        {
+            var window = _window;
+            var want = window is { IsVisible: true } && config.Current.MirrorScreens && !_pcMode && !GameActive && !_signInAsked;
+            var handle = want ? new System.Windows.Interop.WindowInteropHelper(window!).Handle : IntPtr.Zero;
+            var key = want ? $"{handle}:{DisplayService.Screens(0).Count}:{Native.NativeMethods.MonitorFromWindow(handle, Native.NativeMethods.MonitorDefaultToNearest)}" : null;
+            if (key == _mirrorKey) return;
+            _mirrorKey = key;
+            if (key is null) _screenOverlay.Hide();
+            else _screenOverlay.Show(handle, mirror: true, labels: false);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or System.Runtime.InteropServices.COMException or System.ComponentModel.Win32Exception)
+        {
+            Console.Error.WriteLine($"[screens] mirror: {ex.Message}");
+        }
+    });
+
+    /// <summary>True from the moment the Windows sign-in is asked until it ends (at most three minutes): the copies stay off the lock screen's way.</summary>
+    private DateTimeOffset _signInUntil;
+    private bool _signInAsked => DateTimeOffset.UtcNow < _signInUntil;
 
     public IReadOnlyList<ScreenInfo> GetScreens() => DisplayService.Screens(config.Current.ScreenNumber);
 
@@ -8095,9 +8144,13 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         if (!ServiceCodes.Expected || AdminService.DevMayRelax(dev)) return new { ok = false, pending = false };
         if (!fresh && AdminService.Ops.Cache.Has(GrantKind.WindowsUnlock)) return new { ok = true };
         _windowsUnlock.Ask();
+        // The copies of Mega Hub on the other screens leave first, so nothing of ours sits above the sign-in.
+        _signInUntil = DateTimeOffset.UtcNow.AddMinutes(3);
+        ApplyScreenMirror();
         if (!WindowsLock.Lock())
         {
             _windowsUnlock.Cancel();
+            _signInUntil = default;
             return new { ok = false, pending = false };
         }
         return new { ok = false, pending = true };
@@ -8195,6 +8248,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     {
         var pending = _confirm;
         _confirm = new(ConfirmKind.None, DateTimeOffset.MinValue, null, null);
+        _signInUntil = default;
         if (!accept || pending.Kind == ConfirmKind.None || MonoNow() > pending.Until) return new { ok = false };
         // The service saw the unlock itself: its grant (kind "windowsUnlock") lets the policies go with the couch. Never a parent's approval
         // in the service's eyes, whatever it is confirmed for here. Without one the couch still opens; the service keeps its policies then.
@@ -8240,6 +8294,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             }
             else if (_windowsUnlock.OnUnlocked())
             {
+                _signInUntil = default;
                 _confirm = new(ConfirmKind.Unlock, MonoNow() + ConfirmTime, null, null);
                 _window?.BringToFront(personCameBack: true);
                 Emit("unlocked", new { confirm = true });
