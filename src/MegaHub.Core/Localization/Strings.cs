@@ -18,19 +18,17 @@ public static partial class Strings
     {
         if (string.Equals(setting, "de", StringComparison.OrdinalIgnoreCase)) return "de";
         if (string.Equals(setting, "en", StringComparison.OrdinalIgnoreCase)) return "en";
-        // Spanish and French exist in the interface only; the texts the host shows itself stay English there.
-        if (string.Equals(setting, "es", StringComparison.OrdinalIgnoreCase) || string.Equals(setting, "fr", StringComparison.OrdinalIgnoreCase)) return "en";
         var culture = ui ?? CultureInfo.CurrentUICulture;
         return culture.TwoLetterISOLanguageName.Equals("de", StringComparison.OrdinalIgnoreCase) ? "de" : "en";
     }
 
-    /// <summary>The language of the interface: like <see cref="Language"/>, but "es" and "fr" when one of those was chosen.</summary>
+    /// <summary>The language of the interface: the same as <see cref="Language"/> ("de" or "en").</summary>
     public static string UiLanguage { get; private set; } = "de";
 
     public static void Use(string? setting)
     {
         Language = Resolve(setting);
-        UiLanguage = string.Equals(setting, "es", StringComparison.OrdinalIgnoreCase) ? "es" : string.Equals(setting, "fr", StringComparison.OrdinalIgnoreCase) ? "fr" : Language;
+        UiLanguage = Language;
     }
 
     internal static IReadOnlyDictionary<string, string> German => De;

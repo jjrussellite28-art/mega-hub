@@ -9,7 +9,7 @@
 import { api } from './api.js';
 import { dictionaries } from '../i18n/index.js';
 
-const SUPPORTED = ['de', 'en', 'es', 'fr'];
+const SUPPORTED = ['de', 'en'];
 
 /** "auto" follows the browser/Windows display language: de-* is German, everything else English. */
 export function resolveLanguage(setting, navigatorLanguage = globalThis.navigator?.language) {
@@ -24,7 +24,7 @@ export function setLang(setting) {
   active = resolveLanguage(setting);
   // English: keep the Windows region (24 h clock in Europe, 12 h in the US); German is always de-DE.
   const nav = globalThis.navigator?.language || '';
-  activeLocale = active === 'de' ? 'de-DE' : active === 'es' ? (/^es-/i.test(nav) ? nav : 'es-ES') : active === 'fr' ? (/^fr-/i.test(nav) ? nav : 'fr-FR') : /^en-/i.test(nav) ? nav : 'en-GB';
+  activeLocale = active === 'de' ? 'de-DE' : /^en-/i.test(nav) ? nav : 'en-GB';
   document.documentElement.lang = active;
 }
 
@@ -36,7 +36,6 @@ function lookup(key, language) {
 }
 
 export function t(key, params = {}) {
-  // Spanish and French cover the first start and the main pages; what they do not have yet reads English, then German.
   let text = lookup(key, active) ?? lookup(key, 'en') ?? lookup(key, 'de');
   if (text === undefined) {
     console.warn(`[i18n] missing key ${key}`);

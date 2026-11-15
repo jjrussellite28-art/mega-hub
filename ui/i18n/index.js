@@ -37,12 +37,7 @@ import enCompanions from './en/companions.js';
 
 export const FILES = ['settings', 'setup', 'transparency', 'legal', 'system', 'views1', 'views2', 'components1', 'components2', 'core', 'mock', 'wizard', 'downloads', 'tv', 'profiles', 'plugins', 'companions'];
 
-import es from './es.js';
-import fr from './fr.js';
-
 export const dictionaries = {
-  es,
-  fr,
   de: Object.assign({}, deSettings, deSetup, deTransparency, deLegal, deSystem, deViews1, deViews2, deComponents1, deComponents2, deCore, deMock, deWizard, deDownloads, deTv, deProfiles, dePlugins, deCompanions),
   en: Object.assign({}, enSettings, enSetup, enTransparency, enLegal, enSystem, enViews1, enViews2, enComponents1, enComponents2, enCore, enMock, enWizard, enDownloads, enTv, enProfiles, enPlugins, enCompanions)
 };

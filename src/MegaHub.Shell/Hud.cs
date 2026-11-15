@@ -3113,7 +3113,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
                 break;
             case "language":
                 var language = value.GetString();
-                if (language is not ("auto" or "de" or "en" or "es" or "fr")) throw new ArgumentException("Language: auto, de, en, es or fr");
+                if (language is not ("auto" or "de" or "en")) throw new ArgumentException("Language: auto, de or en");
                 config.UpdateOrThrow(c => c.ActiveProfile.Language = language);
                 MegaHub.Core.Localization.Strings.Use(language);
                 plugins.Events.RaiseLanguageChanged(MegaHub.Core.Localization.Strings.Language);
