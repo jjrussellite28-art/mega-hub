@@ -812,6 +812,9 @@ public sealed class AppConfig
     /// <summary>End the PC-mode autostart programs again when returning to the couch.</summary>
     public bool ClosePcAppsOnReturn { get; set; }
 
+    /// <summary>Game clients that Mega Hub started for a game close again after it (Steam today), once cloud saves had time to sync. Turning it on sets every client to "on demand".</summary>
+    public bool CloseClientsAfterGame { get; set; }
+
     /// <summary>Mega Hub: back on the couch, close the windows of all other programs (browsers, chat …) the way a click on the X does, so nothing is lost.</summary>
     public bool CloseAllAppsOnReturn { get; set; }
 

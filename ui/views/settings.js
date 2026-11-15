@@ -1589,6 +1589,8 @@ function startupItems(s) {
       toggle('closePcAppsOnReturn', t('settings.startup.closePc'), t('settings.startup.closePcDesc')),
       // Other programs (browsers, chat …) close like a click on the X when you return to the couch: all of them, or only the chosen ones.
       toggle('closeAllAppsOnReturn', t('settings.startup.closeAll'), t('settings.startup.closeAllDesc')),
+      // Game clients start with a game and close after it (after the cloud save had time to sync).
+      toggle('closeClientsAfterGame', t('settings.startup.clientsAfter'), t('settings.startup.clientsAfterDesc')),
       {
         kind: 'choice',
         label: t('settings.startup.closePick'),

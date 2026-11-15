@@ -340,6 +340,8 @@ export default {
   'settings.startup.choose': 'Startup: couch or PC mode',
   'settings.startup.chooseDesc': 'What starts with Mega Hub and what only on the desktop. Also there: apply the recommendation',
   'settings.cat.startup': 'Startup & services',
+  'settings.startup.clientsAfter': 'Close game clients after a game',
+  'settings.startup.clientsAfterDesc': 'Steam starts in the background with a game and closes after it, once your cloud saves had time to sync. Other clients stay as they are.',
   'settings.startup.closeAll': 'Close all my programs when returning',
   'settings.startup.closeAllDesc': 'Back on the couch, browsers and other programs close like a click on the X: browser tabs can be restored, programs with unsaved work ask first',
   'settings.startup.closePick': 'Choose programs to close',

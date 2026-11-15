@@ -741,6 +741,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         _sessions.Ended += (s, minutes) => Ui(() =>
         {
             Launcher.SessionEnded(s.Item.Id, s.Started);
+            CloseClientAfterGame(s);
             OnCompanionGameEnded(s);
             _freezeGuard.Forget(s.Item);
             if (PluginHostRules.EventFor(s.Item, Areas, minutes, s.Pids.Cast<int?>().FirstOrDefault()) is { } ended) plugins.Events.RaiseGameEnded(ended);
@@ -2800,6 +2801,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             killExplorerOnReturn = KillExplorerOnReturn,
             closePcAppsOnReturn = c.ClosePcAppsOnReturn,
             closeAllAppsOnReturn = c.CloseAllAppsOnReturn,
+            closeClientsAfterGame = c.CloseClientsAfterGame,
             closeAppsList = c.CloseAppsList,
             maximizeBrowser = c.MaximizeBrowser,
             browserHistory = c.BrowserHistory,
@@ -3176,6 +3178,15 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
                 break;
             case "closeAllAppsOnReturn":
                 config.UpdateOrThrow(c => c.CloseAllAppsOnReturn = Bool());
+                break;
+            case "closeClientsAfterGame":
+                var closeAfter = Bool();
+                config.UpdateOrThrow(c =>
+                {
+                    c.CloseClientsAfterGame = closeAfter;
+                    // A client that stays ready all the time cannot close after a game: every client waits for a game instead.
+                    if (closeAfter) foreach (var found in FindLaunchers()) { c.LauncherModes[found.Id] = Launchers.OnDemand; c.LauncherAutostart.Remove(found.Id); }
+                });
                 break;
             case "onlineArtwork":
                 var online = Bool();
@@ -3747,6 +3758,51 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             var byClient = parent is not null && family.Contains(parent.Name, StringComparer.OrdinalIgnoreCase);
             _clients.Observe(id, running: true, start: procs.Min(p => p.Start), byClient, now);
         }
+    }
+
+    /// <summary>
+    /// After a game: a client that MegaHub started for it (on demand) is closed again, but only after a minimum wait so the cloud
+    /// save can sync, and never while it downloads or another game of it runs. Only clients known to close harmlessly (Steam) are
+    /// closed; the others stay as they are.
+    /// </summary>
+    private void CloseClientAfterGame(GameSession s)
+    {
+        if (!Full || _pcMode || !config.Current.CloseClientsAfterGame) return;
+        var launch = s.Item.Launch;
+        var family = ForegroundPolicy.FamilyOfLaunch(s.Item.Source, launch.Kind, launch.Target);
+        if (family is null || !ClientOwnership.ClosesSafely(family)) return;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                // Minimum wait for the cloud save, then up to about ten minutes more while something still downloads or syncs.
+                await Task.Delay(TimeSpan.FromSeconds(30));
+                for (var i = 0; i < 20; i++)
+                {
+                    var l = FindLaunchers().FirstOrDefault(x => x.Id == family);
+                    if (l is null || ModeOfLauncher(l) != Launchers.OnDemand || !config.Current.CloseClientsAfterGame) return;
+                    var running = LauncherControl.IsRunning(l.Process);
+                    var downloading = running && family == "steam" && SteamSettings.SteamDownloading;
+                    switch (_clients.Decide(family, running, downloading, ClientHasGame(l)))
+                    {
+                        case CloseDecision.Close:
+                            SteamSettings.EndSteam();
+                            _clients.NoteEnded(family);
+                            Console.WriteLine($"[launchers] closed {l.Name} after the game");
+                            return;
+                        case CloseDecision.Downloading:
+                            await Task.Delay(TimeSpan.FromSeconds(30));
+                            continue;
+                        default:
+                            return;
+                    }
+                }
+            }
+            catch (Exception ex) when (ex is not OutOfMemoryException)
+            {
+                Console.Error.WriteLine($"[launchers] closing after the game: {ex.Message}");
+            }
+        });
     }
 
     /// <summary>A game of this client runs: a session, Steam's RunningAppID, or a child process of the client that is not part of it.</summary>

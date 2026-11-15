@@ -55,7 +55,7 @@ public static class FeatureAreas
         ["musicVolume"] = Always, ["soundVolume"] = Always, ["soundSet"] = Always, ["uiHdr"] = Always, ["sounds"] = Always,
         ["expertMode"] = Always, ["developerMode"] = Always, ["language"] = Always, ["rumble"] = Always, ["padGlyphs"] = Always, ["runStartupApps"] = Always,
         ["killExplorerOnReturn"] = Always, ["nightMode"] = Always, ["nightModeStrength"] = Always,
-        ["closePcAppsOnReturn"] = Always, ["closeAllAppsOnReturn"] = Always, ["onlineArtwork"] = Always, ["clearArtworkCache"] = Always,
+        ["closePcAppsOnReturn"] = Always, ["closeAllAppsOnReturn"] = Always, ["closeClientsAfterGame"] = Always, ["onlineArtwork"] = Always, ["clearArtworkCache"] = Always,
         ["autoSwitchHeadphones"] = Always, ["returnHoldMs"] = Always, ["weatherLocation"] = Always,
         ["aiProvider"] = Always, ["aiModel"] = Always,
         ["aiApiKey"] = Always, ["mcpEnabled"] = Always, ["mirrorNotifications"] = Always,

@@ -662,6 +662,8 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
           return plan.changes.includes('tvBoth') ? (await save('tvOffWithPc', true)) && on : on;
         }, { where: where('settings.cat.tv') });
       }
+      // Game clients in the background: they start with a game and close after it (the host puts every client on "on demand").
+      if (plan.changes.includes('launchers')) await run('launchers', async () => save('closeClientsAfterGame', true), { where: where('settings.cat.startup') });
       // What the mode question counts as "set up" (the card says "Already set up" without a sign-in that was declined).
       if (this.intent === 'full' && applies('autologon', this.ctx())) await save('autoLogonDeclined', !this.choices.autologon);
       this.results = results;

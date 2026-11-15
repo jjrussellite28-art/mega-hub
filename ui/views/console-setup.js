@@ -587,7 +587,7 @@ async function setupLock(env, deps) {
  * pauseServices false: the services step only prepares the lock's helper tasks (what it always does when no service is suggested) and
  * pauses nothing. The lock's Windows policies need those tasks, so the step is never left out of a setup that sets up the lock.
  */
-function setupSteps({ pauseServices = true } = {}) {
+function setupSteps({ pauseServices = false } = {}) {
   return [
     {
       id: 'integration',
@@ -627,6 +627,9 @@ function setupSteps({ pauseServices = true } = {}) {
         const data = await api.getServices();
         const suggested = pauseServices ? (data?.services ?? []).filter((s) => s.suggested) : [];
         // The same confirmation also sets up the tasks for the lock's Windows policies.
+        // Without services to pause this is the lock's helper task (Windows key and other ways out): never "Not needed", it is either
+        // set up (done) or still to do.
+        if (!suggested.length && !pauseServices) return data?.taskInstalled && data?.policyHelper !== false && data?.cleanupNoteCurrent !== false && !data?.legacyTask ? 'done' : 'todo';
         if (!suggested.length) return data?.policyHelper === false || data?.cleanupNoteCurrent === false ? 'todo' : 'na';
         // A note of the lock's empty Policies keys that is out of date also counts as not done: only a setup run (re)writes it.
         const complete = suggested.every((s) => s.selected) && data.taskInstalled && !data.pending && !data.legacyTask && data.cleanupNoteCurrent !== false;
@@ -714,7 +717,7 @@ function setupSteps({ pauseServices = true } = {}) {
  * Without a `skip` list (the one-button setup in Settings) the automatic sign-in is left out: it is optional and has its own switch
  * (Settings › Windows, expert mode), so the setup never lists it as something still to do.
  */
-export function consoleSetupPage(deps, { skip = ['autologon'], pauseServices = true, carried = [], autoStart = false, onDone = null, carriedEntries = [] } = {}) {
+export function consoleSetupPage(deps, { skip = ['autologon'], pauseServices = false, carried = [], autoStart = false, onDone = null, carriedEntries = [] } = {}) {
   return stepsPage({
     id: 'console-setup',
     title: t('consoleSetup.setup.title'),
