@@ -137,6 +137,7 @@ export default {
   'consoleSetup.setup.adminOnce': 'Windows bittet einmal um eine Bestätigung (Administrator). Alles lässt sich jederzeit rückgängig machen.',
   'consoleSetup.setup.adminMany': 'Windows bittet bis zu {count}-mal um eine Bestätigung (Administrator). Alles lässt sich jederzeit rückgängig machen.',
   'consoleSetup.setup.adminNone': 'Es ist keine Administrator-Bestätigung nötig. Alles lässt sich jederzeit rückgängig machen.',
+  'consoleSetup.setup.runs': 'Im PC-Modus beendet sich Mega Hub vollständig und braucht keinen Speicher. Im Shell-Modus läuft nur Mega Hub; Office- und Sync-Apps warten bis zum PC-Modus. Startauswahl: Einstellungen › Anzeige › Beim Start fragen.',
   'consoleSetup.setup.way': 'Rückweg: HUD › Modus › „In den App-Modus wechseln“. Notfall: Strg + Umschalt oder LB + RB + View beim Start etwa 1,5 Sekunden halten.',
   'consoleSetup.setup.needPassword': 'Warnung: Das Windows-Konto hat kein Kennwort. Der Controller-Code wird eingerichtet, hält aber nur Kinder am Controller auf. Die automatische Anmeldung entfällt (Windows meldet ohne Kennwort ohnehin an), die Windows-Anmeldung als Sperre geht nicht. Besser zuerst unter Windows ein Kennwort setzen.',
   'consoleSetup.setup.bitlocker': 'Tipp: Die Sperre ist so stark wie deine Windows-Anmeldung, lass also eine Windows-PIN oder ein Kennwort gesetzt. Windows-Geräteverschlüsselung oder BitLocker (Windows-Einstellungen › Datenschutz und Sicherheit) bietet zusätzlichen Schutz. Mega Hub schaltet das nicht selbst ein.',

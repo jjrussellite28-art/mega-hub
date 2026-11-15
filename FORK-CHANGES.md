@@ -26,6 +26,7 @@ not a released feature upgrade. See docs/RELEASE-CHECKLIST.md for unfinished wor
 - Unlock: the button disappears as soon as it is pressed and an open-lock icon shows once unlocked; a cancelled unlock shows a "Locked" note with an "Unlock now" button for 5 seconds.
 - The way to set up automatic Windows sign-in (skipping the Windows PIN) is removed from Settings; turning an existing one off stays.
 - Setup texts: "use at your own risk" and the data warning are replaced by friendlier wording (everything can be undone; a tip about the Windows sign-in and device encryption).
+- The start choice reads "Shell mode or PC mode?" and is on by itself while Mega Hub is the Windows shell (Settings › Display › Ask at start still decides when set). The setup page now says what runs in each mode.
 - These are interface changes only (ui/); no host, service or privileged code was changed.
 
 ## 2026-11-10 — own artwork and logo (unreleased)

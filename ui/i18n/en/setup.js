@@ -137,6 +137,7 @@ export default {
   'consoleSetup.setup.adminOnce': 'Windows asks once for a confirmation (administrator). Everything can be undone at any time.',
   'consoleSetup.setup.adminMany': 'Windows asks up to {count} times for a confirmation (administrator). Everything can be undone at any time.',
   'consoleSetup.setup.adminNone': 'No administrator confirmation is needed. Everything can be undone at any time.',
+  'consoleSetup.setup.runs': 'In PC mode Mega Hub quits completely and uses no memory. In shell mode only Mega Hub runs; office and sync apps wait until PC mode. Startup choice: Settings › Display › Ask at start.',
   'consoleSetup.setup.way': 'Way back: HUD › Mode › “Switch to App mode”. In an emergency: hold Ctrl + Shift or LB + RB + View at startup for about 1.5 seconds.',
   'consoleSetup.setup.needPassword': 'Warning: the Windows account has no password. The controller code is set up, but it only stops kids at the controller. Automatic sign-in is left out (Windows signs in without a password anyway), and the Windows sign-in cannot serve as the lock. Better set a password in Windows first.',
   'consoleSetup.setup.bitlocker': 'Tip: the lock is as strong as your Windows sign-in, so keep a Windows PIN or password set. Windows device encryption or BitLocker (Windows Settings › Privacy & security) adds extra protection. Mega Hub does not turn it on by itself.',

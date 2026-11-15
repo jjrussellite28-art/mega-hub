@@ -1374,9 +1374,9 @@ function displayCategoryItems(s) {
       kind: 'toggle',
       label: t('modeask.setting'),
       desc: t('modeask.settingDesc'),
-      value: () => askModeAtStart(),
+      value: () => askModeAtStart(!!state.info?.isShell),
       run: () => {
-        setAskModeAtStart(!askModeAtStart());
+        setAskModeAtStart(!askModeAtStart(!!state.info?.isShell));
         render();
       }
     },

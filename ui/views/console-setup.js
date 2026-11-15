@@ -726,6 +726,7 @@ export function consoleSetupPage(deps, { skip = ['autologon'], pauseServices = t
     notes: (admin, env) => [
       ...(env?.security?.accountPassword === false ? [t('consoleSetup.setup.needPassword')] : []),
       (admin === 0 ? t('consoleSetup.setup.adminNone') : admin === 1 ? t('consoleSetup.setup.adminOnce') : t('consoleSetup.setup.adminMany', { count: admin })),
+      t('consoleSetup.setup.runs'),
       t('consoleSetup.setup.way'),
       t('consoleSetup.setup.bitlocker'),
       ...(env?.security?.couchLock === 'off' && env?.security?.serviceCodes?.parent === true && parental.status?.enabled === true ? [t('consoleSetup.setup.parentCode')] : [])
