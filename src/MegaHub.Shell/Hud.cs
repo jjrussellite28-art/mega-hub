@@ -2733,7 +2733,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         assistant = AssistantConfigured,
         skin = LookProfile.Skin,
         skinRestore = SkinRestoreState(),
-        language = MegaHub.Core.Localization.Strings.Language,
+        language = MegaHub.Core.Localization.Strings.UiLanguage,
         languageSetting = LookProfile.Language
     };
 
@@ -3102,7 +3102,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
                 break;
             case "language":
                 var language = value.GetString();
-                if (language is not ("auto" or "de" or "en")) throw new ArgumentException("Language: auto, de or en");
+                if (language is not ("auto" or "de" or "en" or "es" or "fr")) throw new ArgumentException("Language: auto, de, en, es or fr");
                 config.UpdateOrThrow(c => c.ActiveProfile.Language = language);
                 MegaHub.Core.Localization.Strings.Use(language);
                 plugins.Events.RaiseLanguageChanged(MegaHub.Core.Localization.Strings.Language);

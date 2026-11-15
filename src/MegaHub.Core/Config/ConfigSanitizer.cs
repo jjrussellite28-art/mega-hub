@@ -158,7 +158,7 @@ internal static class ConfigSanitizer
         Pick("pad glyphs", c.PadGlyphs, ["auto", "xbox", "playstation"], "auto", v => c.PadGlyphs = v);
         Pick("pointer", c.Pointer, ["skin", "system", "mouse", "neon", "ring", "dot"], "skin", v => c.Pointer = v);
         Pick("night mode", c.NightMode, ["off", "on", "evening"], "off", v => c.NightMode = v);
-        Pick("language", c.Language, ["auto", "de", "en"], "auto", v => c.Language = v);
+        Pick("language", c.Language, ["auto", "de", "en", "es", "fr"], "auto", v => c.Language = v);
 
         if (FavoritesShelf.NormalizeMode(c.FavoritesMode) != c.FavoritesMode) { c.FavoritesMode = FavoritesShelf.NormalizeMode(c.FavoritesMode); fix("favorites mode"); }
         if (FavoritesShelf.NormalizeRecentDays(c.FavoritesRecentDays) != c.FavoritesRecentDays)

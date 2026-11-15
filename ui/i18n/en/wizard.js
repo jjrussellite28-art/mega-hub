@@ -28,6 +28,8 @@ export default {
   'wizard.welcome.lead': 'Your PC as a console. A few questions, then you’re ready.',
   'wizard.welcome.de': 'Interface in German',
   'wizard.welcome.en': 'Interface in English',
+  'wizard.welcome.es': 'Interface in Spanish (Latin America)',
+  'wizard.welcome.fr': 'Interface in French',
   'wizard.mode.title': 'How should Mega Hub run?',
   'wizard.mode.lead': 'You can switch any time.',
   'wizard.mode.light': 'App',

@@ -1861,13 +1861,15 @@ function categories() {
           kind: 'choice',
           label: t('settings.language.title'),
           desc: t('settings.language.desc'),
-          value: () => ({ auto: t('settings.language.auto'), de: 'Deutsch', en: 'English' })[s.language ?? 'auto'] ?? t('settings.language.auto'),
+          value: () => ({ auto: t('settings.language.auto'), de: 'Deutsch', en: 'English', es: 'Español', fr: 'Français' })[s.language ?? 'auto'] ?? t('settings.language.auto'),
           run: async () => {
             const current = s.language ?? 'auto';
             const v = await chooseDialog(t('settings.language.title'), [
               { label: t('settings.language.auto'), detail: t('settings.language.autoDetail'), value: 'auto' },
               { label: 'Deutsch', value: 'de' },
-              { label: 'English', value: 'en' }
+              { label: 'English', value: 'en' },
+              { label: 'Español (Latinoamérica)', value: 'es' },
+              { label: 'Français', value: 'fr' }
             ], current);
             if (v === undefined || v === current) return;
             if ((await saveSetting('language', v)) === undefined) return;
