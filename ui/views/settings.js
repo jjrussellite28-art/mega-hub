@@ -104,7 +104,8 @@ const wipeRow = (id, run) => {
     hint: text('Hint'),
     run: async () => {
       // The controller code first, then the warning that everything goes.
-      if (!(await ensureUnlocked(text('')))) return;
+      // Reset asks for the controller code first; uninstall never does (it must always be possible, as the way out).
+      if (id !== 'uninstall' && !(await ensureUnlocked(text('')))) return;
       if (!(await confirmDialog(text('Title'), text(''), { danger: true, message: text('Message'), focusCancel: true }))) return;
       if (!(await confirmDialog(t('settings.power.sure'), t('settings.power.sureYes'), { danger: true, message: t('settings.power.sureMessage'), focusCancel: true }))) return;
       await attempt(run, text(''));

@@ -8550,8 +8550,9 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
 
     public void CleanupFromUi(bool uninstall)
     {
-        RequireUnlocked();
-        if (_sessions.Current is not null || GamePause.IsPaused || _sessions.IsPending(DateTimeOffset.UtcNow))
+        // Uninstalling is always possible, locked or not: the way out when the lock or anything else is in the way. Reset keeps the lock.
+        if (!uninstall) RequireUnlocked();
+        if (!uninstall && (_sessions.Current is not null || GamePause.IsPaused || _sessions.IsPending(DateTimeOffset.UtcNow)))
             throw new InvalidOperationException(Strings.Get("restart.gameRunning"));
         if (_quitting) return;
         var exe = Environment.ProcessPath;
