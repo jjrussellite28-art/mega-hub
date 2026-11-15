@@ -35,6 +35,12 @@ export const PRIVACY = () => [
   [t('legal.privacy.fullTitle'), t('legal.privacy.fullText', { repo: REPO })]
 ];
 
+export const CREDITS = () => [
+  [t('legal.credits.thanksTitle'), t('legal.credits.thanksText')],
+  [t('legal.credits.notAffiliatedTitle'), t('legal.credits.notAffiliatedText')],
+  [t('legal.credits.forkTitle'), t('legal.credits.forkText', { repo: REPO })]
+];
+
 function textPage({ id, title, sections, firstRun, onBack }) {
   // Only the German texts are binding; say so in the other language.
   const prevails = () => (lang() === 'de' ? null : el('p', { className: 'legal-intro', textContent: t('legal.germanPrevails') }));
@@ -53,7 +59,7 @@ function textPage({ id, title, sections, firstRun, onBack }) {
         prevails(),
         ...(firstRun ? [[t('legal.disclaimerTitle'), DISCLAIMER()], [t('legal.privacyTitle'), PRIVACY()]] : [[title, sections]]).flatMap(([heading, list]) => [
           firstRun ? el('h3', { className: 'legal-heading', textContent: heading }) : null,
-          ...list.map(([h, text]) => el('section', {}, el('h4', { textContent: h }), el('p', { textContent: text })))
+          ...list.map(([h, text], i) => el('section', {}, el('h4', { textContent: h, className: id === 'credits' && i === 0 ? 'legal-gold' : '' }), el('p', { textContent: text })))
         ]));
       root.append(el('div', { className: 'files legal' },
         el('div', { className: 'files-head' }, el('h2', { textContent: firstRun ? t('legal.termsTitle') : title })),
@@ -99,6 +105,7 @@ function textPage({ id, title, sections, firstRun, onBack }) {
 }
 
 export const disclaimerPage = () => textPage({ id: 'disclaimer', title: t('legal.disclaimerTitle'), sections: DISCLAIMER() });
+export const creditsPage = () => textPage({ id: 'credits', title: t('legal.credits.title'), sections: CREDITS() });
 export const privacyPage = () => textPage({ id: 'privacy', title: t('legal.privacyTitle'), sections: PRIVACY() });
 
 export const termsAccepted = () => (state.info.acceptedTerms ?? 0) >= TERMS_VERSION;

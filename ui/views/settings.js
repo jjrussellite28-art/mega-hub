@@ -33,7 +33,7 @@ import { refreshWeather } from '../core/weather.js';
 import { cleanupStuckPoliciesDialog, launchersPage, servicesPage, startupPage } from './system-tools.js';
 import { showUpdateProgress } from '../components/update-progress.js';
 import { transparencyPage } from './transparency.js';
-import { disclaimerPage, privacyPage } from './legal.js';
+import { creditsPage, disclaimerPage, privacyPage } from './legal.js';
 import { openSetupWizard } from './setup-wizard.js';
 import { pairingPage } from './phone.js';
 import { withParentGrant } from '../core/parent-retry.js';
@@ -1872,6 +1872,7 @@ function categories() {
         },
         action(t('settings.info.disclaimer'), t('settings.info.disclaimerDesc'), () => openPage(disclaimerPage(), t('settings.cat.info'))),
         action(t('settings.info.privacy'), t('settings.info.privacyDesc'), () => openPage(privacyPage(), t('settings.cat.info'))),
+        action(t('settings.info.credits'), t('settings.info.creditsDesc'), () => openPage(creditsPage(), t('settings.cat.info'))),
         info(t('settings.info.guide'), t('settings.info.guideDesc')),
         info(t('settings.info.version'), state.info.version || '–'),
         info(t('settings.info.license'), 'GPL-3.0 · © 2026 kewe87 · fork: jjrussellite28-art'),

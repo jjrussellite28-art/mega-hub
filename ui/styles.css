@@ -5838,3 +5838,33 @@ body[data-view="terms"] #notify-stack .notify-card:not(.security) {
 html[data-bare] #status > :not(#clock) {
   display: none !important;
 }
+
+.legal-gold {
+  color: #f5c542;
+  font-size: 1.6rem;
+  text-shadow: 0 0 1rem rgba(245, 197, 66, 0.4);
+}
+
+/* Start choice: only the two modes, the screens and Next. */
+.mode-chooser .profile-tile.chosen { border-color: color-mix(in srgb, var(--accent) 80%, transparent); }
+.mode-screens { list-style: none; display: flex; gap: 0.8rem; margin: 0; padding: 0; }
+.mode-screen {
+  padding: 0.5rem 1.2rem;
+  border-radius: 99rem;
+  border: 0.14rem solid color-mix(in srgb, var(--fg) 30%, transparent);
+}
+.mode-screen.chosen { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+.mode-screen.focused { border-color: var(--fg); box-shadow: 0 0 1rem color-mix(in srgb, var(--accent) 60%, transparent); }
+.mode-next {
+  margin-top: 1.2rem;
+  padding: 0.8rem 3rem;
+  border: 0.14rem solid transparent;
+  border-radius: 99rem;
+  background: #1f6feb;
+  color: #fff;
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mode-next.focused, .mode-next:hover { border-color: #fff; box-shadow: 0 0 1.4rem rgba(31, 111, 235, 0.8); }

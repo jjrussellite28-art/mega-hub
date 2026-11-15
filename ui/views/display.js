@@ -25,6 +25,9 @@ export async function loadDisplay() {
   return display;
 }
 
+/** The connected screens (asks the host again). */
+export const listScreens = () => loadScreens();
+
 const screenName = (s) => `${t('display.screen.number', { n: s.number })} · ${s.width} × ${s.height}${s.primary ? ` · ${t('display.screen.main')}` : ''}`;
 
 /**
