@@ -1466,7 +1466,7 @@ async function chooseOwnSound(s) {
     })));
     if (event === undefined) return;
     const what = await chooseDialog(ownLabel(event), [
-      { label: t('settings.audio.ownPick'), value: 'pick' },
+      { label: t('settings.audio.ownPick'), detail: t('settings.audio.ownFormats', { max: event === 'music' ? 200 : 8 }), value: 'pick' },
       ...(own[event] ? [{ label: t('settings.audio.ownClear'), value: 'clear' }] : [])
     ]);
     if (what === undefined) continue;

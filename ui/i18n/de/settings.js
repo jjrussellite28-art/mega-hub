@@ -305,6 +305,7 @@ export default {
   'settings.audio.ownDesc': 'Nimm eigene .wav-, .ogg- oder .mp3-Dateien für die Hintergrundmusik und die Menü-Sounds.',
   'settings.audio.ownNone': 'Standard',
   'settings.audio.ownPick': 'Datei von diesem PC wählen …',
+  'settings.audio.ownFormats': 'Nur .mp3-, .wav- oder .ogg-Dateien, bis {max} MB, auf einem Laufwerk dieses PCs.',
   'settings.audio.ownClear': 'Zurück zum Standard',
   'settings.audio.own.music': 'Hintergrundmusik',
   'settings.audio.own.move': 'Bewegen',
