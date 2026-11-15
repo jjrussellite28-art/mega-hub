@@ -6,6 +6,8 @@ Ein Abschnitt je Version, gegliedert nach Bereichen, erst Deutsch, dann Englisch
 
 - Einrichtung: eigenes Vollbild-Fenster ohne Reiter, Glocke und Entsperren-Knopf (nur die Uhr); kürzere Texte; Seite „Pause services“ entfällt (Sperr-Hilfsaufgaben werden automatisch angelegt); „Programme beim Start“ mit zwei Wahlen; letzte Seite mit Dank an kewe87. Profilauswahl mit Rollenanzeige und „Profile verwalten“. Entsperren-Knopf antwortet immer.
 - Setup: own full-screen window without tabs, bell and unlock button (only the clock); shorter texts; the "Pause services" page is gone (the lock's helper tasks are set up automatically); "Programs at start" with two choices; a last page thanking kewe87. Profile picker with role label and "Manage profiles". The Unlock button always answers.
+- Neu: Windows-Taste im Shell-Modus sperren (Einrichtung und Einstellungen › Start); Profilbilder (zwölf gezeichnete, Zufall, eigenes Foto); eigene Sounds und Musik (.wav/.ogg/.mp3); News-Tab ohne Plugin mit eigenen RSS-/Atom-Feeds; Zurücksetzen fragt zuerst den Couch-Code, warnt, und löscht auch die gespeicherten Codes im Dienst; Bildschirm-Spiegel und „Screen N“-Beschriftung für die Startwahl; eigener Signaturschlüssel, Wand-Plugin entfernt.
+- New: block the Windows key in Shell mode (setup and Settings › Startup); profile pictures (twelve drawn ones, random, your own photo); your own sounds and music (.wav/.ogg/.mp3); a News tab without a plugin using your own RSS/Atom feeds; Reset asks for the couch code first, warns, and also removes the codes stored in the service; screen mirror and "Screen N" labels for the start choice; own signing key, the Wand plugin removed.
 
 ## 0.7.1 (2026-11-04)
 
