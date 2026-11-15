@@ -29,6 +29,10 @@ jobs:
         shell: pwsh
         run: |
           [IO.File]::WriteAllText('publish/BUILD-COMMIT.txt', "$env:GITHUB_SHA`n", [Text.UTF8Encoding]::new($false))
+          # The small version line at the bottom of Mega Hub (ui/build.json). The installer overwrites it, so it is never a stale one from an older update.
+          $when = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId([DateTime]::UtcNow, 'Eastern Standard Time').ToString('MMM d, h:mm tt', [Globalization.CultureInfo]::InvariantCulture)
+          New-Item -ItemType Directory -Force -Path publish/ui | Out-Null
+          [IO.File]::WriteAllText('publish/ui/build.json', '{"commit":"' + $env:GITHUB_SHA.Substring(0, 7) + '","updated":"' + $when + '"}', [Text.UTF8Encoding]::new($false))
 
       - name: Publish service
         shell: pwsh
