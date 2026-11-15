@@ -8572,6 +8572,9 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         });
     }
 
+    /// <summary>A game runs or is paused (the recovery key combination is not watched then: Ctrl and Shift are held in games).</summary>
+    public bool GameActive => _sessions.Current is not null || GamePause.IsPaused;
+
     public void CleanupFromUi(bool uninstall)
     {
         // Uninstalling is always possible, locked or not: the way out when the lock or anything else is in the way. Reset keeps the lock.

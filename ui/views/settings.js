@@ -28,7 +28,7 @@ import { SCREENSAVER_STYLES, configureScreensaver, startScreensaver } from '../c
 import { chooseDialog, confirmDialog, openOverlay } from '../components/overlay.js';
 import { openKeyboard } from '../components/keyboard.js';
 import { skinMenu } from '../components/skin-menu.js';
-import { choosePasscode, ensureParentCode, ensureUnlocked, ensureWindowsSignIn, guarded, isLocked } from '../components/passcode.js';
+import { choosePasscode, ensureParentCode, ensureUnlocked, ensureWindowsSignIn, ensureWindowsSignInOnly, guarded, isLocked } from '../components/passcode.js';
 import { addEntryFlow, gameFoldersPage, hiddenItemsPage, scanFolderFlow } from '../components/library-tools.js';
 import { openCompanionApps } from '../components/companions.js';
 import { refreshWeather } from '../core/weather.js';
@@ -104,8 +104,9 @@ const wipeRow = (id, run) => {
     hint: text('Hint'),
     run: async () => {
       // The controller code first, then the warning that everything goes.
-      // Reset asks for the controller code first; uninstall never does (it must always be possible, as the way out).
-      if (id !== 'uninstall' && !(await ensureUnlocked(text('')))) return;
+      // Reset asks for the controller code first.
+      // Uninstall asks for the Windows PIN or password only, locked or not (it is the way out).
+      if (!(await (id === 'uninstall' ? ensureWindowsSignInOnly(text('')) : ensureUnlocked(text(''))))) return;
       if (!(await confirmDialog(text('Title'), text(''), { danger: true, message: text('Message'), focusCancel: true }))) return;
       if (!(await confirmDialog(t('settings.power.sure'), t('settings.power.sureYes'), { danger: true, message: t('settings.power.sureMessage'), focusCancel: true }))) return;
       await attempt(run, text(''));

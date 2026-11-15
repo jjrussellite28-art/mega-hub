@@ -408,6 +408,40 @@ public static class Recovery
         });
     }
 
+    /// <summary>
+    /// Watches for the combination (Ctrl + Shift, or LB + RB + View on a controller) all the time while Mega Hub runs, not only at the start:
+    /// held about 3 seconds, <paramref name="onHeld"/> runs once on a pool thread and the watching ends. Not while a game runs (Ctrl and Shift
+    /// are held in games). The recovery behind it still opens nothing before the Windows sign-in.
+    /// </summary>
+    public static void WatchAlways(Func<bool> gameRunning, Action<string> onHeld)
+    {
+        Task.Run(() =>
+        {
+            DateTime? since = null;
+            string? current = null;
+            for (;;)
+            {
+                try
+                {
+                    var now = gameRunning() ? null : Pressed();
+                    if (now is null || now != current) since = now is null ? null : DateTime.UtcNow;
+                    current = now;
+                    if (since is { } s && DateTime.UtcNow - s >= TimeSpan.FromSeconds(3))
+                    {
+                        Console.WriteLine($"[recovery] {current} held while running");
+                        onHeld(current!);
+                        return;
+                    }
+                }
+                catch (Exception ex) when (ex is not OutOfMemoryException)
+                {
+                    Console.Error.WriteLine($"[recovery] watcher: {ex.GetType().Name}: {ex.Message}");
+                }
+                Thread.Sleep(100);
+            }
+        });
+    }
+
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int MessageBoxW(IntPtr owner, string text, string caption, uint type);
 

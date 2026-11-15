@@ -305,6 +305,12 @@ async function runFullUnlock(security, reason) {
   return true;
 }
 
+/**
+ * Only the Windows sign-in (PIN or password), locked or not: for what must always be possible, like uninstalling. True when it was given,
+ * or when the host cannot ask for it at all (no service), so nobody is shut out by a missing piece.
+ */
+export const ensureWindowsSignInOnly = (reason = '') => signInIfPossible(reason);
+
 /** The Windows sign-in once; true when it was given, or when the host cannot ask for it at all. */
 async function signInIfPossible(reason) {
   const entry = { reason };

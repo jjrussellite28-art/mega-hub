@@ -53,6 +53,8 @@ public partial class App : Application
     private Mutex? _instance;
     private EventWaitHandle? _activate;
     private Hud? _hud;
+    private static int _recoveryRunning;
+    private Action<string>? onHeldAgain;
 
     // Names of the WEBVIEW2_* variables removed at start, logged once the log is open (names only, never values).
     private static IReadOnlyList<string> _scrubbed = [];
@@ -325,12 +327,19 @@ public partial class App : Application
         }, TaskScheduler.Default);
         // A controller may only show up in the first seconds: keep watching for the combination.
         // The recovery waits for the Windows sign-in (see Recovery.Run): off the UI thread, so the HUD behind the lock screen stays alive.
-        Recovery.WatchStart(held => Task.Run(() =>
+        Action<string> onHeld = held => Task.Run(() =>
         {
+            // One recovery at a time (the start watcher and the one that keeps watching can both see the same hold).
+            if (Interlocked.Exchange(ref _recoveryRunning, 1) == 1) return;
             try
             {
-                // Windows would not lock: nothing was changed and the user was told, the HUD stays.
-                if (!Recovery.Run(DataDir, Strings.Get("recovery.keyAfterStart", held))) return;
+                // Windows would not lock: nothing was changed and the user was told, the HUD stays (and the watching starts again).
+                if (!Recovery.Run(DataDir, Strings.Get("recovery.keyAfterStart", held)))
+                {
+                    Interlocked.Exchange(ref _recoveryRunning, 0);
+                    Recovery.WatchAlways(() => _hud?.GameActive == true, h => onHeldAgain?.Invoke(h));
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -341,7 +350,11 @@ public partial class App : Application
                 if (_hud is not null) _hud.Quit();
                 else Shutdown();
             });
-        }));
+        });
+        onHeldAgain = onHeld;
+        Recovery.WatchStart(onHeld);
+        // The combination also works at any time while Mega Hub runs (not in a game): Ctrl + Shift, or LB + RB + View, held about 3 seconds.
+        Recovery.WatchAlways(() => _hud?.GameActive == true, onHeld);
     }
 
     private void StartHud(bool dev)
