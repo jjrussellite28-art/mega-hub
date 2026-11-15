@@ -5851,6 +5851,8 @@ html[data-bare] #status > :not(#clock) {
 }
 
 /* Start choice: only the two modes, the screens and Next. */
+.mode-chooser .profile-tile.mode-card { height: auto; padding: 0; background: none; overflow: hidden; width: min(32vw, 24rem); }
+.mode-card-picture { display: block; width: 100%; height: auto; border-radius: inherit; }
 .mode-chooser .profile-tile.chosen { border-color: color-mix(in srgb, var(--accent) 80%, transparent); }
 .mode-screens { list-style: none; display: flex; gap: 0.8rem; margin: 0; padding: 0; }
 .mode-screen {

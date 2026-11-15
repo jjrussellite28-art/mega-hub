@@ -14,8 +14,8 @@ import { ensureUnlocked } from './passcode.js';
 
 // i18n-used: modeask.couch modeask.couchHint modeask.pc modeask.pcHint
 const CHOICES = [
-  { id: 'couch', icon: '🛋️', label: 'modeask.couch', hint: 'modeask.couchHint' },
-  { id: 'pc', icon: '🖥️', label: 'modeask.pc', hint: 'modeask.pcHint' }
+  { id: 'couch', picture: 'assets/mode-card-couch.png', label: 'modeask.couch', hint: 'modeask.couchHint' },
+  { id: 'pc', picture: 'assets/mode-card-pc.png', label: 'modeask.pc', hint: 'modeask.pcHint' }
 ];
 
 /** Rows, top to bottom: the two modes, the screens, the Next button. */
@@ -36,10 +36,9 @@ export function showModeChooser() {
     screens: [],
     busy: false,
     build(root) {
-      this.tiles = CHOICES.map((c) => el('li', { className: 'profile-tile' },
-        el('span', { className: 'profile-avatar big', textContent: c.icon }),
-        el('strong', { className: 'profile-name', textContent: t(c.label) }),
-        el('small', { className: 'profile-lock', textContent: t(c.hint) })));
+      // The two cards are pictures (name and logo are in them); the words stay for screen readers.
+      this.tiles = CHOICES.map((c) => el('li', { className: 'profile-tile mode-card', ariaLabel: `${t(c.label)}. ${t(c.hint)}` },
+        el('img', { className: 'mode-card-picture', src: c.picture, alt: '', draggable: false })));
       this.screenRow = el('ul', { className: 'mode-screens' });
       this.nextBtn = el('button', { className: 'mode-next', type: 'button', textContent: t('modeask.next'), onclick: () => this.next() });
       root.append(el('div', { className: 'profile-picker mode-chooser' },
