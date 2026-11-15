@@ -32,7 +32,8 @@ import { setPointer } from '../components/mouse.js';
 import { confirmDialog } from '../components/overlay.js';
 import { ensureUnlocked } from '../components/passcode.js';
 import { admitProtectedChange, configFaultNow } from '../core/lock-rules.js';
-import { setAudioMode, sound } from '../sound.js';
+import { BG_STYLES, getLook, setLook } from '../core/look-prefs.js';
+import { SOUND_SETS, setAudioMode, setSoundSet, sound } from '../sound.js';
 import { showTermsIfNeeded, termsAccepted, termsPage } from './legal.js';
 import { consoleRevertPage, consoleSetupPage, hasConsoleSetup } from './console-setup.js';
 import { consoleDeps, enrollCouchCode } from './settings.js';
@@ -86,7 +87,10 @@ async function loadEnv() {
 
 const isFull = (env) => env.settings.integrationMode === 'full';
 const lockOn = (env) => !!env.security.couchLock && env.security.couchLock !== 'off';
-const pointerMode = (s) => (s.pointer === 'system' || (s.pointer === 'mouse' && s.mouseUnlocked) ? s.pointer : 'skin');
+// i18n-used: settings.pointer.skin settings.pointer.system settings.pointer.neon settings.pointer.ring settings.pointer.dot settings.bgStyle.classic settings.bgStyle.purple settings.bgStyle.blue settings.bgStyle.red settings.bgStyle.green
+const POINTER_KEYS = { skin: 'settings.pointer.skin', system: 'settings.pointer.system', neon: 'settings.pointer.neon', ring: 'settings.pointer.ring', dot: 'settings.pointer.dot' };
+const BG_KEYS = { classic: 'settings.bgStyle.classic', 'neon-purple': 'settings.bgStyle.purple', 'neon-blue': 'settings.bgStyle.blue', 'neon-red': 'settings.bgStyle.red', 'neon-green': 'settings.bgStyle.green' };
+const pointerMode = (s) => (s.pointer === 'system' || ['neon', 'ring', 'dot'].includes(s.pointer) || (s.pointer === 'mouse' && s.mouseUnlocked) ? s.pointer : 'skin');
 // i18n-used: wizard.sound.off wizard.sound.ui wizard.sound.music wizard.clients.standby wizard.clients.demand wizard.clients.off
 const AUDIO = ['off', 'ui', 'music'];
 const audioMode = (s) => (AUDIO.includes(s.audioMode) ? s.audioMode : s.sounds === false ? 'off' : 'ui');
@@ -318,15 +322,21 @@ function steps(page) {
             return 'next';
           }
         })),
-        ...['skin', 'system'].map((mode) => ({
+        ...['skin', 'system', 'neon', 'ring', 'dot'].map((mode) => ({
           id: `pointer:${mode}`, row: 1, chip: true, label: t('settings.pointer.title'),
-          title: t(mode === 'system' ? 'settings.pointer.system' : 'settings.pointer.skin'), current: pointerMode(env.settings) === mode,
+          title: t(POINTER_KEYS[mode]), current: pointerMode(env.settings) === mode,
           run: async () => {
             if (!(await save('pointer', mode))) return;
             env.settings.pointer = mode;
             state.info.pointer = mode;
             setPointer(mode, env.settings.mouseUnlocked);
           }
+        })),
+        // The background behind the pages (kept on this device); the clean, calm Mega Hub picture stays the default.
+        ...BG_STYLES.map((bg) => ({
+          id: `bg:${bg}`, row: 2, chip: true, label: t('settings.appearance.bgStyle'),
+          title: t(BG_KEYS[bg]), current: getLook('bgStyle') === bg,
+          run: () => { setLook('bgStyle', bg); }
         }))
       ]
     },
@@ -346,6 +356,25 @@ function steps(page) {
           env.settings.audioMode = o.id;
           state.info.audioMode = o.id;
           setAudioMode(o.id);
+          return 'next';
+        }
+      }))
+    },
+    soundset: {
+      icon: 'audio',
+      title: () => t('wizard.soundset.title'),
+      lead: () => t('wizard.soundset.lead'),
+      later: () => where('settings.cat.audio'),
+      // Each set is made by Mega Hub itself (nothing recorded, nothing to license); it plays when it is focused.
+      options: () => SOUND_SETS.map((x) => ({
+        id: x.id, icon: '♪', title: x.label.split(':')[0], bullets: [x.label.split(':')[1]?.trim()].filter(Boolean), compact: true,
+        current: (env.settings.soundSet || 'default') === x.id,
+        focus: () => { setSoundSet(x.id); sound.select(); },
+        run: async () => {
+          if (!(await save('soundSet', x.id))) return;
+          env.settings.soundSet = x.id;
+          state.info.soundSet = x.id;
+          setSoundSet(x.id);
           return 'next';
         }
       }))
@@ -495,7 +524,8 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
         launchers: env.launchers.length,
         tvPaired: tvPaired(),
         choices: this.choices,
-        areas: this.areas
+        areas: this.areas,
+        audioMode: audioMode(env.settings)
       };
     },
 

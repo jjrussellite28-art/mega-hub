@@ -39,6 +39,14 @@ const MOUSE_SVG = `
   <path d="M9 3 L15 1 M10 5 L16 4 M3 9 L1 15 M5 10 L4 16" stroke="#1b1e28" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
 </svg>`;
 
+// A few pointers of Mega Hub's own (drawn here, nothing copied): a glowing arrow, a ring and a dot. They take the skin's accent color.
+const ART_STYLE = 'style="width:100%;height:100%;overflow:visible"';
+const CUSTOM_ART = {
+  neon: `<svg viewBox="0 0 64 64" ${ART_STYLE} xmlns="http://www.w3.org/2000/svg"><path d="M7 4 L7 46 L18 36 L26 55 L34 52 L26 33 L41 33 Z" fill="#0b0f1a" stroke="var(--accent)" stroke-width="3.5" stroke-linejoin="round" style="filter:drop-shadow(0 0 4px var(--accent)) drop-shadow(0 0 9px var(--accent))"/></svg>`,
+  ring: `<svg viewBox="0 0 64 64" ${ART_STYLE} xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="17" fill="none" stroke="var(--accent)" stroke-width="5" style="filter:drop-shadow(0 0 5px var(--accent))"/><circle cx="32" cy="32" r="3" fill="#fff"/></svg>`,
+  dot: `<svg viewBox="0 0 64 64" ${ART_STYLE} xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="11" fill="var(--accent)" stroke="#fff" stroke-width="3" style="filter:drop-shadow(0 0 6px var(--accent))"/></svg>`
+};
+
 /**
  * The pointer inside the HUD: "skin" (the skin's --pointer image, the default), "system" (the real
  * Windows pointer, no overlay) or "mouse" (the comic mouse). Falls back to "skin" without the unlock.
@@ -68,7 +76,7 @@ svg { width: 100%; height: 100%; overflow: visible; transform-origin: 10% 10%; }
 `;
 
 export function setPointer(mode, mouseUnlocked) {
-  const next = mode === 'system' ? 'system' : mode === 'mouse' && mouseUnlocked ? 'mouse' : 'skin';
+  const next = mode === 'system' ? 'system' : mode === 'mouse' && mouseUnlocked ? 'mouse' : Object.hasOwn(CUSTOM_ART, mode) ? mode : 'skin';
   document.documentElement.dataset.pointer = next;
   // The tab bar is a closed shadow root that the page's CSS cannot reach: the host carries the answer for it.
   document.getElementById('top')?.toggleAttribute('data-real-pointer', next === 'system');
@@ -76,7 +84,7 @@ export function setPointer(mode, mouseUnlocked) {
   if (cursor) {
     // The real Windows pointer shows: no overlay (core/layers.js keeps the pointer out of the top layer then).
     cursor.toggleAttribute('data-off', next === 'system');
-    pointerParts.art.innerHTML = next === 'mouse' ? MOUSE_SVG : '<i class="cp"></i>';
+    pointerParts.art.innerHTML = next === 'mouse' ? MOUSE_SVG : CUSTOM_ART[next] ?? '<i class="cp"></i>';
     sizePointer();
   }
 }
@@ -91,9 +99,11 @@ function sizePointer() {
     return m ? Math.min(max, Math.max(min, (m[2]?.toLowerCase() === 'px' ? Number(m[1]) / rem : Number(m[1])))) : def;
   };
   const comic = pointerMode === 'mouse';
-  const size = comic ? 4.6 : len('--pointer-size', [1, 8, 4.6]);
-  const hx = comic ? 0.1 : num('--pointer-hx', [0, 1, 0.104]);
-  const hy = comic ? 0.1 : num('--pointer-hy', [0, 1, 0.0625]);
+  const own = Object.hasOwn(CUSTOM_ART, pointerMode);
+  const centered = pointerMode === 'ring' || pointerMode === 'dot';
+  const size = comic ? 4.6 : own ? 3.4 : len('--pointer-size', [1, 8, 4.6]);
+  const hx = comic ? 0.1 : own ? (centered ? 0.5 : 0.11) : num('--pointer-hx', [0, 1, 0.104]);
+  const hy = comic ? 0.1 : own ? (centered ? 0.5 : 0.06) : num('--pointer-hy', [0, 1, 0.0625]);
   const style = pointerParts.box.style;
   style.setProperty('--p-size', `${size * rem}px`);
   style.setProperty('--p-hx', String(hx));

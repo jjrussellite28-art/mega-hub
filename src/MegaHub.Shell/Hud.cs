@@ -2986,7 +2986,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
                 break;
             case "pointer":
                 var pointer = value.GetString();
-                if (pointer is not ("skin" or "system" or "mouse")) throw new ArgumentException("pointer: skin, system or mouse");
+                if (pointer is not ("skin" or "system" or "mouse" or "neon" or "ring" or "dot")) throw new ArgumentException("pointer: skin, system, mouse, neon, ring or dot");
                 config.UpdateOrThrow(c => c.Pointer = pointer == "mouse" && !c.MouseUnlocked ? "skin" : pointer);
                 break;
             case "mouseUnlocked":

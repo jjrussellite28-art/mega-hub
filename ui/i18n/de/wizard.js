@@ -45,6 +45,8 @@ export default {
   'wizard.mode.fullReady': 'Schon eingerichtet',
   'wizard.look.title': 'Wähle deinen Look',
   'wizard.look.lead': 'Die Vorschau wechselt beim Blättern.',
+  'wizard.soundset.title': 'Töne aussuchen',
+  'wizard.soundset.lead': 'Fahre über ein Set, um es zu hören. Von Mega Hub selbst gemacht, frei von Rechten Dritter.',
   'wizard.startask.title': 'Shell-Modus oder PC-Modus beim Start?',
   'wizard.startask.lead': 'Wähle, was beim Öffnen von Mega Hub passiert. Du kannst es später unter Einstellungen › Anzeige ändern.',
   'wizard.startask.ask': 'Fragen',

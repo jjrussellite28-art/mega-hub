@@ -45,6 +45,8 @@ export default {
   'wizard.mode.fullReady': 'Already set up',
   'wizard.look.title': 'Pick your look',
   'wizard.look.lead': 'The preview changes as you browse.',
+  'wizard.soundset.title': 'Pick your sounds',
+  'wizard.soundset.lead': 'Move over a set to hear it. Made by Mega Hub itself, free of any rights.',
   'wizard.startask.title': 'Shell mode or PC mode at start?',
   'wizard.startask.lead': 'Choose what happens when Mega Hub opens. You can change it later in Settings › Display.',
   'wizard.startask.ask': 'Ask me',

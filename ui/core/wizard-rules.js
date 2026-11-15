@@ -10,7 +10,7 @@ import { lockStepStatus } from './lock-rules.js';
 export const SEQUENCE = [
   'welcome', 'terms', 'areas', 'updates', 'mode',
   'revert', 'shell', 'lock', 'autologon', 'launchers',
-  'look', 'sound', 'startask', 'startup', 'clientsInfo', 'clients', 'tv',
+  'look', 'sound', 'soundset', 'startask', 'startup', 'clientsInfo', 'clients', 'tv',
   'summary', 'result'
 ];
 
@@ -79,11 +79,12 @@ export function applies(id, ctx) {
     // The sign-in only makes sense with the shell and the lock; an account without a password signs in by itself already.
     case 'autologon': return ctx.intent === 'full' && ctx.accountPassword !== false && !ctx.autoLogonDone;
     case 'launchers': return ctx.intent === 'full';
-    // The thank-you page for the maker of the project this one grew from: once, on the very first start.
     case 'clientsInfo': return full && ctx.launchers > 0 && (ctx.areas ?? ['games']).includes('games');
     case 'clients': return full && ctx.launchers > 0 && (ctx.areas ?? ['games']).includes('games') && choices.clients === 'adjust';
     // The programs Windows starts at sign-in (Discord, EA, driver tools): only a console install starts them for Mega Hub.
     case 'startup': return ctx.intent === 'full' || (full && ctx.intent !== 'light');
+    // The sound set: only when sounds or music were chosen (silent skips the page).
+    case 'soundset': return ctx.audioMode === 'ui' || ctx.audioMode === 'music';
     case 'tv': return !!ctx.tvPaired;
     case 'result': return false;
     default: return true;
@@ -153,7 +154,7 @@ export function summaryPlan(ctx) {
   }
   if (choices.clients === 'adjust' && Object.keys(choices.clientModes ?? {}).length) changes.push('clients');
   if (applies('tv', ctx) && choices.tv !== 'off') changes.push(choices.tv === 'both' ? 'tvBoth' : 'tvOn');
-  const kept = ['language', 'mode', 'look', 'sound', 'startask', 'areas'];
+  const kept = ['language', 'mode', 'look', 'sound', 'soundset', 'startask', 'areas'];
   if (!changes.length) kept.push('nothing');
   return { changes, kept };
 }

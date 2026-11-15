@@ -156,7 +156,7 @@ internal static class ConfigSanitizer
         Pick("audio mode", c.AudioMode, ["off", "ui", "music"], "ui", v => c.AudioMode = v);
         Pick("interface HDR", c.UiHdr, ["off", "auto", "on"], "auto", v => c.UiHdr = v);
         Pick("pad glyphs", c.PadGlyphs, ["auto", "xbox", "playstation"], "auto", v => c.PadGlyphs = v);
-        Pick("pointer", c.Pointer, ["skin", "system", "mouse"], "skin", v => c.Pointer = v);
+        Pick("pointer", c.Pointer, ["skin", "system", "mouse", "neon", "ring", "dot"], "skin", v => c.Pointer = v);
         Pick("night mode", c.NightMode, ["off", "on", "evening"], "off", v => c.NightMode = v);
         Pick("language", c.Language, ["auto", "de", "en"], "auto", v => c.Language = v);
 

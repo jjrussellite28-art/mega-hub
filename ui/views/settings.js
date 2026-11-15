@@ -779,10 +779,13 @@ async function setShell(install) {
 const pointerModes = (unlocked) => [
   { label: t('settings.pointer.skin'), detail: t('settings.pointer.skinDetail'), value: 'skin' },
   { label: t('settings.pointer.system'), detail: t('settings.pointer.systemDetail'), value: 'system' },
+  { label: t('settings.pointer.neon'), detail: t('settings.pointer.neonDetail'), value: 'neon' },
+  { label: t('settings.pointer.ring'), detail: t('settings.pointer.ringDetail'), value: 'ring' },
+  { label: t('settings.pointer.dot'), detail: t('settings.pointer.dotDetail'), value: 'dot' },
   ...(unlocked ? [{ label: t('settings.pointer.mouse'), detail: t('settings.pointer.mouseDetail'), value: 'mouse' }] : [])
 ];
 
-const pointerMode = (s) => (s.pointer === 'system' || (s.pointer === 'mouse' && s.mouseUnlocked) ? s.pointer : 'skin');
+const pointerMode = (s) => (s.pointer === 'system' || ['neon', 'ring', 'dot'].includes(s.pointer) || (s.pointer === 'mouse' && s.mouseUnlocked) ? s.pointer : 'skin');
 
 function applyPointer() {
   state.info.pointer = settings.pointer;
