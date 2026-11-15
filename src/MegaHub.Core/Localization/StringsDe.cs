@@ -319,6 +319,7 @@ public static partial class Strings
         ["restart.failed"] = "Mega Hub konnte sich nicht neu starten, es läuft weiter",
         ["hud.noUninstaller"] = "Kein Deinstallationsprogramm gefunden",
         ["hud.notInstalled"] = "{0} ist nicht installiert",
+        ["screens.label"] = "Bildschirm {0}",
         ["hud.offOrAllow"] = "off oder allow",
         ["hud.played"] = "{0} gespielt · insgesamt {1}",
         ["hud.range"] = "{0}: {1} bis {2}",

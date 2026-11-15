@@ -656,6 +656,9 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
                 return hud.GetScreens();
             case "setScreen":
                 return hud.SetScreen(Arg(0).GetInt32());
+            case "screenOverlay":
+                hud.ShowScreenOverlay(Arg(0).ValueKind == JsonValueKind.True);
+                return null;
             case "setScreenLayout":
                 hud.SetScreenLayout(StringArg(0));
                 return null;

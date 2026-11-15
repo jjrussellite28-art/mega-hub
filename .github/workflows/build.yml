@@ -181,10 +181,6 @@ jobs:
           $files = @(Get-ChildItem publish/service -Recurse -File | ForEach-Object Name)
           if ($files.Count -ne 1 -or $files[0] -ne 'MegaHub.Service.exe') { throw "publish/service should hold only MegaHub.Service.exe, found: $($files -join ', ')" }
 
-      # Plugins are not part of the setup any more (0.6): Wand is built here only to check it compiles; it ships through the signed catalog.
-      - name: Build Wand plugin (catalog package, not bundled)
-        run: dotnet publish plugins/MegaHub.Plugin.Wand/MegaHub.Plugin.Wand.csproj -c Release -o publish-plugins/MegaHub.Plugin.Wand
-
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: MegaHub-win-x64

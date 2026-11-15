@@ -264,7 +264,7 @@ const fnList = (id) => (fnDefs[id] ?? []).map(([fid, suggested, key]) => ({
 const restrictionsPossible = () => !new URLSearchParams(location.search).has('fnnolock') && (security.couchLock !== 'off' || !!parentalState()?.enabled);
 const plugins = [
   lz({
-    folder: 'MegaHub.Plugin.Wand', id: 'wand', name: 'Wand', version: '1.0.0', author: 'kewe87', homepage: 'https://www.wand.com',
+    folder: 'MegaHub.Plugin.Wand', id: 'wand', name: 'Wand', version: '1.0.0', author: 'example', homepage: 'https://www.wand.com',
     enabled: true, loaded: true, error: null, userInstalled: true, origin: 'firstParty', publisher: null, revoked: false, revokedReason: null,
     capabilities: ['pages', 'quickActions', 'assistant', 'process'],
     pages: [lz({ id: 'status', title: 'Wand', icon: '🪄' }, { description: () => t('mock.wandPageDesc') })],
@@ -275,14 +275,14 @@ const plugins = [
     tools: ['wand_open_cheats']
   }, { description: () => t('mock.wandDesc') }),
   lz({
-    folder: 'CouchHud.Plugin.Lumen', id: 'lumen', name: 'Lumen', version: '1.2.0', author: 'kewe87', homepage: null,
+    folder: 'CouchHud.Plugin.Lumen', id: 'lumen', name: 'Lumen', version: '1.2.0', author: 'example', homepage: null,
     enabled: true, loaded: true, error: null, userInstalled: true, origin: 'firstParty', publisher: null, revoked: false, revokedReason: null,
     capabilities: ['pages', 'notify', 'tabs'],
     pages: [lz({ id: 'main', icon: '💡' }, { title: () => 'Lumen', description: () => t('mock.plug.lumenPageDesc') })],
     settings: [], tools: []
   }, { description: () => t('mock.plug.lumenDesc'), functions: () => fnList('lumen'), restrictionsPossible }),
   lz({
-    folder: 'CouchHud.Plugin.HomeAssistant', id: 'homeassistant', name: 'Home Assistant', version: '1.1.1', author: 'kewe87', homepage: null,
+    folder: 'CouchHud.Plugin.HomeAssistant', id: 'homeassistant', name: 'Home Assistant', version: '1.1.1', author: 'example', homepage: null,
     enabled: true, loaded: true, error: null, userInstalled: true, origin: 'firstParty', publisher: null, revoked: false, revokedReason: null,
     capabilities: ['pages', 'tabs', 'network:lan'],
     pages: [lz({ id: 'home', icon: '🏠' }, { title: () => 'Smart Home' })],
@@ -316,9 +316,9 @@ const MOCK_CATEGORY_KEYS = Object.fromEntries(['smartHome', 'streaming', 'hardwa
 const mockCategories = { wand: 'hud', lumen: 'smartHome', casehud: 'streaming', kodi: 'media', glowbar: 'hardware', nightsky: 'information', signalrgb: 'hardware', tidepool: 'ai' };
 const cat = (o, f) => lz({ category: mockCategories[o.id] ?? (o.kind === 'skin' ? 'skins' : 'other'), restartPending: false, reason: null, reasonCode: null, addsCapabilities: false, installedVersion: null, unsigned: false, extra: false, origin: 'firstParty', publisher: null, thirdParty: false, license: 'GPL-3.0-only', capabilities: [], services: [], size: null, minCouchHud: null, homepage: null, ...o }, { categoryLabel: () => t(MOCK_CATEGORY_KEYS[mockCategories[o.id] ?? (o.kind === 'skin' ? 'skins' : 'other')]), ...f });
 const catalog = [
-  cat({ id: 'wand', name: 'Wand', author: 'kewe87', kind: 'plugin', version: '1.1.0', installedVersion: '1.0.0', status: 'update', size: 3_200_000, icon: png(265, 'W'), capabilities: ['pages', 'quickActions', 'assistant', 'process'] }, { description: () => t('mock.wandDesc') }),
-  cat({ id: 'lumen', name: 'Lumen', author: 'kewe87', kind: 'plugin', version: '1.2.0', installedVersion: '1.2.0', status: 'installed', size: 480_000, icon: png(45, 'L'), license: 'MIT', capabilities: ['pages', 'notify'] }, { description: () => t('mock.plug.lumenDesc') }),
-  cat({ id: 'casehud', name: 'CaseHUD', author: 'kewe87', kind: 'plugin', version: '1.1.0', status: 'notInstalled', size: 5_600_000, icon: png(190, 'C'), capabilities: ['pages', 'quickActions', 'assistant', 'setup.run', 'lock.restrict', 'startup.args', 'process', 'network:loopback'] }, { description: () => t('mock.plug.casehudDesc') }),
+  cat({ id: 'wand', name: 'Wand', author: 'example', kind: 'plugin', version: '1.1.0', installedVersion: '1.0.0', status: 'update', size: 3_200_000, icon: png(265, 'W'), capabilities: ['pages', 'quickActions', 'assistant', 'process'] }, { description: () => t('mock.wandDesc') }),
+  cat({ id: 'lumen', name: 'Lumen', author: 'example', kind: 'plugin', version: '1.2.0', installedVersion: '1.2.0', status: 'installed', size: 480_000, icon: png(45, 'L'), license: 'MIT', capabilities: ['pages', 'notify'] }, { description: () => t('mock.plug.lumenDesc') }),
+  cat({ id: 'casehud', name: 'CaseHUD', author: 'example', kind: 'plugin', version: '1.1.0', status: 'notInstalled', size: 5_600_000, icon: png(190, 'C'), capabilities: ['pages', 'quickActions', 'assistant', 'setup.run', 'lock.restrict', 'startup.args', 'process', 'network:loopback'] }, { description: () => t('mock.plug.casehudDesc') }),
   cat({ id: 'kodi', name: 'Kodi', author: 'community', kind: 'plugin', version: '0.3.0', installedVersion: '0.3.0', status: 'installed', origin: 'thirdParty', thirdParty: true, publisher: 'a1b2-c3d4-e5f6-7890', size: 1_900_000, icon: png(20, 'K'), license: 'GPL-2.0-or-later', capabilities: ['library', 'network:loopback'] }, { description: () => t('mock.catKodiDesc') }),
   cat({ id: 'glowbar', name: 'GlowBar', author: 'dev-hans', kind: 'plugin', version: '2.0.1', installedVersion: '2.0.1', status: 'installed', origin: 'thirdParty', thirdParty: true, publisher: '5e6f-7a8b-9c0d-1e2f', size: 760_000, icon: png(320, 'G'), license: 'MIT', capabilities: ['network:internet', 'registry'] }, { description: () => t('mock.plug.glowbarDesc') }),
   cat({ id: 'nightsky', name: 'NightSky', author: 'dev-clara', kind: 'plugin', version: '1.0.0', status: 'notInstalled', origin: 'thirdParty', thirdParty: true, extra: true, publisher: '9f8e-7d6c-5b4a-3921', size: 2_400_000, icon: png(240, 'N'), license: 'Apache-2.0', capabilities: ['pages', 'notify', 'network:internet', 'native'] }, { description: () => t('mock.plug.nightskyDesc') }),
@@ -339,7 +339,7 @@ const catalogState = () => ({ entries: structuredClone(catalog), fromCache: fals
 const catalogUpdates = () => structuredClone(catalog.filter((c) => c.status === 'update'));
 // The official catalog is built in and cannot be removed; the others were added after the "I trust this developer" warning.
 const catalogSources = {
-  official: { url: 'https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/index.json', builtIn: true, removable: false },
+  official: { url: 'https://raw.githubusercontent.com/jjrussellite28-art/mega-hub/mega-hub-rename/catalog/index.json', builtIn: true, removable: false },
   extra: [
     { url: 'https://plugins.example-dev.net/catalog/index.json', host: 'plugins.example-dev.net', name: 'Example Dev', keyCode: '9f8e-7d6c-5b4a-3921', signed: true, added: '2026-10-20T10:00:00Z' },
     { url: 'https://catalog.community-hub.org/index.json', host: 'catalog.community-hub.org', name: null, keyCode: null, signed: false, added: '2026-10-22T18:30:00Z' }
@@ -368,7 +368,7 @@ const lumenRows = (pageId) => (pageId === 'displays' ? [
 // The preview shows the suggestion once (?suggest): a program is installed and the catalog has a plugin for it.
 let suggestionOpen = new URLSearchParams(location.search).has('suggest');
 const wandRows = () => [
-  { id: 'state', label: 'Wand', detail: t('mock.wandFound', { path: 'C:\\Users\\kewe87\\AppData\\Local\\Wand\\Wand.exe' }), icon: '✓', value: t('mock.wandInstalled'), on: true },
+  { id: 'state', label: 'Wand', detail: t('mock.wandFound', { path: 'C:\\Users\\player\\AppData\\Local\\Wand\\Wand.exe' }), icon: '✓', value: t('mock.wandInstalled'), on: true },
   { id: 'open', label: t('mock.wandOpen'), detail: session ? t('mock.wandCheatsFor', { name: session.name }) : t('mock.wandStartsOrFront'), icon: '🪄' }
 ];
 const gameFolders = ['D:\\Games'];
@@ -381,7 +381,7 @@ const companionView = () => ({
   rules: companionRules.map((r) => ({ appId: r.appId, name: library.find((i) => i.id === r.appId)?.name ?? r.appId, mode: r.mode, games: r.gameIds.map((id) => ({ id, name: library.find((i) => i.id === id)?.name ?? id })), closeWithGame: r.closeWithGame, minimized: r.minimized, whenLocked: r.whenLocked, problem: null })),
   candidates: library.filter((i) => i.type === 'app' && i.source === 'custom' && !companionRules.some((r) => r.appId === i.id) && !['custom:youtube', 'custom:netflix'].includes(i.id) && !/^https?:/.test(i.launch?.target ?? '')).map((i) => ({ id: i.id, name: i.name })),
   games: library.filter((i) => i.type === 'game').map((i) => ({ id: i.id, name: i.name })),
-  wand: { pluginInstalled: true, found: true, verified: true, path: 'C:\\Users\\kewe87\\AppData\\Local\\Wand\\Wand.exe', appId: null, hasRule: companionRules.some((r) => r.appId === 'custom:wand') }
+  wand: { pluginInstalled: true, found: true, verified: true, path: 'C:\\Users\\player\\AppData\\Local\\Wand\\Wand.exe', appId: null, hasRule: companionRules.some((r) => r.appId === 'custom:wand') }
 });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const saveBackups = [
@@ -390,7 +390,7 @@ const saveBackups = [
   { id: '2026-10-15_20-00_unvollstaendig.zip', created: Date.now() - 4 * 86400_000, sizeBytes: 300_000, fileCount: 3, safety: false, complete: false },
   { id: '2026-10-12_19-05.zip', created: Date.now() - 7 * 86400_000, sizeBytes: 1_020_000, fileCount: 13, safety: false, complete: true }
 ];
-const saveDir = 'C:\\Users\\kewe87\\AppData\\Roaming\\MegaHub\\Backups';
+const saveDir = 'C:\\Users\\player\\AppData\\Roaming\\MegaHub\\Backups';
 const saveSettings = { backupDir: saveDir, defaultBackupDir: saveDir, keep: 5, includeConfig: false, autoBackup: true, autoKeep: 3, autoMaxGameMb: 1000, autoMaxTotalMb: 10000 };
 const saveTotalBytes = () => saveBackups.reduce((sum, b) => sum + b.sizeBytes, 0);
 const notes = [
@@ -793,7 +793,7 @@ window.megahub = {
       unavailable: false,
       warnings: [],
       gameName: t('mock.sampleGame'),
-      locations: ['C:\\Users\\kewe87\\AppData\\Roaming\\Beispielspiel\\saves', 'C:\\Program Files (x86)\\Steam\\userdata\\1234567\\4242\\remote'],
+      locations: ['C:\\Users\\player\\AppData\\Roaming\\Beispielspiel\\saves', 'C:\\Program Files (x86)\\Steam\\userdata\\1234567\\4242\\remote'],
       fileCount: 14,
       totalBytes: 3_400_000,
       lastWrite: Date.now() - 3 * 3600_000,
@@ -825,7 +825,7 @@ window.megahub = {
     else saveSettings[key] = value;
     return { ...saveSettings, custom: saveSettings.backupDir !== saveSettings.defaultBackupDir, totalBytes: saveTotalBytes() };
   },
-  getSettings: async () => ({ ...settings, isShell, configPath: 'C:\\Users\\kewe87\\AppData\\Roaming\\MegaHub\\config.json', logPath: 'C:\\Users\\kewe87\\AppData\\Local\\MegaHub\\logs' }),
+  getSettings: async () => ({ ...settings, isShell, configPath: 'C:\\Users\\player\\AppData\\Roaming\\MegaHub\\config.json', logPath: 'C:\\Users\\player\\AppData\\Local\\MegaHub\\logs' }),
   setSetting: async (key, value) => {
     if (key === 'steamGridDbApiKey') settings.steamGridDbKeySet = !!value;
     else if (key === 'weatherLocation') settings.weatherPlace = value;
@@ -853,8 +853,8 @@ window.megahub = {
         entries: [
           { name: 'System (C:)', path: 'C:\\', kind: 'drive', size: 120_000_000_000 },
           { name: t('mock.driveGames'), path: 'D:\\', kind: 'drive', size: 840_000_000_000 },
-          { name: 'Desktop', path: 'C:\\Users\\kewe87\\Desktop', kind: 'place', size: 0 },
-          { name: 'Downloads', path: 'C:\\Users\\kewe87\\Downloads', kind: 'place', size: 0 }
+          { name: 'Desktop', path: 'C:\\Users\\player\\Desktop', kind: 'place', size: 0 },
+          { name: 'Downloads', path: 'C:\\Users\\player\\Downloads', kind: 'place', size: 0 }
         ]
       };
     }
@@ -1431,7 +1431,7 @@ window.megahub = {
   },
   setupWand: async (all, acceptUnverified) => {
     log('setupWand', all, acceptUnverified);
-    if (!library.some((i) => i.id === 'custom:wand')) library.push(custom('Wand', 'app', { launch: { kind: 'exe', target: 'C:\\Users\\kewe87\\AppData\\Local\\Wand\\Wand.exe', args: [] } }));
+    if (!library.some((i) => i.id === 'custom:wand')) library.push(custom('Wand', 'app', { launch: { kind: 'exe', target: 'C:\\Users\\player\\AppData\\Local\\Wand\\Wand.exe', args: [] } }));
     companionRules.push({ appId: 'custom:wand', mode: all ? 'all' : 'games', gameIds: [], closeWithGame: false, minimized: true, whenLocked: false });
     if (!guideAppIds.includes('custom:wand')) guideAppIds.push('custom:wand');
     return companionView();

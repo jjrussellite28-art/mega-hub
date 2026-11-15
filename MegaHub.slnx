@@ -9,7 +9,6 @@
     <Project Path="src/MegaHub.ServiceClient/MegaHub.ServiceClient.csproj" />
   </Folder>
   <Folder Name="/plugins/">
-    <Project Path="plugins/MegaHub.Plugin.Wand/MegaHub.Plugin.Wand.csproj" />
     <Project Path="plugins/MegaHub.Plugin.Achievements/MegaHub.Plugin.Achievements.csproj" />
   </Folder>
   <Folder Name="/tests/">

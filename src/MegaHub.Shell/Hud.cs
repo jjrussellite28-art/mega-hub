@@ -4181,6 +4181,19 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     /// <summary>The screen Mega Hub covers: 0 = automatic, 1 = the leftmost screen ...</summary>
     public int ScreenNumber => config.Current.ScreenNumber;
 
+    private readonly ScreenOverlay _screenOverlay = new();
+
+    /// <summary>The start choice on several screens: a live copy of Mega Hub and a "Screen N" label on every screen (off again with false).</summary>
+    public void ShowScreenOverlay(bool on) => Ui(() =>
+    {
+        if (!on || _window is null)
+        {
+            _screenOverlay.Hide();
+            return;
+        }
+        _screenOverlay.Show(new System.Windows.Interop.WindowInteropHelper(_window).Handle);
+    });
+
     public IReadOnlyList<ScreenInfo> GetScreens() => DisplayService.Screens(config.Current.ScreenNumber);
 
     /// <summary>Picks the screen Mega Hub covers (0 = automatic) and moves the window there right away.</summary>

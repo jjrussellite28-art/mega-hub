@@ -53,6 +53,8 @@ export function showModeChooser() {
       listScreens().then((list) => {
         this.screens = list ?? [];
         this.update();
+        // Several screens: every screen shows this page and its "Screen N" label, so it can be chosen from the couch.
+        if (this.screens.length > 1) attempt(() => api.screenOverlay?.(true));
       }).catch(() => {});
     },
     options() {
@@ -68,12 +70,16 @@ export function showModeChooser() {
       this.screenRow.replaceChildren(...opts.map((o, i) => el('li', { className: `mode-screen${i === this.screenIndex ? ' chosen' : ''}${this.row === ROW_SCREENS && i === this.screenIndex ? ' focused' : ''}`, textContent: o.label })));
       this.nextBtn.classList.toggle('focused', this.row === ROW_NEXT);
     },
+    onClose() {
+      attempt(() => api.screenOverlay?.(false));
+    },
     async next() {
       if (this.busy) return;
       this.busy = true;
       try {
         const choice = CHOICES[this.mode].id;
         const number = this.options()[this.screenIndex]?.number ?? 0;
+        // The copies and labels stay up while the question is shown, so it can be answered from any screen.
         // One screen chosen: ask once, then Mega Hub moves there.
         if (number > 0 && this.screens.length > 1) {
           if (!(await confirmDialog(t('modeask.isThisScreen', { n: number }), t('modeask.yes')))) return;
