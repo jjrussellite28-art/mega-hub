@@ -78,6 +78,8 @@ export default {
   'passcode.newHint': 'Merk dir die Reihenfolge, wie beim Xbox-Passkey',
   'passcode.repeatTitle': 'Code wiederholen',
   'passcode.mismatch': 'Die Codes waren verschieden, bitte noch einmal',
+  'passcode.wayExit': 'Zu Windows beenden',
+  'passcode.wayExitDetail': 'Windows sperrt. Nach der Anmeldung kommt der normale Desktop und Mega Hub schließt.',
   'passcode.wayTitle': 'Wie möchtest du entsperren?',
   'passcode.wayCode': 'Controller-Code',
   'passcode.wayCodeDetail': 'Gib deinen Mega-Hub-Code ein',

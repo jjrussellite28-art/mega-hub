@@ -235,6 +235,9 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
             case "quit":
                 hud.QuitFromUi();
                 return null;
+            case "emergencyExit":
+                hud.EmergencyExit();
+                return null;
             case "resetMegaHub":
                 await hud.ResetMegaHubAsync();
                 return null;

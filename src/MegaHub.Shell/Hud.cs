@@ -8548,6 +8548,30 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         CleanupFromUi(false);
     }
 
+    /// <summary>
+    /// The exit button of the unlock question: the same emergency way as the key combination at the start. Windows locks first and nothing
+    /// is opened before the account signed in again (so nobody at the controller reaches the desktop without it); then the shell entry goes,
+    /// the normal desktop comes and Mega Hub closes. Windows that cannot be locked: nothing changes.
+    /// </summary>
+    [SecondFactorExempt("the emergency way out: it opens nothing before the Windows sign-in, as the key combination at the start")]
+    public void EmergencyExit()
+    {
+        if (_quitting) return;
+        var dir = dataDir;
+        Task.Run(() =>
+        {
+            try
+            {
+                if (!MegaHub.Shell.Services.Recovery.Run(dir, "Emergency exit button")) return;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"[recovery] failed: {ex}");
+            }
+            Ui(() => Quit());
+        });
+    }
+
     public void CleanupFromUi(bool uninstall)
     {
         // Uninstalling is always possible, locked or not: the way out when the lock or anything else is in the way. Reset keeps the lock.

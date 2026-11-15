@@ -277,9 +277,15 @@ async function runFullUnlock(security, reason) {
     // Either way opens it: the Mega Hub code, or the Windows sign-in (PIN or password).
     const way = await chooseDialog(t('passcode.wayTitle'), [
       { label: t('passcode.wayCode'), detail: t('passcode.wayCodeDetail'), icon: '🔢', value: 'code' },
-      { label: t('passcode.wayWindows'), detail: t('passcode.wayWindowsDetail'), icon: '🪟', value: 'windows' }
+      { label: t('passcode.wayWindows'), detail: t('passcode.wayWindowsDetail'), icon: '🪟', value: 'windows' },
+      { label: t('passcode.wayExit'), detail: t('passcode.wayExitDetail'), icon: '🚪', value: 'exit' }
     ], 'code');
     if (way === undefined) return false;
+    // The way out: Windows locks, and after the sign-in the normal desktop comes (the same as holding Ctrl + Shift at the start).
+    if (way === 'exit') {
+      await attempt(() => api.emergencyExit());
+      return false;
+    }
     if (way === 'windows') {
       if (!(await signInIfPossible(reason))) return false;
       // The sign-in opened the couch (the host did it after the confirmation). A host that cannot ask for it (no service) opened nothing:

@@ -123,6 +123,7 @@ window.megahub = {
   restartMegaHub: () => call('restartMegaHub'),
   resetMegaHub: () => call('resetMegaHub'),
   uninstallMegaHub: () => call('uninstallMegaHub'),
+  emergencyExit: () => call('emergencyExit'),
   onInput: on('input'),
   onNav: on('nav'),
   onLibrary: on('library'),

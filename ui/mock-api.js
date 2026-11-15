@@ -1129,6 +1129,7 @@ window.megahub = {
   },
   resetMegaHub: async () => log('resetMegaHub'),
   uninstallMegaHub: async () => log('uninstallMegaHub'),
+  emergencyExit: async () => log('emergencyExit'),
   quit: async () => log('quit'),
   onInput: noop,
   onNav: noop,

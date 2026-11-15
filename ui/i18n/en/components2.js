@@ -78,6 +78,8 @@ export default {
   'passcode.newHint': 'Remember the order, like an Xbox passkey',
   'passcode.repeatTitle': 'Repeat code',
   'passcode.mismatch': 'The codes did not match, please try again',
+  'passcode.wayExit': 'Exit to Windows',
+  'passcode.wayExitDetail': 'Windows locks. After you sign in, the normal desktop comes and Mega Hub closes.',
   'passcode.wayTitle': 'How do you want to unlock?',
   'passcode.wayCode': 'Controller code',
   'passcode.wayCodeDetail': 'Enter your Mega Hub code',
