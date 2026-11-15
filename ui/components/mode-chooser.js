@@ -8,14 +8,15 @@ import { push, removePage, render } from '../core/nav.js';
 import { state } from '../core/state.js';
 import { sound } from '../sound.js';
 import { t } from '../core/i18n.js';
+import { getLook } from '../core/look-prefs.js';
 import { listScreens } from '../views/display.js';
 import { confirmDialog } from './overlay.js';
 import { ensureUnlocked } from './passcode.js';
 
 // i18n-used: modeask.couch modeask.couchHint modeask.pc modeask.pcHint
 const CHOICES = [
-  { id: 'couch', picture: 'assets/mode-card-couch.png', label: 'modeask.couch', hint: 'modeask.couchHint' },
-  { id: 'pc', picture: 'assets/mode-card-pc.png', label: 'modeask.pc', hint: 'modeask.pcHint' }
+  { id: 'couch', icon: '🛋️', picture: 'assets/mode-card-couch.png', label: 'modeask.couch', hint: 'modeask.couchHint' },
+  { id: 'pc', icon: '🖥️', picture: 'assets/mode-card-pc.png', label: 'modeask.pc', hint: 'modeask.pcHint' }
 ];
 
 /** Rows, top to bottom: the two modes, the screens, the Next button. */
@@ -36,9 +37,15 @@ export function showModeChooser() {
     screens: [],
     busy: false,
     build(root) {
-      // The two cards are pictures (name and logo are in them); the words stay for screen readers.
-      this.tiles = CHOICES.map((c) => el('li', { className: 'profile-tile mode-card', ariaLabel: `${t(c.label)}. ${t(c.hint)}` },
-        el('img', { className: 'mode-card-picture', src: c.picture, alt: '', draggable: false })));
+      // The original tiles by default; the picture cards (name and logo are in them) when chosen in the setup or the settings.
+      const art = getLook('modeCards') === 'art';
+      this.tiles = CHOICES.map((c) => (art
+        ? el('li', { className: 'profile-tile mode-card', ariaLabel: `${t(c.label)}. ${t(c.hint)}` },
+          el('img', { className: 'mode-card-picture', src: c.picture, alt: '', draggable: false }))
+        : el('li', { className: 'profile-tile' },
+          el('span', { className: 'profile-avatar big', textContent: c.icon }),
+          el('strong', { className: 'profile-name', textContent: t(c.label) }),
+          el('small', { className: 'profile-lock', textContent: t(c.hint) }))));
       this.screenRow = el('ul', { className: 'mode-screens' });
       this.nextBtn = el('button', { className: 'mode-next', type: 'button', textContent: t('modeask.next'), onclick: () => this.next() });
       root.append(el('div', { className: 'profile-picker mode-chooser' },

@@ -32,7 +32,7 @@ import { setPointer } from '../components/mouse.js';
 import { confirmDialog } from '../components/overlay.js';
 import { ensureUnlocked } from '../components/passcode.js';
 import { admitProtectedChange, configFaultNow } from '../core/lock-rules.js';
-import { BG_STYLES, getLook, setLook } from '../core/look-prefs.js';
+import { BG_STYLES, MODE_CARDS, getLook, setLook } from '../core/look-prefs.js';
 import { SOUND_SETS, setAudioMode, setSoundSet, sound } from '../sound.js';
 import { showTermsIfNeeded, termsAccepted, termsPage } from './legal.js';
 import { consoleRevertPage, consoleSetupPage, hasConsoleSetup } from './console-setup.js';
@@ -87,7 +87,7 @@ async function loadEnv() {
 
 const isFull = (env) => env.settings.integrationMode === 'full';
 const lockOn = (env) => !!env.security.couchLock && env.security.couchLock !== 'off';
-// i18n-used: settings.pointer.skin settings.pointer.system settings.pointer.neon settings.pointer.ring settings.pointer.dot settings.bgStyle.classic settings.bgStyle.purple settings.bgStyle.blue settings.bgStyle.red settings.bgStyle.green
+// i18n-used: settings.modeCards.classic settings.modeCards.art settings.pointer.skin settings.pointer.system settings.pointer.neon settings.pointer.ring settings.pointer.dot settings.bgStyle.classic settings.bgStyle.purple settings.bgStyle.blue settings.bgStyle.red settings.bgStyle.green
 const POINTER_KEYS = { skin: 'settings.pointer.skin', system: 'settings.pointer.system', neon: 'settings.pointer.neon', ring: 'settings.pointer.ring', dot: 'settings.pointer.dot' };
 const BG_KEYS = { classic: 'settings.bgStyle.classic', 'neon-purple': 'settings.bgStyle.purple', 'neon-blue': 'settings.bgStyle.blue', 'neon-red': 'settings.bgStyle.red', 'neon-green': 'settings.bgStyle.green' };
 const pointerMode = (s) => (s.pointer === 'system' || ['neon', 'ring', 'dot'].includes(s.pointer) || (s.pointer === 'mouse' && s.mouseUnlocked) ? s.pointer : 'skin');
@@ -344,6 +344,12 @@ function steps(page) {
           id: `bg:${bg}`, row: 2, chip: true, label: t('settings.appearance.bgStyle'),
           title: t(BG_KEYS[bg]), current: getLook('bgStyle') === bg,
           run: () => { setLook('bgStyle', bg); }
+        })),
+        // The start-choice cards: the original tiles stay the default, the picture cards are an extra.
+        ...MODE_CARDS.map((m) => ({
+          id: `modecards:${m}`, row: 3, chip: true, label: t('settings.appearance.modeCards'),
+          title: t(m === 'art' ? 'settings.modeCards.art' : 'settings.modeCards.classic'), current: getLook('modeCards') === m,
+          run: () => { setLook('modeCards', m); }
         }))
       ]
     },

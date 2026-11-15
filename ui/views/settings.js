@@ -829,6 +829,10 @@ const avatarAnimOptions = () => [
   { label: t('settings.avatarAnim.glow'), value: 'glow' },
   { label: t('settings.avatarAnim.off'), value: 'off' }
 ];
+const modeCardOptions = () => [
+  { label: t('settings.modeCards.classic'), detail: t('settings.modeCards.classicDetail'), value: 'classic' },
+  { label: t('settings.modeCards.art'), detail: t('settings.modeCards.artDetail'), value: 'art' }
+];
 const lookLabel = (options, name) => options().find((o) => o.value === getLook(name))?.label;
 
 /** Opens the list for one look and applies the pick at once; `note` says when it shows (the loading screen only at the next start). */
@@ -1716,6 +1720,7 @@ function categories() {
         { kind: 'choice', label: t('settings.appearance.skin'), desc: state.skin.description, value: () => state.skin.name, run: async () => openOverlay(await skinMenu()) },
         { kind: 'choice', label: t('settings.pointer.title'), desc: t('settings.pointer.desc'), value: () => pointerModes(s.mouseUnlocked).find((m) => m.value === pointerMode(s))?.label, run: choosePointer },
         { kind: 'choice', label: t('settings.appearance.bgStyle'), desc: t('settings.appearance.bgStyleDesc'), value: () => lookLabel(bgStyleOptions, 'bgStyle'), run: () => chooseLook('bgStyle', t('settings.appearance.bgStyle'), bgStyleOptions) },
+        { kind: 'choice', label: t('settings.appearance.modeCards'), desc: t('settings.appearance.modeCardsDesc'), value: () => lookLabel(modeCardOptions, 'modeCards'), run: () => chooseLook('modeCards', t('settings.appearance.modeCards'), modeCardOptions) },
         { kind: 'choice', label: t('settings.appearance.bootScene'), desc: t('settings.appearance.bootSceneDesc'), value: () => lookLabel(bootSceneOptions, 'bootScene'), run: () => chooseLook('bootScene', t('settings.appearance.bootScene'), bootSceneOptions, t('settings.appearance.bootSceneNote')) },
         { kind: 'choice', label: t('settings.appearance.avatarAnim'), desc: t('settings.appearance.avatarAnimDesc'), value: () => lookLabel(avatarAnimOptions, 'avatarAnim'), run: () => chooseLook('avatarAnim', t('settings.appearance.avatarAnim'), avatarAnimOptions) },
         action(t('settings.appearance.install'), t('settings.appearance.installDesc'), () => openPage(pluginsPage(1, { expert: !!settings?.expertMode }), t('settings.cat.appearance'))),

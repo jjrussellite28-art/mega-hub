@@ -7,11 +7,13 @@
 
 export const BOOT_SCENES = Object.freeze(['orbital', 'horizon', 'core', 'pulse', 'classic']);
 export const BG_STYLES = Object.freeze(['classic', 'neon-purple', 'neon-blue', 'neon-red', 'neon-green']);
+// The two start-choice cards: the original emoji tiles (default) or the picture cards.
+export const MODE_CARDS = Object.freeze(['classic', 'art']);
 export const AVATAR_ANIMS = Object.freeze(['float', 'bounce', 'pulse', 'wiggle', 'glow', 'off']);
 
-const LISTS = { bootScene: BOOT_SCENES, bgStyle: BG_STYLES, avatarAnim: AVATAR_ANIMS };
-const DEFAULTS = { bootScene: 'orbital', bgStyle: 'classic', avatarAnim: 'float' };
-const KEYS = { bootScene: 'megahub.bootScene', bgStyle: 'megahub.bgStyle', avatarAnim: 'megahub.avatarAnim' };
+const LISTS = { bootScene: BOOT_SCENES, bgStyle: BG_STYLES, avatarAnim: AVATAR_ANIMS, modeCards: MODE_CARDS };
+const DEFAULTS = { bootScene: 'orbital', bgStyle: 'classic', avatarAnim: 'float', modeCards: 'classic' };
+const KEYS = { bootScene: 'megahub.bootScene', bgStyle: 'megahub.bgStyle', avatarAnim: 'megahub.avatarAnim', modeCards: 'megahub.modeCards' };
 
 // What was chosen in this session, for the case that storage cannot keep it.
 const session = {};
