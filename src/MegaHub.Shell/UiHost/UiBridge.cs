@@ -236,7 +236,7 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
                 hud.QuitFromUi();
                 return null;
             case "resetMegaHub":
-                hud.CleanupFromUi(false);
+                await hud.ResetMegaHubAsync();
                 return null;
             case "uninstallMegaHub":
                 hud.CleanupFromUi(true);

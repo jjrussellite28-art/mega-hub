@@ -101,9 +101,10 @@ const wipeRow = (id, run) => {
     desc: text('Desc'),
     hint: text('Hint'),
     run: async () => {
+      // The controller code first, then the warning that everything goes.
+      if (!(await ensureUnlocked(text('')))) return;
       if (!(await confirmDialog(text('Title'), text(''), { danger: true, message: text('Message'), focusCancel: true }))) return;
       if (!(await confirmDialog(t('settings.power.sure'), t('settings.power.sureYes'), { danger: true, message: t('settings.power.sureMessage'), focusCancel: true }))) return;
-      if (!(await ensureUnlocked(text('')))) return;
       await attempt(run, text(''));
     }
   };

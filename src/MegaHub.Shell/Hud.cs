@@ -8480,6 +8480,24 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     /// "...\MegaHub" in the user's AppData is ever deleted.
     /// </summary>
     [SecondFactorExempt("behind RequireUnlocked and the parents' code in the UI; the script only deletes this user's own settings folder")]
+    /// <summary>
+    /// Factory reset from the UI: the codes the service holds go first (a new couch code is needed after the reset, no "code from before is
+    /// still valid" question), then the same cleanup as before. A service that does not answer does not stop the reset (the settings go anyway).
+    /// </summary>
+    public async Task ResetMegaHubAsync()
+    {
+        RequireUnlocked();
+        if (ServiceCodes.Expected && !AdminService.DevMayRelax(dev))
+        {
+            foreach (var kind in new[] { MegaHub.Service.Contracts.CodeKinds.Parent, MegaHub.Service.Contracts.CodeKinds.Couch })
+            {
+                try { await ServiceCodes.RemoveAsync(kind); }
+                catch (Exception ex) { Console.Error.WriteLine($"[hud] reset: {kind} code not removed: {ex.Message}"); }
+            }
+        }
+        CleanupFromUi(false);
+    }
+
     public void CleanupFromUi(bool uninstall)
     {
         RequireUnlocked();
