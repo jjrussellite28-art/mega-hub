@@ -1717,6 +1717,7 @@ window.megahub = {
   profileIdle: async () => null,
   addProfile: async (name, avatar, color, restricted) => (mockProfiles.push({ id: `p${mockProfiles.length}`, name, avatar, color, restricted, hasCode: false, isDefault: false, active: false }), mockProfilesView()),
   renameProfile: async (id, name) => (mockProfile(id).name = name, mockProfilesView()),
+  setCustomSound: async (name, path) => ({ ...(path ? { [name]: { name: path.split(/[\\/]/).pop(), url: 'https://local.megahub/mock.wav' } } : {}) }),
   profileAvatarFromFile: async () => 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAAAP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==',
   setProfileLook: async (id, avatar, color) => (Object.assign(mockProfile(id), { avatar, color }), mockProfilesView()),
   setProfileRestricted: async (id, restricted) => (Object.assign(mockProfile(id), { restricted, hasCode: restricted && mockProfile(id).hasCode }), mockProfilesView()),

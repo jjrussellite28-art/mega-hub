@@ -121,7 +121,7 @@ public static class FeatureAreas
         "displayOn", "displayOff", "screenOverlay", "getSecurity", "getServiceStatus", "repairService", "resetCodeStore", "resetServiceState", "getParental", "setParental",
         "setParentalItemLock", "resetParentalAllChildrenLocks", "parentalCheck", "parentalExtend", "parentalAuth", "confirmWindowsUnlock", "parentalReset",
         "parentalAcceptClock", "parentalAdoptZone", "parentalCloseGame", "getProfiles", "switchProfile", "profileScreen", "profileIdle",
-        "addProfile", "renameProfile", "setProfileLook", "profileAvatarFromFile", "setProfileRestricted", "setProfileCode", "removeProfile", "getProfileRules",
+        "addProfile", "renameProfile", "setProfileLook", "profileAvatarFromFile", "setCustomSound", "setProfileRestricted", "setProfileCode", "removeProfile", "getProfileRules",
         "setProfileRule", "unlock", "windowsSignIn", "setPasscode", "setCouchLock", "setParentCode", "readClipboard",
         "holdUnlockForSetup", "setBlockTaskManager", "openAutoLogonDialog", "enableAutoLogon", "setAutoLogon",
         // Sound, controllers, batteries, display, performance, captures and screenshots.

@@ -16,7 +16,8 @@ import { cycleBar, handleChip } from './core/bar-chips.js';
 import { closeOverlay, handleOverlay, openOverlay } from './components/overlay.js';
 import { Input } from './input.js';
 import { attachMouse, hide as hideMouse, setPointer } from './components/mouse.js';
-import { setAudioMode, setFocusActive, setGameRunning, setHaptics, setMusicVolume, setSoundSet, setSoundVolume, sound } from './sound.js';
+import { setAudioMode, setFocusActive, setGameRunning, setHaptics, setMusicVolume, setSoundSet, setSoundVolume, setUserSounds, sound } from './sound.js';
+import { soundUrls } from './core/custom-sounds.js';
 import { startHdr } from './core/hdr.js';
 import { refreshMotion, setMotionActive, startMotion } from './core/motion.js';
 import { hideLaunch, launchFocus, launchInput, launchSession, launchTimedOut } from './components/launch-overlay.js';
@@ -280,6 +281,7 @@ async function init() {
   setSoundVolume((state.info.soundVolume ?? 70) / 100);
   setMusicVolume((state.info.musicVolume ?? 35) / 100);
   setSoundSet(state.info.soundSet || null);
+  setUserSounds(soundUrls(state.info.customSounds));
   configureScreensaver({ minutes: state.info.screensaverMinutes ?? 5, style: state.info.screensaverStyle ?? 'art', displayOff: state.info.displayOffMinutes ?? 0, pixelShift: state.info.pixelShift ?? true });
   startHdr();
   startMotion();
@@ -351,6 +353,7 @@ async function init() {
     setSoundVolume((s.soundVolume ?? 70) / 100);
     setMusicVolume((s.musicVolume ?? 35) / 100);
     setSoundSet(s.soundSet || null);
+    setUserSounds(soundUrls(s.customSounds));
     state.info.trailerPreviews = s.trailerPreviews;
     state.info.reduceMotion = s.reduceMotion;
     state.info.pointer = s.pointer;

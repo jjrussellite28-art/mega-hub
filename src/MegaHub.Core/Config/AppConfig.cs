@@ -258,6 +258,12 @@ public sealed class AppConfig
     /// <summary>Older versions: client id → start with MegaHub (false = off). Read only, replaced by <see cref="LauncherModes"/> at the first change.</summary>
     public Dictionary<string, bool> LauncherAutostart { get; set; } = new();
 
+    /// <summary>The person's own sound files: event name (see <see cref="CustomSoundEvents"/>) → file on a local drive. They win over the sound set.</summary>
+    public Dictionary<string, string> CustomSounds { get; set; } = new();
+
+    /// <summary>The events a sound file can be chosen for ("music" is the background music).</summary>
+    public static readonly IReadOnlyList<string> CustomSoundEvents = ["music", "move", "tab", "select", "back", "bump", "open"];
+
     /// <summary>"off", "ui" (sounds only) or "music" (sounds and background music).</summary>
     public string AudioMode { get; set; } = "ui";
 

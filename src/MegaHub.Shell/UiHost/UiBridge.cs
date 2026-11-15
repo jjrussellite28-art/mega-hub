@@ -578,6 +578,8 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
                 return hud.RenameProfile(StringArg(0), StringArg(1));
             case "setProfileLook":
                 return hud.SetProfileLook(StringArg(0), StringArg(1), StringArg(2));
+            case "setCustomSound":
+                return hud.SetCustomSound(StringArg(0), StringArg(1));
             case "profileAvatarFromFile":
                 return await hud.ProfileAvatarFromFileAsync(StringArg(0));
             case "setProfileRestricted":

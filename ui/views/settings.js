@@ -17,7 +17,9 @@ import { currentView, move, push, render, renderHints } from '../core/nav.js';
 import { state } from '../core/state.js';
 import { glyph, setPadGlyphs } from '../core/skins.js';
 import { PAD_GLYPH_SETTINGS } from '../core/pad-glyphs.js';
-import { SOUND_SETS, setAudioMode, setMusicVolume, setSoundSet, setSoundVolume, sound } from '../sound.js';
+import { SOUND_SETS, setAudioMode, setMusicVolume, setSoundSet, setSoundVolume, setUserSounds, sound } from '../sound.js';
+import { CUSTOM_SOUND_EVENTS, SOUND_FILES, soundUrls } from '../core/custom-sounds.js';
+import { openFileBrowser } from '../components/file-browser.js';
 import { setHdrMode } from '../core/hdr.js';
 import { setPointer } from '../components/mouse.js';
 import { getLook, setLook } from '../core/look-prefs.js';
@@ -1448,6 +1450,38 @@ function displayCategoryItems(s) {
   return out;
 }
 
+// i18n-used: settings.audio.own.music settings.audio.own.move settings.audio.own.tab settings.audio.own.select settings.audio.own.back settings.audio.own.bump settings.audio.own.open
+const OWN_KEYS = {
+  music: 'settings.audio.own.music', move: 'settings.audio.own.move', tab: 'settings.audio.own.tab', select: 'settings.audio.own.select',
+  back: 'settings.audio.own.back', bump: 'settings.audio.own.bump', open: 'settings.audio.own.open'
+};
+const ownLabel = (event) => t(OWN_KEYS[event]);
+
+/** Your own sound files: pick the event, then a file from this PC (or take it away again). */
+async function chooseOwnSound(s) {
+  for (;;) {
+    const own = s.customSounds ?? {};
+    const event = await chooseDialog(t('settings.audio.own'), CUSTOM_SOUND_EVENTS.map((e) => ({
+      label: ownLabel(e), detail: own[e]?.name ?? t('settings.audio.ownNone'), value: e
+    })));
+    if (event === undefined) return;
+    const what = await chooseDialog(ownLabel(event), [
+      { label: t('settings.audio.ownPick'), value: 'pick' },
+      ...(own[event] ? [{ label: t('settings.audio.ownClear'), value: 'clear' }] : [])
+    ]);
+    if (what === undefined) continue;
+    const path = what === 'pick' ? await openFileBrowser({ title: ownLabel(event), mode: 'file', extensions: SOUND_FILES }) : '';
+    if (path === undefined) continue;
+    const view = await attempt(() => api.setCustomSound(event, path), t('settings.common.notSaved'));
+    if (!view) continue;
+    s.customSounds = view;
+    settings.customSounds = view;
+    setUserSounds(soundUrls(view));
+    sound.select();
+    render();
+  }
+}
+
 function audioItems(s) {
   const mode = s.audioMode ?? 'ui';
   return [
@@ -1489,6 +1523,13 @@ function audioItems(s) {
         setSoundVolume(v / 100);
         sound.select();
       }
+    }] : []),
+    ...(mode !== 'off' ? [{
+      kind: 'choice',
+      label: t('settings.audio.own'),
+      desc: t('settings.audio.ownDesc'),
+      value: () => String(Object.keys(s.customSounds ?? {}).length || t('settings.common.off')),
+      run: () => chooseOwnSound(s)
     }] : []),
     toggle('autoSwitchHeadphones', t('settings.audio.headphones'), t('settings.audio.headphonesDesc')),
     ...(mode !== 'off' ? expert({

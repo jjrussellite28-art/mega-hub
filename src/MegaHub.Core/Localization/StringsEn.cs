@@ -325,6 +325,7 @@ public static partial class Strings
         ["hud.range"] = "{0}: {1} to {2}",
         ["hud.remoteFailed"] = "Phone connection won't start (port {0} in use?)",
         ["hud.setCodeFirst"] = "Set a code first",
+        ["settings.customSoundInvalid"] = "That is not a usable sound file (a .wav, .ogg or .mp3 on a drive of this PC, not too big).",
         ["hud.codeLockWithoutCode"] = "The Mega Hub service took the code lock but holds no couch code. Mega Hub therefore does not take the code lock over; set the code again",
         ["hud.codeLockUnconfirmed"] = "The Mega Hub service did not confirm that it holds the couch code (no answer). Mega Hub therefore does not take the code lock over; try again",
         ["hud.shellEntry"] = "Shell entry",

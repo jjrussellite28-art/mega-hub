@@ -44,6 +44,13 @@ export function setSkinSounds(skinId, files = null, soundSet = null) {
 }
 
 /** null follows the skin; a set id uses that set for every skin. */
+/** The person's own files { music: url, move: url, … } (Settings › Sound): they win over the skin's and the set's sounds. */
+let userFiles = null;
+export function setUserSounds(files) {
+  userFiles = files && Object.keys(files).length ? files : null;
+  updateMusic();
+}
+
 export function setSoundSet(id) {
   id = migrateSoundSetId(id);
   forcedSet = id && SETS[id] ? id : null;
@@ -232,6 +239,10 @@ function play(event) {
   if (!enabled || volume === 0 || !focused) return;
   try {
     // A user skin's own file wins; the synth set is the fallback.
+    if (userFiles?.[event]) {
+      playFile(userFiles[event]).then((ok) => ok || synth(event)).catch(() => {});
+      return;
+    }
     if (!forcedSet && customFiles?.[event]) {
       playFile(customFiles[event]).then((ok) => ok || synth(event)).catch(() => {});
       return;
@@ -335,7 +346,7 @@ document.addEventListener('visibilitychange', () => updateMusic());
 function updateMusic() {
   const setId = forcedSet ?? activeSet;
   const want = wantsMusic();
-  if (want && (!musicTimer || musicSet !== setId || musicFile !== (customFiles?.music ?? null))) startMusic(setId);
+  if (want && (!musicTimer || musicSet !== setId || musicFile !== (userFiles?.music ?? customFiles?.music ?? null))) startMusic(setId);
   else if (!want && musicTimer) stopMusic();
 }
 
@@ -345,7 +356,7 @@ function startMusic(setId) {
     const c = audio();
     if (c.state === 'suspended') c.resume().catch(() => {});
     musicSet = setId;
-    musicFile = forcedSet ? null : customFiles?.music ?? null;
+    musicFile = userFiles?.music ?? (forcedSet ? null : customFiles?.music ?? null);
     musicBus = c.createGain();
     musicBus.gain.setValueAtTime(0.0001, c.currentTime);
     musicBus.gain.setTargetAtTime(musicVolume * 0.5, c.currentTime, 1.2); // slow fade in

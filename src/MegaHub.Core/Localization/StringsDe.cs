@@ -325,6 +325,7 @@ public static partial class Strings
         ["hud.range"] = "{0}: {1} bis {2}",
         ["hud.remoteFailed"] = "Handy-Verbindung startet nicht (Port {0} belegt?)",
         ["hud.setCodeFirst"] = "Bitte zuerst einen Code festlegen",
+        ["settings.customSoundInvalid"] = "Das ist keine brauchbare Sounddatei (.wav, .ogg oder .mp3 auf einem Laufwerk dieses PCs, nicht zu groß).",
         ["hud.codeLockWithoutCode"] = "Der Mega-Hub-Dienst hat die Codesperre eingetragen, hält aber keinen Couch-Code. Mega Hub übernimmt die Codesperre deshalb nicht; bitte den Code noch einmal festlegen",
         ["hud.codeLockUnconfirmed"] = "Der Mega-Hub-Dienst hat nicht bestätigt, dass er den Couch-Code hält (keine Antwort). Mega Hub übernimmt die Codesperre deshalb nicht; bitte noch einmal versuchen",
         ["hud.shellEntry"] = "Shell-Eintrag",

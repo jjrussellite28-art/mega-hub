@@ -2770,6 +2770,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             sounds = c.ActiveProfile.Sounds,
             audioMode = c.ActiveProfile.AudioMode,
             musicVolume = c.ActiveProfile.MusicVolume,
+            customSounds = CustomSoundView(c),
             guideTapInGame = c.GuideTapInGame,
             autoLogonDeclined = c.AutoLogonDeclined,
             suppressCompetitors = c.SuppressCompetitors,
@@ -8408,6 +8409,39 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         // Awaited, after the policies: the answer below says what the service holds now (the setup assistant checks the code lock by it).
         if (service) await ServiceCodes.RefreshAsync();
         return GetSecurity();
+    }
+
+    /// <summary>The own sound files for the UI: event → file name (to show) and address (to play, through the local-file host).</summary>
+    private static Dictionary<string, object> CustomSoundView(AppConfig c)
+    {
+        var view = new Dictionary<string, object>();
+        foreach (var (name, path) in c.CustomSounds)
+        {
+            if (!AppConfig.CustomSoundEvents.Contains(name) || !MegaHub.Core.Files.LocalPaths.IsAllowed(path) || !File.Exists(path)) continue;
+            view[name] = new { name = Path.GetFileName(path), url = MegaHub.Shell.UiHost.LocalFiles.Rewrite(new Uri(path).AbsoluteUri) };
+        }
+        return view;
+    }
+
+    /// <summary>One of the person's own sound files (an empty path takes it away again). Only a sound file on a local drive of a sensible size.</summary>
+    public object SetCustomSound(string name, string path)
+    {
+        RefuseWhileConfigFaulted();
+        if (!AppConfig.CustomSoundEvents.Contains(name)) throw new ArgumentException(Strings.Get("settings.customSoundInvalid"));
+        if (path.Length > 0)
+        {
+            var ext = Path.GetExtension(path);
+            var okExt = ext.Equals(".wav", StringComparison.OrdinalIgnoreCase) || ext.Equals(".ogg", StringComparison.OrdinalIgnoreCase) || ext.Equals(".mp3", StringComparison.OrdinalIgnoreCase);
+            var limit = name == "music" ? 200L * 1024 * 1024 : 8L * 1024 * 1024;
+            if (!okExt || !MegaHub.Core.Files.LocalPaths.IsAllowed(path, MegaHub.Core.Files.LocalPaths.IsNetworkDrive) || !File.Exists(path) || new FileInfo(path).Length > limit)
+                throw new ArgumentException(Strings.Get("settings.customSoundInvalid"));
+        }
+        config.UpdateOrThrow(c =>
+        {
+            if (path.Length == 0) c.CustomSounds.Remove(name);
+            else c.CustomSounds[name] = path;
+        });
+        return CustomSoundView(config.Current);
     }
 
     public object SetBlockTaskManager(bool on)
