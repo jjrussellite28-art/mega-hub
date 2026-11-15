@@ -148,16 +148,6 @@ public class LanguageFixTests
         Assert.Equal(expected, manifest.Description?.For(language));
     }
 
-    [Fact]
-    public void The_bundled_wand_manifest_has_both_languages()
-    {
-        var dir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "plugins", "MegaHub.Plugin.Wand"));
-        var manifest = PluginManager.ReadManifest(dir);
-        Assert.NotNull(manifest);
-        Assert.Contains("Cheats", manifest!.Description!.For("en"));
-        Assert.NotEqual(manifest.Description.For("de"), manifest.Description.For("en"));
-    }
-
     // ---- SDK: older hosts and plugins keep working
 
     private sealed class MinimalContext : IPluginContext

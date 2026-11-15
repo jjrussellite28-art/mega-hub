@@ -142,17 +142,12 @@ public sealed partial class Hud
 
     // Mega Hub's own News tab: with no news plugin loaded, the feeds the person added are read here (RSS and Atom, plain text only).
     private const int MaxOwnFeeds = 30;
-    private static readonly HttpClient NewsHttp = MakeNewsHttp();
+    private HttpClient? _newsHttp;
+    // Through the gate (Offline stops it); the feeds are the person's own choice, so no switch of a plugin applies.
+    private HttpClient NewsHttp => _newsHttp ??= MegaHub.Core.Net.NetGate.CreateClient(MegaHub.Core.Net.NetService.Plugin, net, TimeSpan.FromSeconds(12), userAgent: "MegaHub-News/1.0");
     private readonly object _ownNewsGate = new();
     private List<PluginNewsItem> _ownNews = [];
     private DateTimeOffset _ownNewsAt = DateTimeOffset.MinValue;
-
-    private static HttpClient MakeNewsHttp()
-    {
-        var http = new HttpClient(new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.All, MaxAutomaticRedirections = 4 }) { Timeout = TimeSpan.FromSeconds(12) };
-        http.DefaultRequestHeaders.UserAgent.ParseAdd("MegaHub-News/1.0");
-        return http;
-    }
 
     private IReadOnlyList<PluginNewsFeed> OwnFeeds() =>
         (config.Current.OwnNewsFeeds ?? []).Where(f => f?.Url is not null && HttpUrl(f.Url) is not null)
