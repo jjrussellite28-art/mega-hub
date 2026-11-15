@@ -8,7 +8,7 @@ import { render, removePage } from '../core/nav.js';
 import { state } from '../core/state.js';
 import { sound } from '../sound.js';
 import { t } from '../core/i18n.js';
-import { confirmDialog } from './overlay.js';
+import { chooseDialog, confirmDialog } from './overlay.js';
 import { CODE_KEYS, padHelp, shouldShowCodeKeys, withTimeout } from '../core/input-help.js';
 import { REPORT_REFRESH_MS, changeReporter, codeEntryTracker } from '../core/screenshot-rules.js';
 
@@ -230,8 +230,8 @@ export async function isLocked() {
 }
 
 /**
- * True once the couch lock lets the user through. Mega Hub's rule: the Windows sign-in (PIN or password) AND the Mega Hub code, and then
- * it stays open without a timer (the host ends it after the lid was closed about 3 minutes, a shutdown or restart; the Lock button ends it too).
+ * True once the couch lock lets the user through. Mega Hub's rule: the Mega Hub code OR the Windows sign-in (PIN or password), whichever the
+ * person chooses, and then it stays open without a timer (the host ends it after the lid was closed about 3 minutes, a shutdown or restart; the Lock button ends it too).
  * Everyone asking at the same time waits for the same unlock.
  */
 export async function ensureUnlocked(reason = '') {
@@ -274,13 +274,27 @@ async function runFullUnlock(security, reason) {
     if (asked?.pending === false) pendingWindowsUnlocks = pendingWindowsUnlocks.filter((e) => e.reason !== reason);
     if (!(asked?.pending === false ? false : await unlocked)) return false;
   } else {
-    // 1: the Windows sign-in. A host that cannot ask for it (no service) does not block the unlock.
-    if (!(await signInIfPossible(reason))) return false;
-    // 2: the Mega Hub code (one entry at a time).
+    // Either way opens it: the Mega Hub code, or the Windows sign-in (PIN or password).
+    const way = await chooseDialog(t('passcode.wayTitle'), [
+      { label: t('passcode.wayCode'), detail: t('passcode.wayCodeDetail'), icon: '🔢', value: 'code' },
+      { label: t('passcode.wayWindows'), detail: t('passcode.wayWindowsDetail'), icon: '🪟', value: 'windows' }
+    ], 'code');
+    if (way === undefined) return false;
+    if (way === 'windows') {
+      if (!(await signInIfPossible(reason))) return false;
+      // The sign-in opened the couch (the host did it after the confirmation). A host that cannot ask for it (no service) opened nothing:
+      // then the code is the way.
+      const now = await attempt(() => api.getSecurity());
+      if (now?.unlocked) {
+        await attempt(() => api.unlockFully?.());
+        return true;
+      }
+    }
+    // The Mega Hub code (one entry at a time).
     codeEntry ??= askForCode(reason).finally(() => { codeEntry = null; });
     if (!(await codeEntry)) return false;
   }
-  // Both given: it stays open (the code's own two minutes would end it).
+  // Opened: it stays open (the code's own two minutes would end it).
   await attempt(() => api.unlockFully?.());
   return true;
 }
