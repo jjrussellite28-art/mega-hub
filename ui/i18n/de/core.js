@@ -35,6 +35,7 @@ export default {
   'unlockChip.unlockTitle': 'Mega Hub entsperren: Windows-Anmeldung und Mega-Hub-Code',
   'unlockChip.lockTitle': 'Mega Hub wieder sperren',
   'unlockChip.openTitle': 'Entsperrt',
+  'unlockChip.notUnlocked': 'Noch gesperrt',
   'unlockChip.locked': 'Gesperrt',
   'unlockChip.unlocked': 'Entsperrt: bleibt offen, bis der Deckel länger zu ist oder der PC heruntergefahren oder neu gestartet wird',
   'feedback.unlockNow': 'Jetzt entsperren',

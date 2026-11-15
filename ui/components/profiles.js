@@ -157,6 +157,7 @@ export async function showPicker({ required = false } = {}) {
         const tile = el('li', { className: 'profile-tile' },
           avatarEl(p, true),
           el('strong', { className: 'profile-name', textContent: nameOf(p) }),
+          el('small', { className: 'profile-role', textContent: kidProfile(p) ? t('profiles.child') : t('profiles.adult') }),
           el('small', { className: 'profile-lock', textContent: p.hasCode ? '🔒' : kidProfile(p) ? '⏳' : '' }));
         // The card takes the profile's color (one of the fixed presets, see colorOf).
         tile.style.setProperty('--profile-color', colorOf(p));
@@ -167,18 +168,38 @@ export async function showPicker({ required = false } = {}) {
         el('p', { className: 'profile-greeting', textContent: greeting() }),
         el('h2', { textContent: t('profiles.pickerTitle') }),
         el('p', { className: 'meta', textContent: d?.gameRunning ? t('profiles.gameRunningHint') : d?.exhausted ? t('profiles.exhaustedHint') : t('profiles.pickerHint') }),
-        el('ul', { className: 'profile-tiles' }, this.tiles)));
+        el('ul', { className: 'profile-tiles' }, this.tiles),
+        this.manageBtn = el('button', { className: 'profile-manage', type: 'button', textContent: t('profiles.managePicker'), onclick: () => this.handle('manage') })));
       this.update();
     },
     update() {
-      if (this.tiles?.length) setFocused(this.tiles, this.index);
+      if (this.tiles?.length) setFocused(this.tiles, this.onManage ? -1 : this.index);
+      this.manageBtn?.classList.toggle('focused', !!this.onManage);
     },
     async handle(action) {
       if (this.busy) return;
       switch (action) {
-        case 'left': return move(this, -1, this.list.length, true);
-        case 'right': return move(this, 1, this.list.length, true);
+        case 'left': if (this.onManage) return; return move(this, -1, this.list.length, true);
+        case 'right': if (this.onManage) return; return move(this, 1, this.list.length, true);
+        case 'down':
+          if (this.required || this.onManage) return;
+          this.onManage = true;
+          sound.move?.();
+          return this.update();
+        case 'up':
+          if (!this.onManage) return;
+          this.onManage = false;
+          sound.move?.();
+          return this.update();
+        case 'manage': {
+          if (this.required) return sound.bump();
+          sound.select();
+          removePage(this);
+          this.onClose();
+          return openProfilesPage(push);
+        }
         case 'a': {
+          if (this.onManage) return this.handle('manage');
           const p = this.list[this.index];
           if (!p) return;
           sound.select();
@@ -201,7 +222,7 @@ export async function showPicker({ required = false } = {}) {
       }
     },
     hints() {
-      return this.required ? [['A', t('profiles.hintChoose')]] : [['A', t('profiles.hintChoose')], ['B', t('profiles.hintBack')]];
+      return this.required ? [['A', t('profiles.hintOpen')], ['↔', t('profiles.hintChoose')]] : [['A', t('profiles.hintOpen')], ['↔', t('profiles.hintChoose')], ['↓', t('profiles.managePicker')], ['B', t('profiles.hintBack')]];
     }
   };
   picker = page;

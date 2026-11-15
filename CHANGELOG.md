@@ -2,6 +2,11 @@
 
 Ein Abschnitt je Version, gegliedert nach Bereichen, erst Deutsch, dann Englisch. / One section per version, starting with a short summary (Kurz / Summary), then grouped by area, German first, then English.
 
+## 0.8.0 (in Arbeit / in progress)
+
+- Einrichtung: eigenes Vollbild-Fenster ohne Reiter, Glocke und Entsperren-Knopf (nur die Uhr); kürzere Texte; Seite „Pause services“ entfällt (Sperr-Hilfsaufgaben werden automatisch angelegt); „Programme beim Start“ mit zwei Wahlen; letzte Seite mit Dank an kewe87. Profilauswahl mit Rollenanzeige und „Profile verwalten“. Entsperren-Knopf antwortet immer.
+- Setup: own full-screen window without tabs, bell and unlock button (only the clock); shorter texts; the "Pause services" page is gone (the lock's helper tasks are set up automatically); "Programs at start" with two choices; a last page thanking kewe87. Profile picker with role label and "Manage profiles". The Unlock button always answers.
+
 ## 0.7.1 (2026-11-04)
 
 ### Kurz / Summary

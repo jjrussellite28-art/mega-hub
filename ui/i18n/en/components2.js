@@ -79,6 +79,7 @@ export default {
   'passcode.repeatTitle': 'Repeat code',
   'passcode.mismatch': 'The codes did not match, please try again',
   'passcode.signInWindows': 'Please sign in to Windows',
+  'passcode.again': 'Starting the unlock again …',
   'passcode.wrong': 'Wrong code',
   'passcode.adminFallback': 'Too many wrong parents\' codes. Have an administrator of this PC confirm instead? Windows asks with its own User Account Control.',
   'passcode.adminFallbackNoCode': 'The Mega Hub service has no parents\' code yet (it is set with the next new code). Have an administrator of this PC confirm now? Windows asks with its own User Account Control.',

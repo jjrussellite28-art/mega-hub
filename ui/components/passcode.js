@@ -237,6 +237,13 @@ export async function isLocked() {
 export async function ensureUnlocked(reason = '') {
   const security = await attempt(() => api.getSecurity());
   if (!security || security.unlocked) return true;
+  // Pressed again while the Windows sign-in is still awaited: nothing seems to happen from the couch, so this press starts the unlock over
+  // (the old wait ends) instead of joining a wait that may never end.
+  if (fullUnlock && pendingWindowsUnlocks.length) {
+    cancelPendingUnlock();
+    toast(t('passcode.again'), 3000);
+    await fullUnlock.catch(() => false);
+  }
   fullUnlock ??= runFullUnlock(security, reason).finally(() => { fullUnlock = null; });
   const ok = await fullUnlock;
   if (ok) (await import('../core/unlock-chip.js')).refreshUnlockChip();
@@ -244,6 +251,14 @@ export async function ensureUnlocked(reason = '') {
 }
 
 let fullUnlock = null;
+
+/** Ends a wait for a Windows sign-in that has not come (the host drops it after three minutes anyway); the next unlock starts fresh. */
+export function cancelPendingUnlock() {
+  const waiting = pendingWindowsUnlocks;
+  pendingWindowsUnlocks = [];
+  for (const entry of waiting) entry.resolve(false);
+  return waiting.length > 0;
+}
 
 async function runFullUnlock(security, reason) {
   if (security.couchLock === 'windows') {

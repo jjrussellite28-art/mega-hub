@@ -154,6 +154,15 @@ function steps(page) {
         }
       }))
     },
+    credit: {
+      // The last page of a first run: a thank-you to the creator of the app this one grew from (gold, see styles).
+      glyph: '★',
+      title: () => t('wizard.credit.title'),
+      lead: () => t('wizard.credit.lead'),
+      later: () => t('wizard.credit.note'),
+      note: () => t('wizard.credit.note'),
+      options: () => [{ id: 'continue', button: true, action: true, primary: true, safe: true, title: t('wizard.credit.go'), sub: t('wizard.credit.goSub'), run: () => page.afterCredit() }]
+    },
     terms: {
       // The existing first-start notice is this step: same texts, same accept and decline.
       enter: () => page.openTerms()
@@ -279,6 +288,7 @@ function steps(page) {
     }),
     autologon: explainStep('autologon', {
       later: () => where('settings.cat.console', 'settings.mode.title'),
+      note: () => t('wizard.x.autologon.note'),
       choices: () => [
         ['safe', true, decide(() => { ch.autologon = false; })],
         ['go', false, decide(() => { ch.autologon = true; })]
@@ -289,13 +299,6 @@ function steps(page) {
       choices: () => [
         ['safe', true, decide(() => { ch.launchers = false; })],
         ['go', false, decide(() => { ch.launchers = true; })]
-      ]
-    }),
-    services: explainStep('services', {
-      later: () => where('settings.cat.startup'),
-      choices: () => [
-        ['safe', true, decide(() => { ch.services = false; })],
-        ['go', false, decide(() => { ch.services = true; })]
       ]
     }),
     look: {
@@ -370,18 +373,15 @@ function steps(page) {
       later: () => where('settings.cat.startup'),
       options: () => [
         { id: 'off', icon: '🧹', title: t('wizard.startup.off'), bullets: [t('wizard.startup.off1'), t('wizard.startup.off2')] },
-        { id: 'clean', icon: '✨', title: t('wizard.startup.clean'), bullets: [t('wizard.startup.clean1'), t('wizard.startup.clean2')] },
         { id: 'on', icon: '▶', title: t('wizard.startup.on'), bullets: [t('wizard.startup.on1'), t('wizard.startup.on2')] }
       ].map((o) => ({
         ...o,
-        current: !env.settings.runStartupApps === (o.id !== 'on') && !!env.settings.closeAllAppsOnReturn === (o.id === 'clean'),
+        current: !env.settings.runStartupApps === (o.id !== 'on'),
         run: async () => {
           if (!(await save('runStartupApps', o.id === 'on'))) return;
           env.settings.runStartupApps = o.id === 'on';
-          // "clean": also close the other programs (browsers …) like a click on the X when returning to the couch.
-          const closeAll = o.id === 'clean';
-          if (!(await save('closeAllAppsOnReturn', closeAll))) return;
-          env.settings.closeAllAppsOnReturn = closeAll;
+          if (!(await save('closeAllAppsOnReturn', false))) return;
+          env.settings.closeAllAppsOnReturn = false;
           return 'next';
         }
       }))
@@ -635,6 +635,13 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
       // What the mode question counts as "set up" (the card says "Already set up" without a sign-in that was declined).
       if (this.intent === 'full' && applies('autologon', this.ctx())) await save('autoLogonDeclined', !this.choices.autologon);
       this.results = results;
+      // A first run ends with the thank-you page, then the app (or the flow that was chosen).
+      if (this.firstRun) return this.go('credit');
+      return this.afterCredit();
+    },
+
+    /** What follows "Apply" (after the thank-you page on a first run): the chosen flow, or the assistant's own result page. */
+    async afterCredit() {
       if (this.intent && termsAccepted()) return this.finish({ runIntent: true });
       // The marker means nothing for security: if it cannot be saved (a toast said so), the assistant goes on.
       if (await save('setupWizardDone', WIZARD_VERSION)) state.info.setupWizardDone = WIZARD_VERSION;
@@ -703,7 +710,7 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
       this.options = this.loaded ? def.options() : [];
       if (this.index < 0 || this.index >= this.options.length) this.index = defaultIndex(this.options);
       const order = this.order().filter((s) => s !== 'terms' || this.withTerms);
-      const at = this.step === 'result' ? order.length : order.indexOf(this.step);
+      const at = this.step === 'result' || this.step === 'credit' ? order.length : order.indexOf(this.step);
       const dots = el('ol', { className: 'wizard-dots', ariaLabel: t('wizard.progress', { n: Math.min(at, order.length - 1) + 1, total: order.length }) },
         order.map((s, i) => el('li', { className: i < at ? 'done' : i === at ? 'active' : '' })));
 
@@ -747,7 +754,7 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
     /** The reading part of an explanation, summary or result page; scrolls with up/down and the right stick. */
     docBody(def) {
       const parts = def.layout === 'explain' ? this.explainParts(def) : def.layout === 'summary' ? this.summaryParts(def) : this.resultParts();
-      this.doc = el('div', { className: `wizard-doc wizard-doc-${def.layout}` }, parts);
+      this.doc = el('div', { className: `wizard-doc wizard-doc-${def.layout}${EXPLAINS[def.explain]?.big ? ' wizard-doc-big' : ''}` }, parts);
       this.doc.addEventListener('scroll', () => this.updateMore(), { passive: true });
       return this.doc;
     },
@@ -774,7 +781,7 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
     /** What will change on the PC, what was chosen, and the way back. */
     summaryParts() {
       const plan = summaryPlan(this.ctx());
-      const needsAdmin = plan.changes.some((c) => ['shell', 'revert', 'autologon', 'services'].includes(c));
+      const needsAdmin = plan.changes.some((c) => ['shell', 'revert', 'autologon'].includes(c));
       return [
         el('section', { className: 'wizard-doc-col' },
           el('h3', { textContent: t('wizard.sum.changesHead') }),

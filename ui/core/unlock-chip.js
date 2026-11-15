@@ -67,7 +67,9 @@ export async function toggleLock() {
     toast(t('unlockChip.locked'));
   } else {
     const { ensureUnlocked } = await import('../components/passcode.js');
+    // Always an answer: unlocked, or still locked (the code screen was closed, the sign-in did not come).
     if (await ensureUnlocked(t('unlockChip.unlock'))) toast(t('unlockChip.unlocked'), 4000);
+    else toast(t('unlockChip.notUnlocked'), 3000);
   }
   await refreshUnlockChip();
 }

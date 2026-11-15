@@ -9,6 +9,8 @@ export default {
   'profiles.pickerHint': 'Choose a profile',
   'profiles.gameRunningHint': 'The profile cannot be switched while a game is running.',
   'profiles.exhaustedHint': 'Time is up: another profile only with the parent code.',
+  'profiles.managePicker': 'Manage profiles',
+  'profiles.hintOpen': 'Open profile',
   'profiles.hintChoose': 'Choose',
   'profiles.hintBack': 'Back',
   'profiles.hintEdit': 'Edit',

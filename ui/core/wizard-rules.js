@@ -9,7 +9,7 @@ import { lockStepStatus } from './lock-rules.js';
 /** All steps in the order they are asked. Which of them apply right now is decided by applies(). */
 export const SEQUENCE = [
   'welcome', 'terms', 'areas', 'updates', 'mode',
-  'revert', 'shell', 'lock', 'autologon', 'launchers', 'services',
+  'revert', 'shell', 'lock', 'autologon', 'launchers',
   'look', 'sound', 'startask', 'startup', 'clientsInfo', 'clients', 'tv',
   'summary', 'result'
 ];
@@ -19,9 +19,8 @@ export const EXPLAINS = {
   shell: { risks: 3, icon: 'console' },
   revert: { risks: 2, icon: 'console' },
   lock: { risks: 3, icon: 'shield' },
-  autologon: { risks: 3, icon: 'shield' },
+  autologon: { risks: 3, icon: 'shield', big: true },
   launchers: { risks: 3, icon: 'console' },
-  services: { risks: 3, icon: 'console' },
   clientsInfo: { risks: 2, icon: 'library' },
   tv: { risks: 3, icon: 'tv' }
 };
@@ -79,8 +78,8 @@ export function applies(id, ctx) {
     case 'lock': return full && !ctx.lockOn;
     // The sign-in only makes sense with the shell and the lock; an account without a password signs in by itself already.
     case 'autologon': return ctx.intent === 'full' && ctx.accountPassword !== false && !ctx.autoLogonDone;
-    case 'launchers':
-    case 'services': return ctx.intent === 'full';
+    case 'launchers': return ctx.intent === 'full';
+    // The thank-you page for the maker of the project this one grew from: once, on the very first start.
     case 'clientsInfo': return full && ctx.launchers > 0 && (ctx.areas ?? ['games']).includes('games');
     case 'clients': return full && ctx.launchers > 0 && (ctx.areas ?? ['games']).includes('games') && choices.clients === 'adjust';
     // The programs Windows starts at sign-in (Discord, EA, driver tools): only a console install starts them for Mega Hub.
@@ -147,7 +146,6 @@ export function summaryPlan(ctx) {
     if (!ctx.lockOn) changes.push('lockSetup');
     if (applies('autologon', ctx) && choices.autologon) changes.push('autologon');
     if (choices.launchers) changes.push('launchers');
-    if (choices.services) changes.push('services');
   } else if (ctx.intent === 'light') {
     changes.push('revert');
   } else if (isFullNow(ctx) && !ctx.lockOn && choices.lock) {
@@ -167,10 +165,9 @@ export const summaryFocus = (plan) => (plan.changes.length ? 'back' : 'apply');
 // i18n-used: wizard.x.shell.title wizard.x.shell.what wizard.x.shell.changes wizard.x.shell.risk1 wizard.x.shell.risk2 wizard.x.shell.risk3 wizard.x.shell.undo wizard.x.shell.detail wizard.x.shell.safe wizard.x.shell.safeSub wizard.x.shell.go wizard.x.shell.goSub
 // i18n-used: wizard.x.revert.title wizard.x.revert.what wizard.x.revert.changes wizard.x.revert.risk1 wizard.x.revert.risk2 wizard.x.revert.undo wizard.x.revert.detail wizard.x.revert.safe wizard.x.revert.safeSub wizard.x.revert.go wizard.x.revert.goSub
 // i18n-used: wizard.x.lock.title wizard.x.lock.what wizard.x.lock.changes wizard.x.lock.risk1 wizard.x.lock.risk2 wizard.x.lock.risk3 wizard.x.lock.undo wizard.x.lock.detail wizard.x.lock.safe wizard.x.lock.safeSub wizard.x.lock.go wizard.x.lock.goSub wizard.x.lock.needed wizard.x.lock.setup wizard.x.lock.setupSub
-// i18n-used: wizard.x.autologon.title wizard.x.autologon.what wizard.x.autologon.changes wizard.x.autologon.risk1 wizard.x.autologon.risk2 wizard.x.autologon.risk3 wizard.x.autologon.undo wizard.x.autologon.detail wizard.x.autologon.safe wizard.x.autologon.safeSub wizard.x.autologon.go wizard.x.autologon.goSub
+// i18n-used: wizard.x.autologon.title wizard.x.autologon.what wizard.x.autologon.changes wizard.x.autologon.risk1 wizard.x.autologon.risk2 wizard.x.autologon.risk3 wizard.x.autologon.undo wizard.x.autologon.detail wizard.x.autologon.note wizard.x.autologon.safe wizard.x.autologon.safeSub wizard.x.autologon.go wizard.x.autologon.goSub
 // i18n-used: wizard.x.launchers.title wizard.x.launchers.what wizard.x.launchers.changes wizard.x.launchers.risk1 wizard.x.launchers.risk2 wizard.x.launchers.risk3 wizard.x.launchers.undo wizard.x.launchers.detail wizard.x.launchers.safe wizard.x.launchers.safeSub wizard.x.launchers.go wizard.x.launchers.goSub
-// i18n-used: wizard.x.services.title wizard.x.services.what wizard.x.services.changes wizard.x.services.risk1 wizard.x.services.risk2 wizard.x.services.risk3 wizard.x.services.undo wizard.x.services.detail wizard.x.services.safe wizard.x.services.safeSub wizard.x.services.go wizard.x.services.goSub
 // i18n-used: wizard.x.clientsInfo.title wizard.x.clientsInfo.what wizard.x.clientsInfo.changes wizard.x.clientsInfo.risk1 wizard.x.clientsInfo.risk2 wizard.x.clientsInfo.undo wizard.x.clientsInfo.detail wizard.x.clientsInfo.safe wizard.x.clientsInfo.safeSub wizard.x.clientsInfo.go wizard.x.clientsInfo.goSub
 // i18n-used: wizard.x.tv.title wizard.x.tv.what wizard.x.tv.changes wizard.x.tv.risk1 wizard.x.tv.risk2 wizard.x.tv.risk3 wizard.x.tv.undo wizard.x.tv.detail wizard.x.tv.safe wizard.x.tv.safeSub wizard.x.tv.go wizard.x.tv.goSub wizard.x.tv.goBoth wizard.x.tv.goBothSub
 // i18n-used: wizard.x.lock.stay wizard.x.lock.staySub
-// i18n-used: wizard.sum.shell wizard.sum.lockSetup wizard.sum.lockNow wizard.sum.autologon wizard.sum.launchers wizard.sum.services wizard.sum.revert wizard.sum.clients wizard.sum.tvOn wizard.sum.tvBoth
+// i18n-used: wizard.sum.shell wizard.sum.lockSetup wizard.sum.lockNow wizard.sum.autologon wizard.sum.launchers wizard.sum.revert wizard.sum.clients wizard.sum.tvOn wizard.sum.tvBoth

@@ -9,6 +9,8 @@ export default {
   'profiles.pickerHint': 'Profil wählen',
   'profiles.gameRunningHint': 'Solange ein Spiel läuft, lässt sich das Profil nicht wechseln.',
   'profiles.exhaustedHint': 'Die Zeit ist um: ein anderes Profil nur mit dem Eltern-Code.',
+  'profiles.managePicker': 'Profile verwalten',
+  'profiles.hintOpen': 'Profil öffnen',
   'profiles.hintChoose': 'Wählen',
   'profiles.hintBack': 'Zurück',
   'profiles.hintEdit': 'Bearbeiten',

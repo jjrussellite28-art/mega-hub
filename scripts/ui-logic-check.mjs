@@ -1647,7 +1647,7 @@ for (const a of AREAS) assert.ok(AREA_NAME_KEYS[a] && AREA_DESC_KEYS[a], a);
   // App mode: no system page at all, straight from the questions to the summary.
   assert.deepEqual(W.order(ctx()), ['welcome', 'areas', 'updates', 'mode', 'look', 'sound', 'startask', 'summary']);
   // Shell mode chosen: the explanations come right after the question, in a fixed order, then look and sound, then the summary.
-  assert.deepEqual(W.order(ctx({ intent: 'full' })), ['welcome', 'areas', 'updates', 'mode', 'shell', 'lock', 'autologon', 'launchers', 'services', 'look', 'sound', 'startask', 'startup', 'clientsInfo', 'summary']);
+  assert.deepEqual(W.order(ctx({ intent: 'full' })), ['welcome', 'areas', 'updates', 'mode', 'shell', 'lock', 'autologon', 'launchers', 'look', 'sound', 'startask', 'startup', 'clientsInfo', 'summary']);
   // The way back is explained too.
   assert.deepEqual(W.order(ctx({ intent: 'light', full: true })), ['welcome', 'areas', 'updates', 'mode', 'revert', 'look', 'sound', 'startask', 'summary']);
   // No password on the account (it signs in by itself), a sign-in set up already, a lock set already: those pages fall away.
@@ -1672,7 +1672,7 @@ for (const a of AREAS) assert.ok(AREA_NAME_KEYS[a] && AREA_DESC_KEYS[a], a);
   const full = ctx({ intent: 'full' });
   assert.equal(W.nextOf('mode', full), 'shell');
   assert.equal(W.prevOf('lock', full), 'shell');
-  assert.equal(W.prevOf('look', full), 'services');
+  assert.equal(W.prevOf('look', full), 'launchers');
   assert.equal(W.prevOf('shell', full), 'mode');
   assert.equal(W.nextOf('shell', ctx({ intent: null })), 'look');
   assert.equal(W.nextOf('sound', ctx()), 'startask');
@@ -1762,7 +1762,7 @@ for (const a of AREAS) assert.ok(AREA_NAME_KEYS[a] && AREA_DESC_KEYS[a], a);
   assert.deepEqual(W.summaryPlan(ctx()).changes, []);
   assert.ok(W.summaryPlan(ctx()).kept.includes('nothing'));
   assert.deepEqual(W.summaryPlan(ctx({ intent: 'full' })).changes, ['shell', 'lockSetup']);
-  assert.deepEqual(W.summaryPlan(ctx({ intent: 'full', lockOn: true, choices: { ...W.freshChoices(), autologon: true, launchers: true, services: true } })).changes, ['shell', 'autologon', 'launchers', 'services']);
+  assert.deepEqual(W.summaryPlan(ctx({ intent: 'full', lockOn: true, choices: { ...W.freshChoices(), autologon: true, launchers: true, services: true } })).changes, ['shell', 'autologon', 'launchers']);
   // An automatic sign-in that does not apply (no password) is not listed even if it was chosen earlier.
   assert.ok(!W.summaryPlan(ctx({ intent: 'full', accountPassword: false, choices: { ...W.freshChoices(), autologon: true } })).changes.includes('autologon'));
   assert.deepEqual(W.summaryPlan(ctx({ intent: 'light', full: true })).changes, ['revert']);
@@ -1770,7 +1770,7 @@ for (const a of AREAS) assert.ok(AREA_NAME_KEYS[a] && AREA_DESC_KEYS[a], a);
   assert.deepEqual(W.summaryPlan(ctx({ full: true, choices: { ...W.freshChoices(), clients: 'adjust', clientModes: { steam: 'demand' } } })).changes, ['clients']);
   assert.deepEqual(W.summaryPlan(ctx({ tvPaired: true, choices: { ...W.freshChoices(), tv: 'on' } })).changes, ['tvOn']);
   assert.deepEqual(W.summaryPlan(ctx({ tvPaired: true, choices: { ...W.freshChoices(), tv: 'both' } })).changes, ['tvBoth']);
-  for (const id of ['shell', 'lockSetup', 'lockNow', 'autologon', 'launchers', 'services', 'revert', 'clients', 'tvOn', 'tvBoth']) {
+  for (const id of ['shell', 'lockSetup', 'lockNow', 'autologon', 'launchers', 'revert', 'clients', 'tvOn', 'tvBoth']) {
     assert.ok(wizDe[`wizard.sum.${id}`] && wizEn[`wizard.sum.${id}`], `wizard.sum.${id}`);
   }
   // The summary starts on "Back" while the PC is about to change, on "Apply" when it is not: A in a row never sets up a shell.

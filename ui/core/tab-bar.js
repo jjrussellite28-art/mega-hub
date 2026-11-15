@@ -211,7 +211,10 @@ export { BAR_SKIN_VARS };
 /** The setup assistant hides the tabs (not the status area); on the keyboard and code pages LB/RB belong to the page, so their symbols go. Only the core's state decides that. */
 export function setBarTabsHidden(view) {
   if (!refs) return;
-  refs.nav.toggleAttribute('data-hidden', view === 'setup-wizard');
+  // First-run setup and the start choice: no tabs; during setup also no bell or unlock button (only the clock).
+  const bare = view === 'setup-wizard' || view === 'terms';
+  refs.nav.toggleAttribute('data-hidden', bare || view === 'mode-chooser');
+  html.toggleAttribute('data-bare', bare);
   refs.nav.toggleAttribute('data-noshoulder', view === 'keyboard' || view === 'passcode');
 }
 

@@ -79,6 +79,7 @@ export default {
   'passcode.repeatTitle': 'Code wiederholen',
   'passcode.mismatch': 'Die Codes waren verschieden, bitte noch einmal',
   'passcode.signInWindows': 'Bitte bei Windows anmelden',
+  'passcode.again': 'Entsperren wird neu gestartet …',
   'passcode.wrong': 'Falscher Code',
   'passcode.adminFallback': 'Zu viele falsche Eltern-Codes. Stattdessen von einem Administrator dieses PCs bestätigen lassen? Windows fragt danach mit seiner eigenen Benutzerkontensteuerung.',
   'passcode.adminFallbackNoCode': 'Der Mega-Hub-Dienst kennt noch keinen Eltern-Code (er wird mit dem nächsten neuen Code gesetzt). Jetzt von einem Administrator dieses PCs bestätigen lassen? Windows fragt danach mit seiner eigenen Benutzerkontensteuerung.',

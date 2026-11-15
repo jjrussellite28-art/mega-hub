@@ -37,7 +37,11 @@ export function cycleBar(delta) {
 
 /** A on the focused chip, or a click on it: the bell opens the notifications, the downloads chip the Downloads tab. */
 export function activateChip(id) {
-  if (chipsBlocked(state) || chipAction(state, currentView(), id) === 'blocked') return false;
+  if (chipsBlocked(state) || chipAction(state, currentView(), id) === 'blocked') {
+    sound.bump();
+    return false;
+  }
+  sound.select();
   bar.chip = null;
   showChipFocus();
   if (id === 'unlock') {

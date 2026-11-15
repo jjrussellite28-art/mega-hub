@@ -5188,6 +5188,32 @@ body[data-view="terms"] #notify-stack .notify-card:not(.security) {
   min-height: 1.2rem;
 }
 
+.profile-role {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.profile-manage {
+  margin-top: 1.4rem;
+  padding: 0.7rem 1.8rem;
+  border-radius: 99rem;
+  border: 0.14rem solid color-mix(in srgb, var(--fg) 35%, transparent);
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+  color: var(--fg);
+  font: inherit;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.profile-manage.focused,
+.profile-manage:hover {
+  border-color: var(--fg);
+  box-shadow: 0 0 1.2rem color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
 .profile-avatar {
   display: inline-flex;
   align-items: center;
@@ -5790,4 +5816,25 @@ body[data-view="terms"] #notify-stack .notify-card:not(.security) {
   min-width: 0;
   overflow-wrap: anywhere;
   line-height: 1.2;
+}
+
+/* The thank-you page at the end of the first-run setup: the creator's name in gold. */
+.wizard-step-credit .wizard-head h2 {
+  color: #f5c542;
+  font-size: 3rem;
+  text-shadow: 0 0 1.4rem rgba(245, 197, 66, 0.45);
+}
+
+.wizard-step-credit .wizard-icon {
+  color: #f5c542;
+}
+
+.wizard-doc-big .wizard-doc-note {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+/* First-run setup: no bell, no unlock button; only the clock is left. */
+html[data-bare] #status > :not(#clock) {
+  display: none !important;
 }
