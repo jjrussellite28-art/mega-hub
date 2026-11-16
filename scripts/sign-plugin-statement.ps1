@@ -92,7 +92,7 @@ $entry = $indexNode['entries'].AsArray() | Where-Object { [string]$_['id'] -eq $
 if (-not $entry) { throw "No entry '$id' in $indexPath." }
 $entry['version'] = $version
 $entry['sha256'] = $sha
-$entry['download'] = "https://github.com/kewe87/CouchHUD-Catalog/releases/download/$id-$version/$folderName-$version.zip"
+$entry['download'] = "https://github.com/jjrussellite28-art/mega-hub/releases/download/$id-$version/$folderName-$version.zip"
 $entry['license'] = [string]$template['license']
 $caps = [System.Text.Json.Nodes.JsonArray]::new()
 foreach ($c in $template['capabilities'].AsArray()) { $caps.Add([string]$c) }

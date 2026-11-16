@@ -1,0 +1,27 @@
+{
+  "id": "achievements",
+  "folder": "MegaHub.Plugin.Achievements",
+  "version": "0.5.0",
+  "sdk": 5,
+  "minCouchHud": "0.8.0",
+  "capabilities": [
+    "pages",
+    "tabs",
+    "browser",
+    "network:internet"
+  ],
+  "license": "GPL-3.0-or-later",
+  "source": "https://github.com/jjrussellite28-art/mega-hub",
+  "author": "russellite06",
+  "name": "Achievements",
+  "summary": "One Achievements page: Steam and local achievement files, progress per game",
+  "description": "An Achievements page for Mega Hub: Steam (through Steam's web service, with your own free key) and local achievement files such as those from the Goldberg emulator, with progress per game.",
+  "services": [
+    {
+      "id": "steam",
+      "hosts": [
+        "api.steampowered.com"
+      ]
+    }
+  ]
+}
