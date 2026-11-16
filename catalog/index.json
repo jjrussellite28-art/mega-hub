@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "serial": 10,
+  "serial": 12,
   "name": "Mega Hub Catalog",
   "entries": [
     {
@@ -15,12 +15,13 @@
         "de": "Steam- und lokale Erfolge mit Fortschritt je Spiel"
       },
       "author": "russellite06",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "minCouchHud": "0.8.0",
+      "category": "addons",
       "folder": "MegaHub.Plugin.Achievements",
       "homepage": "https://github.com/jjrussellite28-art/mega-hub",
-      "download": "https://github.com/jjrussellite28-art/mega-hub/releases/download/achievements-0.5.0/MegaHub.Plugin.Achievements-0.5.0.zip",
-      "sha256": "fd270ce9bde0e7f462f68700e024bb741c44cf58e825434cf2365f368bafb3b1",
+      "download": "https://github.com/jjrussellite28-art/mega-hub/releases/download/achievements-0.6.0/MegaHub.Plugin.Achievements-0.6.0.zip",
+      "sha256": "f855194132cce56f3c543c073b4de7164b3b2bd7da801ef516085bd4547862bc",
       "license": "GPL-3.0-or-later",
       "capabilities": [
         "pages",
@@ -28,8 +29,8 @@
         "browser",
         "network:internet"
       ],
-      "statement": "eyJpZCI6ImFjaGlldmVtZW50cyIsImZvbGRlciI6Ik1lZ2FIdWIuUGx1Z2luLkFjaGlldmVtZW50cyIsInZlcnNpb24iOiIwLjUuMCIsInNkayI6NSwibWluQ291Y2hIdWQiOiIwLjguMCIsImNhcGFiaWxpdGllcyI6WyJwYWdlcyIsInRhYnMiLCJicm93c2VyIiwibmV0d29yazppbnRlcm5ldCJdLCJsaWNlbnNlIjoiR1BMLTMuMC1vci1sYXRlciIsInNvdXJjZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS9qanJ1c3NlbGxpdGUyOC1hcnQvbWVnYS1odWIiLCJhdXRob3IiOiJydXNzZWxsaXRlMDYiLCJuYW1lIjoiQWNoaWV2ZW1lbnRzIiwic3VtbWFyeSI6Ik9uZSBBY2hpZXZlbWVudHMgcGFnZTogU3RlYW0gYW5kIGxvY2FsIGFjaGlldmVtZW50IGZpbGVzLCBwcm9ncmVzcyBwZXIgZ2FtZSIsImRlc2NyaXB0aW9uIjoiQW4gQWNoaWV2ZW1lbnRzIHBhZ2UgZm9yIE1lZ2EgSHViOiBTdGVhbSAodGhyb3VnaCBTdGVhbSdzIHdlYiBzZXJ2aWNlLCB3aXRoIHlvdXIgb3duIGZyZWUga2V5KSBhbmQgbG9jYWwgYWNoaWV2ZW1lbnQgZmlsZXMgc3VjaCBhcyB0aG9zZSBmcm9tIHRoZSBHb2xkYmVyZyBlbXVsYXRvciwgd2l0aCBwcm9ncmVzcyBwZXIgZ2FtZS4iLCJzZXJ2aWNlcyI6W3siaWQiOiJzdGVhbSIsImhvc3RzIjpbImFwaS5zdGVhbXBvd2VyZWQuY29tIl19XSwic2hhMjU2IjoiZmQyNzBjZTliZGUwZTdmNDYyZjY4NzAwZTAyNGJiNzQxYzQ0Y2Y1OGU4MjU0MzRjZjIzNjVmMzY4YmFmYjNiMSIsInB1Ymxpc2hlcktleSI6ImRhMDhlYmMyZDg1YTkzYTdjMDJjYzg1Y2FmYTgwMWE2MDFlYmE0NGJjNjUzOTU2YTZkNDc4NDI4YzBmOTlhMmUiLCJzaXplIjo1MjE5N30=",
-      "signature": "62EU032uLhhmn0N9JybFMb79n4oGAkEChpPI5O+G9vYxIzB7Ekn2LqiR1RM8M5OFbyxA6n6Sezcg1guKgqXjKg=="
+      "statement": "eyJpZCI6ImFjaGlldmVtZW50cyIsImZvbGRlciI6Ik1lZ2FIdWIuUGx1Z2luLkFjaGlldmVtZW50cyIsInZlcnNpb24iOiIwLjYuMCIsInNkayI6NSwibWluQ291Y2hIdWQiOiIwLjguMCIsImNhcGFiaWxpdGllcyI6WyJwYWdlcyIsInRhYnMiLCJicm93c2VyIiwibmV0d29yazppbnRlcm5ldCJdLCJsaWNlbnNlIjoiR1BMLTMuMC1vci1sYXRlciIsInNvdXJjZSI6Imh0dHBzOi8vZ2l0aHViLmNvbS9qanJ1c3NlbGxpdGUyOC1hcnQvbWVnYS1odWIiLCJhdXRob3IiOiJydXNzZWxsaXRlMDYiLCJuYW1lIjoiQWNoaWV2ZW1lbnRzIiwic3VtbWFyeSI6Ik9uZSBBY2hpZXZlbWVudHMgcGFnZTogU3RlYW0gYW5kIGxvY2FsIGFjaGlldmVtZW50IGZpbGVzLCBwcm9ncmVzcyBwZXIgZ2FtZSIsImRlc2NyaXB0aW9uIjoiQW4gQWNoaWV2ZW1lbnRzIHBhZ2UgZm9yIE1lZ2EgSHViOiBTdGVhbSAodGhyb3VnaCBTdGVhbSdzIHdlYiBzZXJ2aWNlLCB3aXRoIHlvdXIgb3duIGZyZWUga2V5KSBhbmQgbG9jYWwgYWNoaWV2ZW1lbnQgZmlsZXMgc3VjaCBhcyB0aG9zZSBmcm9tIHRoZSBHb2xkYmVyZyBlbXVsYXRvciwgd2l0aCBwcm9ncmVzcyBwZXIgZ2FtZS4iLCJzZXJ2aWNlcyI6W3siaWQiOiJzdGVhbSIsImhvc3RzIjpbImFwaS5zdGVhbXBvd2VyZWQuY29tIl19XSwic2hhMjU2IjoiZjg1NTE5NDEzMmNjZTU2ZjNjNTQzYzA3M2I0ZGU3MTY0YjNiMmJkN2RhODAxZWY1MTYwODViZDQ1NDc4NjJiYyIsInB1Ymxpc2hlcktleSI6ImRhMDhlYmMyZDg1YTkzYTdjMDJjYzg1Y2FmYTgwMWE2MDFlYmE0NGJjNjUzOTU2YTZkNDc4NDI4YzBmOTlhMmUiLCJzaXplIjo1MjI5NH0=",
+      "signature": "V2eglSp47d3168bbaPr8TZj91yMHfoSLGgTiEyC3IcjoJF0Hk39DWAzS9T/on/qzEC2J5lfDzqzpjbuj3/i/kA=="
     }
   ]
 }
