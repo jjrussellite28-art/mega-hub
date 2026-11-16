@@ -1,2 +1,6 @@
 catalog/* -text
 *.sh text eol=lf
+
+# The catalog index is signed byte for byte: git must never change its line endings (a Windows checkout would break the signature).
+catalog/index.json -text
+catalog/index.json.sig -text
