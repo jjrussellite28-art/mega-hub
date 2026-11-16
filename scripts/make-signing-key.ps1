@@ -4,12 +4,12 @@
 # Stops if a key is already there, so it can never overwrite one.
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Security.Cryptography.ProtectedData -ErrorAction SilentlyContinue
-Add-Type -AssemblyName System.Security -ErrorAction SilentlyContinue
+Add-Type -AssemblyName System.Security.Cryptography.ProtectedData -ErrorAction SilentlyContinue
 $dir = Join-Path $env:USERPROFILE '.megahub'
 $file = Join-Path $dir 'catalog-signing.key'
 if (Test-Path $file) { throw "A key is already at $file. Not overwriting it." }
 New-Item -ItemType Directory -Force $dir | Out-Null
-$ecdsa = [System.Security.Cryptography.ECDsa]::Create([System.Security.Cryptography.ECCurve]::NamedCurves.nistP256)
+$ecdsa = [System.Security.Cryptography.ECDsa]::Create([System.Security.Cryptography.ECCurve]::CreateFromValue('1.2.840.10045.3.1.7'))
 try {
     $plain = $ecdsa.ExportPkcs8PrivateKey()
     $protected = [System.Security.Cryptography.ProtectedData]::Protect($plain, $null, [System.Security.Cryptography.DataProtectionScope]::CurrentUser)
