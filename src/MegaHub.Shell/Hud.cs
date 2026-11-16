@@ -2740,6 +2740,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         trailerPreviews = config.Current.TrailerPreviews,
         weather = WeatherAvailable && WeatherPlace() is not null,
         news = NewsAvailable,
+        windowsTools = !ChildNow,
         assistant = AssistantConfigured,
         skin = LookProfile.Skin,
         skinRestore = SkinRestoreState(),
@@ -3914,6 +3915,40 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             c.LauncherAutostart.Remove(id);
         });
         return GetLaunchers();
+    }
+
+    /// <summary>The Windows tools the Windows tab may open: a fixed list, nothing the page sends is ever run as a command.</summary>
+    private static readonly IReadOnlyDictionary<string, string> WindowsTools = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["explorer"] = "explorer.exe",
+        ["settings"] = "ms-settings:",
+        ["taskmgr"] = "taskmgr.exe",
+        ["control"] = "control.exe",
+        ["network"] = "ms-settings:network",
+        ["bluetooth"] = "ms-settings:bluetooth",
+        ["sound"] = "ms-settings:sound",
+        ["display"] = "ms-settings:display",
+        ["apps"] = "ms-settings:appsfeatures",
+        ["update"] = "ms-settings:windowsupdate"
+    };
+
+    /// <summary>Opens one of the Windows tools of the Windows tab. Needs the unlock and is not for a child's profile.</summary>
+    public void OpenWindowsTool(string id)
+    {
+        RequireUnlocked();
+        if (ChildNow) throw new LockedException(Strings.Get("lock.unlockFirst"));
+        if (!WindowsTools.TryGetValue(id ?? "", out var target)) throw new ArgumentException(id);
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(target) { UseShellExecute = true });
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            Console.Error.WriteLine($"[windows] {id}: {ex.Message}");
+            throw new InvalidOperationException(Strings.Get("hud.notInstalled", id));
+        }
+        // A Windows window needs the mouse: the controller becomes one while it is open.
+        _mouse?.Start();
     }
 
     /// <summary>

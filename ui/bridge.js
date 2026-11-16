@@ -358,6 +358,7 @@ window.megahub = {
   setAutoLogon: (mode) => call('setAutoLogon', mode),
   setLauncherMode: (id, mode) => call('setLauncherMode', id, mode),
   openLauncher: (id) => call('openLauncher', id),
+  openWindowsTool: (id) => call('openWindowsTool', id),
   setStartupMode: (id, mode) => call('setStartupMode', id, mode),
   applyStartupSuggestions: () => call('applyStartupSuggestions'),
   getServices: () => call('getServices'),

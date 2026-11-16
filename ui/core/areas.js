@@ -29,7 +29,7 @@ export const SETTING_AREAS = {
 };
 
 /** Main tabs that belong to an area (by the view's id). Favorites (the home view), downloads, assistant and settings are always there. */
-export const TAB_AREAS = { games: 'games', apps: 'apps', browser: 'browser', news: 'news' };
+export const TAB_AREAS = { store: 'games', games: 'games', apps: 'apps', browser: 'browser', news: 'news' };
 
 /** Setup assistant steps that belong to an area: the game clients only make sense with Gaming. */
 export const WIZARD_STEP_AREAS = { clients: 'games' };
