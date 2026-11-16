@@ -423,14 +423,15 @@ public partial class MainWindow : Window
             ? configured
             : int.TryParse(Environment.GetEnvironmentVariable("MEGAHUB_SCREEN"), out var fromEnvironment) && fromEnvironment >= 1 ? fromEnvironment : 0;
         if (number < 1) return null;
-        var found = new List<(IntPtr Monitor, int Left)>();
+        var found = new List<(IntPtr Monitor, int Left, int Top)>();
         NativeMethods.EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (monitor, _, _, _) =>
         {
             var info = new NativeMethods.MonitorInfo { Size = System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.MonitorInfo>() };
-            if (NativeMethods.GetMonitorInfo(monitor, ref info)) found.Add((monitor, info.Monitor.Left));
+            if (NativeMethods.GetMonitorInfo(monitor, ref info)) found.Add((monitor, info.Monitor.Left, info.Monitor.Top));
             return true;
         }, IntPtr.Zero);
-        found.Sort((x, y) => x.Left.CompareTo(y.Left));
+        // The same order as the screen picker (left to right, or top to bottom when stacked).
+        DisplayService.SortScreens(found, s => (s.Left, s.Top));
         return number <= found.Count ? found[number - 1].Monitor : null;
     }
 

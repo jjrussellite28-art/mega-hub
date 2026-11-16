@@ -55,20 +55,38 @@ public static class DisplayService
         if (result != DispChangeSuccessful) throw new InvalidOperationException(Strings.Get("display.switchFailed", result));
     }
 
+    /// <summary>
+    /// The one order every part of Mega Hub numbers the screens in: from the left; when the screens sit above each other more than beside
+    /// each other (stacked), from the top. Screen 1 is therefore the same screen in the picker, the labels and the window placement.
+    /// </summary>
+    public static void SortScreens<T>(List<T> items, Func<T, (int Left, int Top)> position)
+    {
+        if (items.Count < 2) return;
+        var lefts = items.Select(i => position(i).Left).ToList();
+        var tops = items.Select(i => position(i).Top).ToList();
+        var stacked = tops.Max() - tops.Min() > lefts.Max() - lefts.Min();
+        items.Sort((a, b) =>
+        {
+            var (al, at) = position(a);
+            var (bl, bt) = position(b);
+            return stacked ? (at != bt ? at.CompareTo(bt) : al.CompareTo(bl)) : (al != bl ? al.CompareTo(bl) : at.CompareTo(bt));
+        });
+    }
+
     /// <summary>The connected screens from left to right. `chosen` is the ScreenNumber setting (0 = automatic).</summary>
     public static IReadOnlyList<ScreenInfo> Screens(int chosen)
     {
-        var found = new List<(int Left, int Width, int Height, bool Primary)>();
+        var found = new List<(int Left, int Top, int Width, int Height, bool Primary)>();
         NativeMethods.EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (monitor, _, _, _) =>
         {
             var info = new NativeMethods.MonitorInfo { Size = Marshal.SizeOf<NativeMethods.MonitorInfo>() };
             if (NativeMethods.GetMonitorInfo(monitor, ref info))
             {
-                found.Add((info.Monitor.Left, info.Monitor.Right - info.Monitor.Left, info.Monitor.Bottom - info.Monitor.Top, (info.Flags & 1) != 0));
+                found.Add((info.Monitor.Left, info.Monitor.Top, info.Monitor.Right - info.Monitor.Left, info.Monitor.Bottom - info.Monitor.Top, (info.Flags & 1) != 0));
             }
             return true;
         }, IntPtr.Zero);
-        found.Sort((x, y) => x.Left.CompareTo(y.Left));
+        SortScreens(found, s => (s.Left, s.Top));
         return found.Select((s, i) => new ScreenInfo(i + 1, s.Width, s.Height, s.Primary, chosen == i + 1)).ToList();
     }
 

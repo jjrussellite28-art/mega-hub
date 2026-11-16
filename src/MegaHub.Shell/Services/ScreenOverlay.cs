@@ -62,7 +62,7 @@ internal sealed class ScreenOverlay
             return true;
         }, IntPtr.Zero);
         // The same order as DisplayService.Screens: from the left.
-        found.Sort((a, b) => a.Item2.Left.CompareTo(b.Item2.Left));
+        DisplayService.SortScreens(found, s => (s.Item2.Left, s.Item2.Top));
         return found;
     }
 

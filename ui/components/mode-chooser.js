@@ -46,6 +46,8 @@ export function showModeChooser() {
           el('span', { className: 'profile-avatar big', textContent: c.icon }),
           el('strong', { className: 'profile-name', textContent: t(c.label) }),
           el('small', { className: 'profile-lock', textContent: t(c.hint) }))));
+      // The mouse works as well: a click takes the mode (like A) and goes down to the next row.
+      this.tiles.forEach((tile, i) => { tile.onclick = () => this.pick(ROW_MODES, i); });
       this.screenRow = el('ul', { className: 'mode-screens' });
       this.nextBtn = el('button', { className: 'mode-next', type: 'button', textContent: t('modeask.next'), onclick: () => this.next() });
       root.append(el('div', { className: 'profile-picker mode-chooser' },
@@ -73,8 +75,16 @@ export function showModeChooser() {
       const opts = this.options();
       this.screenRow.hidden = this.screens.length < 2;
       this.screenRow.previousSibling.hidden = this.screens.length < 2;
-      this.screenRow.replaceChildren(...opts.map((o, i) => el('li', { className: `mode-screen${i === this.screenIndex ? ' chosen' : ''}${this.row === ROW_SCREENS && i === this.screenIndex ? ' focused' : ''}`, textContent: o.label })));
+      this.screenRow.replaceChildren(...opts.map((o, i) => el('li', { className: `mode-screen${i === this.screenIndex ? ' chosen' : ''}${this.row === ROW_SCREENS && i === this.screenIndex ? ' focused' : ''}`, textContent: o.label, onclick: () => this.pick(ROW_SCREENS, i) })));
       this.nextBtn.classList.toggle('focused', this.row === ROW_NEXT);
+    },
+    /** A mouse click on a mode or a screen: the same as moving there and pressing A. */
+    pick(row, index) {
+      if (this.busy) return;
+      this.row = row;
+      if (row === ROW_MODES) this.mode = index;
+      else this.screenIndex = index;
+      return this.handle('a');
     },
     onClose() {
       attempt(() => api.screenOverlay?.(false));
