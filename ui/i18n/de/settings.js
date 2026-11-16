@@ -248,6 +248,7 @@ export default {
   'modeask.pc': 'PC-Modus',
   'modeask.pcHint': 'Windows-Desktop, Mega Hub schließt vollständig und braucht keinen Speicher',
   'modeask.screens': 'Bildschirme',
+  'modeask.display': 'Anzeige',
   'modeask.allScreens': 'Alle Bildschirme',
   'modeask.next': 'Weiter',
   'modeask.hintRows': 'Bewegen',

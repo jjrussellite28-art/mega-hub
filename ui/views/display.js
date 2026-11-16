@@ -55,7 +55,7 @@ export async function chooseScreen() {
 }
 
 /** PC screen only, the same picture on both (mirror), use both (extend) or the second screen only: Windows' own switch. */
-async function chooseLayout() {
+export async function chooseLayout() {
   const pick = await chooseDialog(t('display.layout.label'), [
     { label: t('display.layout.internal'), detail: t('display.layout.internalDetail'), value: 'internal' },
     { label: t('display.layout.clone'), detail: t('display.layout.cloneDetail'), value: 'clone' },

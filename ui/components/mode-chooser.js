@@ -9,7 +9,7 @@ import { state } from '../core/state.js';
 import { sound } from '../sound.js';
 import { t } from '../core/i18n.js';
 import { getLook } from '../core/look-prefs.js';
-import { listScreens } from '../views/display.js';
+import { chooseLayout, listScreens } from '../views/display.js';
 import { confirmDialog } from './overlay.js';
 import { ensureUnlocked } from './passcode.js';
 
@@ -33,7 +33,7 @@ export function showModeChooser() {
     row: ROW_MODES,
     mode: 0,
     /** 0 = all screens (mirror, the default); otherwise the number of one screen. */
-    screenIndex: 0,
+    screenIndex: 1,
     screens: [],
     busy: false,
     build(root) {
@@ -66,14 +66,14 @@ export function showModeChooser() {
       }).catch(() => {});
     },
     options() {
-      return [{ label: t('modeask.allScreens'), number: 0 }, ...this.screens.map((s) => ({ label: t('display.screen.number', { n: s.number }), number: s.number }))];
+      // The first chip is the display settings (screens together: one, same picture, both); always there, also with one screen.
+      return [{ label: `⚙ ${t('modeask.display')}`, display: true, number: 0 }, { label: t('modeask.allScreens'), number: 0 }, ...this.screens.map((s) => ({ label: t('display.screen.number', { n: s.number }), number: s.number }))];
     },
     update() {
       if (!this.tiles) return;
       setFocused(this.tiles, this.row === ROW_MODES ? this.mode : -1);
       this.tiles.forEach((n, i) => n.classList.toggle('chosen', i === this.mode));
       const opts = this.options();
-      this.screenRow.hidden = this.screens.length < 2;
       this.screenRow.previousSibling.hidden = this.screens.length < 2;
       this.screenRow.replaceChildren(...opts.map((o, i) => el('li', { className: `mode-screen${i === this.screenIndex ? ' chosen' : ''}${this.row === ROW_SCREENS && i === this.screenIndex ? ' focused' : ''}`, textContent: o.label, onclick: () => this.pick(ROW_SCREENS, i) })));
       this.nextBtn.classList.toggle('focused', this.row === ROW_NEXT);
@@ -85,6 +85,19 @@ export function showModeChooser() {
       if (row === ROW_MODES) this.mode = index;
       else this.screenIndex = index;
       return this.handle('a');
+    },
+    /** The display settings chip: how the screens work together; afterwards the list of screens is read again. */
+    async changeDisplay() {
+      this.busy = true;
+      try {
+        if (await chooseLayout()) {
+          this.screens = (await listScreens()) ?? [];
+          if (this.screenIndex >= this.options().length) this.screenIndex = 1;
+        }
+      } finally {
+        this.busy = false;
+        this.update();
+      }
     },
     onClose() {
       attempt(() => api.screenOverlay?.(false));
@@ -136,7 +149,6 @@ export function showModeChooser() {
         case 'up': {
           const d = action === 'down' ? 1 : -1;
           let row = this.row + d;
-          if (row === ROW_SCREENS && this.screens.length < 2) row += d;
           if (row < ROW_MODES || row > ROW_NEXT) return sound.bump();
           this.row = row;
           sound.move?.();
@@ -147,6 +159,7 @@ export function showModeChooser() {
         case 'a':
           sound.select();
           if (this.row === ROW_NEXT) return this.next();
+          if (this.row === ROW_SCREENS && this.options()[this.screenIndex]?.display) return this.changeDisplay();
           // A on a mode or a screen: take it and go down to the next row.
           this.row = this.row === ROW_MODES && this.screens.length >= 2 ? ROW_SCREENS : ROW_NEXT;
           return this.update();
