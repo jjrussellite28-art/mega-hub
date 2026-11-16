@@ -57,6 +57,8 @@ export function showModeChooser() {
       this.tiles.forEach((tile, i) => { tile.onclick = () => this.pick(ROW_MODES, i); });
       this.screenRow = el('ul', { className: 'mode-screens' });
       this.arrows = screenArrows((d) => this.step(d));
+      // Which screens are connected: size, the Windows main screen and where Mega Hub is now.
+      this.screenInfo = el('ul', { className: 'mode-screen-info' });
       this.unbind = bindSideButtons((d) => this.step(d));
       this.nextBtn = el('button', { className: 'mode-next', type: 'button', textContent: t('modeask.next'), onclick: () => this.next() });
       root.append(el('div', { className: 'profile-picker mode-chooser' },
@@ -65,6 +67,7 @@ export function showModeChooser() {
         el('p', { className: 'profile-greeting', textContent: t('modeask.screens') }),
         this.screenRow,
         this.arrows,
+        this.screenInfo,
         this.nextBtn));
       this.update();
       // The list of screens comes from the host; with one screen the section stays out.
@@ -90,6 +93,9 @@ export function showModeChooser() {
       const opts = this.options();
       this.screenRow.previousSibling.hidden = this.screens.length < 2;
       this.screenRow.replaceChildren(...opts.map((o, i) => el('li', { className: `mode-screen${i === this.screenIndex ? ' chosen' : ''}${this.row === ROW_SCREENS && i === this.screenIndex ? ' focused' : ''}`, textContent: o.label, onclick: () => this.pick(ROW_SCREENS, i) })));
+      this.screenInfo.replaceChildren(...(this.screens.length > 1 ? this.screens : []).map((s) => el('li', {
+        textContent: [t('display.screen.number', { n: s.number }), `${s.width} × ${s.height}`, s.primary ? t('screens.main') : null, s.chosen ? t('screens.here') : null].filter(Boolean).join(' · ')
+      })));
       this.nextBtn.classList.toggle('focused', this.row === ROW_NEXT);
     },
     /** A mouse click on a mode or a screen: the same as moving there and pressing A. */

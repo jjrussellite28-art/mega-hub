@@ -106,6 +106,7 @@ export default {
   'safe.offer': 'Cannot get in? Safe mode opens PC mode or Uninstall without a code.',
   'safe.offerYes': 'Open safe mode',
   'safe.offerNo': 'Keep trying',
+  'profiles.addPicker': 'Add profile',
   'profiles.child': 'Child profile',
   'profiles.adult': 'Adult, no limits',
   'profiles.noCodeHint': 'no code of its own: brothers and sisters can use the profile',

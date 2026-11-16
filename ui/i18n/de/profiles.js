@@ -106,6 +106,7 @@ export default {
   'safe.offer': 'Kein Zugang? Der abgesicherte Modus öffnet PC-Modus oder Deinstallieren ohne Code.',
   'safe.offerYes': 'Abgesicherten Modus öffnen',
   'safe.offerNo': 'Weiter versuchen',
+  'profiles.addPicker': 'Profil hinzufügen',
   'profiles.child': 'Kinderprofil',
   'profiles.adult': 'Erwachsen, ohne Limits',
   'profiles.noCodeHint': 'ohne eigenen Code: Geschwister können das Profil nutzen',

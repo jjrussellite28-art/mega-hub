@@ -250,6 +250,7 @@ export default {
   'modeask.screens': 'Bildschirme',
   'modeask.display': 'Anzeige',
   'modeask.allScreens': 'Alle Bildschirme',
+  'screens.here': 'Mega Hub ist hier',
   'screens.main': 'Hauptbildschirm',
   'screens.previous': 'Vorheriger Bildschirm',
   'screens.next': 'Nächster Bildschirm',

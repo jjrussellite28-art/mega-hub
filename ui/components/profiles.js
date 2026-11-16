@@ -189,15 +189,19 @@ export async function showPicker({ required = false } = {}) {
         el('p', { className: 'meta', textContent: d?.gameRunning ? t('profiles.gameRunningHint') : d?.exhausted ? t('profiles.exhaustedHint') : t('profiles.pickerHint') }),
         el('ul', { className: 'profile-tiles' }, this.tiles),
         this.arrows,
+        // Not while a protected profile waits for its code: nothing may be added in front of it.
+        this.required ? null : this.addBtn = el('button', { className: 'profile-manage', type: 'button', textContent: t('profiles.addPicker'), onclick: () => this.handle('add') }),
         this.manageBtn = el('button', { className: 'profile-manage', type: 'button', textContent: t('profiles.managePicker'), onclick: () => this.handle('manage') }),
         // Not while a protected profile waits for its code: nothing may be changed in front of it.
         this.required ? null : this.autoBtn = el('button', { className: 'profile-manage', type: 'button', title: t('profiles.autoHint'), textContent: autoLabel(), onclick: () => this.handle('auto') })));
       this.update();
     },
     update() {
-      if (this.tiles?.length) setFocused(this.tiles, this.onManage || this.onAuto ? -1 : this.index);
-      this.manageBtn?.classList.toggle('focused', !!this.onManage);
-      this.autoBtn?.classList.toggle('focused', !!this.onAuto);
+      const zone = this.zone ?? 'tiles';
+      if (this.tiles?.length) setFocused(this.tiles, zone === 'tiles' ? this.index : -1);
+      this.addBtn?.classList.toggle('focused', zone === 'add');
+      this.manageBtn?.classList.toggle('focused', zone === 'manage');
+      this.autoBtn?.classList.toggle('focused', zone === 'auto');
       if (this.autoBtn) this.autoBtn.textContent = autoLabel();
     },
     async step(d) {
@@ -215,25 +219,29 @@ export async function showPicker({ required = false } = {}) {
       switch (action) {
         case 'lb': return this.step(-1);
         case 'rb': return this.step(1);
-        case 'left': if (this.onManage || this.onAuto) return; return move(this, -1, this.list.length, true);
-        case 'right': if (this.onManage || this.onAuto) return; return move(this, 1, this.list.length, true);
+        case 'left': if ((this.zone ?? 'tiles') !== 'tiles') return; return move(this, -1, this.list.length, true);
+        case 'right': if ((this.zone ?? 'tiles') !== 'tiles') return; return move(this, 1, this.list.length, true);
         case 'down':
-          if (this.required || this.onAuto) return;
-          if (this.onManage) {
-            if (!this.autoBtn) return;
-            this.onManage = false;
-            this.onAuto = true;
-          } else this.onManage = true;
+        case 'up': {
+          // The rows under the profiles: Add profile, Manage, Sign in automatically (none of them while a protected profile waits).
+          if (this.required) return;
+          const zones = ['tiles', ...(this.addBtn ? ['add'] : []), 'manage', ...(this.autoBtn ? ['auto'] : [])];
+          const at = zones.indexOf(this.zone ?? 'tiles');
+          const next = at + (action === 'down' ? 1 : -1);
+          if (next < 0 || next >= zones.length) return;
+          this.zone = zones[next];
           sound.move?.();
           return this.update();
-        case 'up':
-          if (this.onAuto) {
-            this.onAuto = false;
-            this.onManage = true;
-          } else if (this.onManage) this.onManage = false;
-          else return;
-          sound.move?.();
-          return this.update();
+        }
+        case 'add': {
+          if (this.required) return sound.bump();
+          sound.select();
+          removePage(this);
+          this.onClose();
+          // The usual questions (name, child or adult, picture, colour) and the parents' code; a child's profile is the first choice. Then back here.
+          await addProfile();
+          return showPicker({ required: false });
+        }
         case 'auto': {
           if (this.required) return sound.bump();
           sound.select();
@@ -255,8 +263,9 @@ export async function showPicker({ required = false } = {}) {
           return openProfilesPage(push);
         }
         case 'a': {
-          if (this.onManage) return this.handle('manage');
-          if (this.onAuto) return this.handle('auto');
+          if (this.zone === 'add') return this.handle('add');
+          if (this.zone === 'manage') return this.handle('manage');
+          if (this.zone === 'auto') return this.handle('auto');
           const p = this.list[this.index];
           if (!p) return;
           sound.select();

@@ -5862,6 +5862,7 @@ html[data-bare] #status > :not(#clock) {
 .mode-chooser .profile-tile.mode-card { height: auto; padding: 0; background: none; overflow: hidden; width: min(32vw, 24rem); }
 .mode-card-picture { display: block; width: 100%; height: auto; border-radius: inherit; }
 .mode-chooser .profile-tile.chosen { border-color: color-mix(in srgb, var(--accent) 80%, transparent); }
+.mode-screen-info { list-style: none; margin: 0.2rem 0 0.8rem; padding: 0; display: flex; flex-direction: column; gap: 0.25rem; align-items: center; font-size: 0.95em; opacity: 0.85; }
 .screen-arrows { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 0.6rem 0; }
 .screen-arrows[hidden] { display: none; }
 .screen-arrows-label { min-width: 12rem; text-align: center; opacity: 0.85; }
