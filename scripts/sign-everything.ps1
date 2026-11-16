@@ -30,9 +30,11 @@ if ($LASTEXITCODE -ne 0) { throw 'dotnet publish failed.' }
 # The catalog entry is added once (from catalog/statements/<id>.entry.json); the signing step fills in hash, statement and signature.
 $indexFile = Join-Path $root 'catalog\index.json'
 $index = Get-Content $indexFile -Raw | ConvertFrom-Json -AsHashtable
-if (-not ($index.entries | Where-Object { $_.id -eq $Id })) {
-    $entry = Get-Content (Join-Path $root "catalog\statements\$Id.entry.json") -Raw | ConvertFrom-Json -AsHashtable
-    $index.entries = @($index.entries) + $entry
+$entry = Get-Content (Join-Path $root "catalog\statements\$Id.entry.json") -Raw | ConvertFrom-Json -AsHashtable
+$current = $index.entries | Where-Object { $_.id -eq $Id }
+if (-not $current -or $current.version -ne $entry.version -or $current.category -ne $entry.category) {
+    # New, or a new version / category: the entry is replaced by the template; the signing step below fills in hash, statement and signature again.
+    $index.entries = @($index.entries | Where-Object { $_.id -ne $Id }) + $entry
     $index.serial = [int]$index.serial + 1
     ($index | ConvertTo-Json -Depth 20) + "`n" | Set-Content $indexFile -Encoding utf8NoBOM
 }
@@ -55,7 +57,9 @@ Remove-Item (Join-Path $root 'catalog\index.json.unsigned') -ErrorAction Silentl
 Write-Host '5/5 Committing the signed catalog'
 git add catalog
 git commit -m "Catalog: signed $Id $version with Mega Hub's own key"
+if ($LASTEXITCODE -ne 0) { throw 'git commit failed (is your name and e-mail set? git config --global user.name / user.email).' }
 git push
+if ($LASTEXITCODE -ne 0) { throw 'git push failed: the catalog is signed but not saved to GitHub.' }
 
 if ($ReleaseTag) {
     Write-Host "Signing the release $ReleaseTag"

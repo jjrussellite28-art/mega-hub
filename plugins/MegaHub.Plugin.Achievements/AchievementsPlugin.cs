@@ -12,6 +12,9 @@ namespace MegaHub.Plugin.Achievements;
 public sealed class AchievementsPlugin : IPlugin
 {
     private const int MaxGamePages = 120;
+    /// <summary>The add-on look of every page: a deep midnight background with a gold accent (the host draws it for an add-on only).</summary>
+    private static readonly PluginPageLook AddOnLook = new("midnight", "#f5c542");
+
     private const string ListPage = "achievements";
     private const string SteamPage = "steam-setup";
 
@@ -115,6 +118,7 @@ public sealed class AchievementsPlugin : IPlugin
 
         _context.RegisterPage(new PluginPage
         {
+            Look = AddOnLook,
             Id = ListPage,
             Title = T("Erfolge", "Achievements"),
             Description = T("Fortschritt je Spiel aus Steam und lokalen Erfolgsdateien", "Progress per game from Steam and local achievement files"),
@@ -145,6 +149,7 @@ public sealed class AchievementsPlugin : IPlugin
 
         _context.RegisterPage(new PluginPage
         {
+            Look = AddOnLook,
             Id = SteamPage,
             Title = T("Steam einrichten", "Set up Steam"),
             Description = T("Vier Schritte, einmal. Danach zeigt Mega Hub deine Steam-Erfolge von selbst.", "Four steps, once. After that Mega Hub shows your Steam achievements by itself."),
@@ -376,6 +381,7 @@ public sealed class AchievementsPlugin : IPlugin
         var title = game.Name.Length > 40 ? game.Name[..40] : game.Name;
         _context.RegisterPage(new PluginPage
         {
+            Look = AddOnLook,
             Id = pageId,
             Title = title,
             Description = $"{game.Earned} / {game.Total} · {game.Percent} % · {Tier(game.Percent)}",

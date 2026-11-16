@@ -1,7 +1,7 @@
 {
   "id": "achievements",
   "folder": "MegaHub.Plugin.Achievements",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "sdk": 5,
   "minCouchHud": "0.8.0",
   "capabilities": [
