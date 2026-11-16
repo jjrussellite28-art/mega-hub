@@ -12,6 +12,7 @@
   "author": "russellite06",
   "version": "0.5.0",
   "minCouchHud": "0.8.0",
+  "category": "addons",
   "folder": "MegaHub.Plugin.Achievements",
   "homepage": "https://github.com/jjrussellite28-art/mega-hub",
   "download": "https://github.com/jjrussellite28-art/mega-hub/releases/download/achievements-0.5.0/MegaHub.Plugin.Achievements-0.5.0.zip",

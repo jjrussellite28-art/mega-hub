@@ -167,6 +167,7 @@ public static partial class Strings
         ["catalog.archiveBad"] = "Archiv fehlerhaft: {0}",
         ["catalog.badFolder"] = "Ungültiger Ordnername",
         ["catalog.skinInUse"] = "Der Skin {0} lässt sich gerade nicht entfernen, seine Dateien sind in Gebrauch",
+        ["catalog.category.addonsName"] = "Add-ons",
         ["catalog.category.smartHomeName"] = "Smart Home",
         ["catalog.category.streamingName"] = "Streaming",
         ["catalog.category.hardwareName"] = "Hardware",

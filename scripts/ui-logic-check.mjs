@@ -4686,7 +4686,12 @@ console.log('companion apps and guide apps: ok');
     { id: 'oldskin', name: 'oldskin', kind: 'skin', status: 'notInstalled' }
   ];
   // The fixed order, "other" last; unknown ids read as other (skins: skins); older hosts without the field still list.
-  assert.deepEqual(pr.CATEGORY_ORDER, ['smartHome', 'streaming', 'hardware', 'media', 'ai', 'information', 'hud', 'skins', 'other']);
+  assert.deepEqual(pr.CATEGORY_ORDER, ['addons', 'smartHome', 'streaming', 'hardware', 'media', 'ai', 'information', 'hud', 'skins', 'other']);
+  assert.equal(pr.categoryOf({ category: 'addons', kind: 'plugin' }), 'addons');
+  assert.equal(pr.pageLookStyle(null), null);
+  assert.equal(pr.pageLookStyle({ background: 'url(x)', accent: 'red' }), null);
+  assert.equal(pr.pageLookStyle({ background: '#102030' }).background, '#102030');
+  assert.ok(pr.pageLookStyle({ background: 'aurora', accent: '#ffaa00' }).background.startsWith('linear-gradient'));
   assert.equal(pr.categoryOf(e('x', 'quantum')), 'other');
   assert.equal(pr.categoryOf({ kind: 'skin' }), 'skins');
   assert.equal(pr.categoryOf({ kind: 'plugin' }), 'other');

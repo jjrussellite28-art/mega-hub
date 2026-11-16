@@ -9,6 +9,7 @@ namespace MegaHub.Core.Plugins;
 /// </summary>
 public static class CatalogCategories
 {
+    public const string Addons = "addons";
     public const string SmartHome = "smartHome";
     public const string Streaming = "streaming";
     public const string Hardware = "hardware";
@@ -20,7 +21,7 @@ public static class CatalogCategories
     public const string Other = "other";
 
     /// <summary>The order the catalog lists them in; "other" is always last.</summary>
-    public static readonly IReadOnlyList<string> All = [SmartHome, Streaming, Hardware, Media, Ai, Information, Hud, Skins, Other];
+    public static readonly IReadOnlyList<string> All = [Addons, SmartHome, Streaming, Hardware, Media, Ai, Information, Hud, Skins, Other];
 
     /// <summary>
     /// The known id for the text in the index, or the fallback: Skins for a skin, Other for a plugin. Case, dashes, underscores and spaces do not

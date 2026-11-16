@@ -4876,6 +4876,8 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             rows = PluginRows.Filter(VisibleRows(pluginId, page, locked, rows ?? [])),
             sections = page.Sections.Take(20).Where(x => !string.IsNullOrEmpty(x.Id) && x.Id.Length <= PluginRows.MaxId).Select(x => new { x.Id, Title = x.Title is { Length: > PluginRows.MaxLabel } longTitle ? longTitle[..PluginRows.MaxLabel] : x.Title, kind = PluginRows.SectionKindName(x.Kind) }).ToList(),
             actions = VisiblePageActions(pluginId, page, locked).Select(a => a.View).ToList(),
+            // An add-on's own background and accent (fixed words and colours only); a plugin gets none.
+            look = MegaHub.Core.Plugins.PluginPageLooks.Check(page.Look, plugins.KindOfId(pluginId)),
             origin = plugins.OriginOf(pluginId).ToString()
         };
     }

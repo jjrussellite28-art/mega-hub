@@ -65,9 +65,19 @@ public sealed record PluginRow(string Id, string Label)
     public double? Progress { get; init; }
 }
 
+/// <summary>
+/// The look of a page: a background and an accent colour. Only an add-on (plugin.json "kind": "addon") gets it drawn; for a plugin the host ignores it.
+/// <see cref="Background"/> is one of the host's presets ("aurora", "sunset", "forest", "midnight", "ember", "ocean") or a colour "#rrggbb";
+/// <see cref="Accent"/> is a colour "#rrggbb". Anything else is ignored. Added to SDK 5 without a new number: an older host ignores it.
+/// </summary>
+public sealed record PluginPageLook(string? Background = null, string? Accent = null);
+
 /// <summary>A full-screen list page, reachable from the plugin's entry in the settings.</summary>
 public sealed class PluginPage
 {
+    /// <summary>The page's look (background, accent). Drawn for an add-on only; see <see cref="PluginPageLook"/>.</summary>
+    public PluginPageLook? Look { get; init; }
+
     public required string Id { get; init; }
     public required string Title { get; init; }
     public string? Description { get; init; }

@@ -323,6 +323,12 @@ public sealed partial class PluginManager(IReadOnlyList<(string Dir, bool UserIn
         lock (_gate) return _grants.GetValueOrDefault(pluginId);
     }
 
+    /// <summary>"addon" or "plugin" for a plugin id (what its plugin.json stated); "plugin" when unknown.</summary>
+    public string KindOfId(string pluginId)
+    {
+        lock (_gate) return _infos.FirstOrDefault(i => string.Equals(i.Id, pluginId, StringComparison.OrdinalIgnoreCase))?.Kind ?? "plugin";
+    }
+
     /// <summary>The origin of a loaded plugin; a plugin that is not loaded counts as local (the strictest rules for a page that is not its own).</summary>
     public PluginOrigin OriginOf(string pluginId) => GrantOf(pluginId)?.Origin ?? PluginOrigin.Local;
 

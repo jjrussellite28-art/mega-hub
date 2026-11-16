@@ -5875,3 +5875,19 @@ html[data-bare] #status > :not(#clock) {
   cursor: pointer;
 }
 .mode-next.focused, .mode-next:hover { border-color: #fff; box-shadow: 0 0 1.4rem rgba(31, 111, 235, 0.8); }
+
+/* An add-on's own page look: background and accent chosen by the add-on (fixed presets or colours, cleaned by the host) */
+.plugin-page.pp-look {
+  background: var(--pp-bg, transparent);
+  border-radius: 18px;
+  padding: 18px 22px;
+}
+
+.plugin-page.pp-look .pp-bar-fill {
+  background: var(--pp-accent, currentColor);
+}
+
+.plugin-page.pp-look .pp-tile.on,
+.plugin-page.pp-look .update-section {
+  color: var(--pp-accent, inherit);
+}

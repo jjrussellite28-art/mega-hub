@@ -25,6 +25,7 @@ public sealed class CatalogCategoryTests
     [InlineData("ai", "ai")]
     [InlineData("information", "information")]
     [InlineData("hud", "hud")]
+    [InlineData("Add-ons", "addons")]
     [InlineData("skins", "skins")]
     [InlineData("other", "other")]
     public void A_known_category_is_taken_as_the_core_names_it(string raw, string expected) =>

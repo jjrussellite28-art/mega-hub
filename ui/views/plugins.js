@@ -445,11 +445,11 @@ export function pluginsPage(startTab = 0, { expert = false, openId = null } = {}
     const size = sizeText(e);
     const version = e.status === 'update' ? `${e.installedVersion} → ${e.version}` : e.version;
     return {
-      icon: status.icon === '⬇' || status.icon === '⬆' ? (e.kind === 'skin' ? '🎨' : '🧩') : status.icon,
+      icon: status.icon === '⬇' || status.icon === '⬆' ? (e.kind === 'skin' ? '🎨' : e.category === 'addons' ? '▣' : '🧩') : status.icon,
       img: safeImage(e.icon),
       label: e.name,
       detail: stateNote(e, installed) ?? e.description,
-      meta: [e.kind === 'skin' ? t('plugins.kind.skin') : t('plugins.kind.plugin'), publisherOf(e) ? t('plugins.by', { author: publisherOf(e) }) : null, `v${version}`, size].filter(Boolean).join(' · '),
+      meta: [e.kind === 'skin' ? t('plugins.kind.skin') : e.category === 'addons' ? t('plugins.kind.addon') : t('plugins.kind.plugin'), publisherOf(e) ? t('plugins.by', { author: publisherOf(e) }) : null, `v${version}`, size].filter(Boolean).join(' · '),
       badge,
       badgeClass: badge ? 'warn' : '',
       value: status.value,
@@ -757,11 +757,11 @@ function entryDetailPage(entry, store, { expert, setPlugins }) {
       const badge = badgeText(e);
       const block = installBlock(e, { expert });
       rows.push({
-        icon: e.kind === 'skin' ? '🎨' : '🧩',
+        icon: e.kind === 'skin' ? '🎨' : e.category === 'addons' ? '▣' : '🧩',
         img: safeImage(e.icon),
         label: `${e.name} ${e.version}`,
         detail: [publisherOf(e) ? t('plugins.by', { author: publisherOf(e) }) : null, sizeText(e), e.license].filter(Boolean).join(' · ') || null,
-        meta: e.kind === 'skin' ? t('plugins.kind.skin') : t('plugins.kind.plugin'),
+        meta: e.kind === 'skin' ? t('plugins.kind.skin') : e.category === 'addons' ? t('plugins.kind.addon') : t('plugins.kind.plugin'),
         badge,
         badgeClass: badge ? 'warn' : '',
         value: STATUS()[entryState(e, installed)].value,

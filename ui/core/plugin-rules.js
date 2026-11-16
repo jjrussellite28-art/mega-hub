@@ -356,7 +356,7 @@ export const isPageSetting = (s) => s?.kind === 'page';
 // filters by it. An id this version does not know reads as "other" (skins: "skins"), so a newer index never breaks the list.
 
 /** The order the catalog lists the categories in; 'other' is always last (the same list as CatalogCategories.All in the core). */
-export const CATEGORY_ORDER = ['smartHome', 'streaming', 'hardware', 'media', 'ai', 'information', 'hud', 'skins', 'other'];
+export const CATEGORY_ORDER = ['addons', 'smartHome', 'streaming', 'hardware', 'media', 'ai', 'information', 'hud', 'skins', 'other'];
 
 /** The category id of a row: a known one as the host sent it, else 'skins' for a skin and 'other' for anything else. */
 export const categoryOf = (entry) => (CATEGORY_ORDER.includes(entry?.category) ? entry.category : entry?.kind === 'skin' ? 'skins' : 'other');
@@ -393,4 +393,26 @@ export function categoryGroups(entries, filter = 'all') {
   return categoriesIn(entries)
     .filter((c) => wanted === 'all' || c.id === wanted)
     .map((c) => ({ id: c.id, label: c.label, entries: (entries ?? []).filter((e) => categoryOf(e) === c.id).sort(byName) }));
+}
+
+// ---------------------------------------------------------------------------
+// The look of an add-on's page: the host sends { background, accent } (fixed preset words or "#rrggbb"), already cleaned; this only turns it into CSS.
+
+/** The presets an add-on page may use as a background (the same words as PluginPageLooks.Presets in the core). */
+export const PAGE_BACKGROUNDS = {
+  aurora: 'linear-gradient(135deg, #0b1f2e 0%, #14464f 50%, #2a1f55 100%)',
+  sunset: 'linear-gradient(160deg, #2a1033 0%, #6b2a4a 55%, #c2603a 100%)',
+  forest: 'linear-gradient(160deg, #0a1f14 0%, #17402a 60%, #2c5a3a 100%)',
+  midnight: 'linear-gradient(160deg, #05070f 0%, #0d1530 100%)',
+  ember: 'linear-gradient(160deg, #1a0a08 0%, #4a1a10 60%, #8a3a14 100%)',
+  ocean: 'linear-gradient(160deg, #04141f 0%, #0a3550 60%, #1a6a8a 100%)'
+};
+
+/** CSS values for a page look: { background, accent } with only valid ones set; null when there is nothing to draw. */
+export function pageLookStyle(look) {
+  if (!look || typeof look !== 'object') return null;
+  const colour = (v) => (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v) ? v : null);
+  const bg = typeof look.background === 'string' ? (PAGE_BACKGROUNDS[look.background] ?? colour(look.background)) : null;
+  const accent = colour(look.accent);
+  return bg || accent ? { background: bg, accent } : null;
 }

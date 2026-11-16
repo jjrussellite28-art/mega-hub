@@ -12,7 +12,7 @@ import { settler } from '../core/settle.js';
 import { sound } from '../sound.js';
 import { withParentGrant } from '../core/parent-retry.js';
 import { t } from '../core/i18n.js';
-import { pageSync, currentOption, formatStepper, groupRows, layoutLines, parseStepper, pressKind, progressOf, safeImage, sectionColumns, stepValue } from '../core/plugin-rules.js';
+import { pageLookStyle, pageSync, currentOption, formatStepper, groupRows, layoutLines, parseStepper, pressKind, progressOf, safeImage, sectionColumns, stepValue } from '../core/plugin-rules.js';
 
 // Pages that are open, so a push from the plugin ("this page changed") redraws the one on screen.
 const open = new Set();
@@ -184,9 +184,13 @@ export function declarativePage(plugin, pageInfo, { asTab = false } = {}) {
       this.r = Math.min(this.r, Math.max(0, this.lines.length - 1));
       this.c = Math.min(this.c, Math.max(0, (this.lines[this.r]?.length ?? 1) - 1));
       this.scroller = el('div', { className: 'pp-scroll list-scroll' }, content.length ? content : el('p', { className: 'empty-note', textContent: t('plugins.page.empty') }));
-      root.append(el('div', { className: 'files plugin-page' },
+      const look = pageLookStyle(data.look);
+      const pageNode = el('div', { className: `files plugin-page${look ? ' pp-look' : ''}` },
         el('div', { className: 'files-head' }, el('h2', { textContent: data.title || pageInfo.title }), data.description ?? pageInfo.description ? el('p', { className: 'meta', textContent: data.description ?? pageInfo.description }) : null),
-        this.scroller));
+        this.scroller);
+      if (look?.background) pageNode.style.setProperty('--pp-bg', look.background);
+      if (look?.accent) pageNode.style.setProperty('--pp-accent', look.accent);
+      root.append(pageNode);
       this.update({ instant: true });
     },
     /** Asks the host for the page (first open, or after the plugin said it changed). */
