@@ -4487,6 +4487,9 @@ body[data-view="terms"] #notify-stack .notify-card:not(.security) {
   filter: drop-shadow(0 0 0.8rem var(--accent-glow));
 }
 
+.wizard-warn { margin: 1rem 0; padding: 1rem 1.4rem; border-radius: 1rem; border: 3px solid #ff5a1f; background: rgba(255, 90, 31, 0.18); color: #ffd2bd; text-align: center; }
+.wizard-warn strong { display: block; font-size: 1.5em; font-weight: 900; letter-spacing: 0.04em; color: #ff7a3d; text-transform: uppercase; }
+.wizard-warn p { margin: 0.4rem 0 0; font-size: 1.15em; font-weight: 800; }
 .wizard-lead {
   max-width: 56rem;
   color: var(--muted);

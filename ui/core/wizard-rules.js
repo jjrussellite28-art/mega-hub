@@ -8,7 +8,7 @@ import { lockStepStatus } from './lock-rules.js';
 
 /** All steps in the order they are asked. Which of them apply right now is decided by applies(). */
 export const SEQUENCE = [
-  'welcome', 'terms', 'areas', 'updates', 'mode',
+  'welcome', 'terms', 'adult', 'areas', 'updates', 'mode',
   'revert', 'shell', 'lock', 'autologon', 'launchers', 'winkey',
   'look', 'sound', 'soundset', 'startask', 'startup', 'clientsInfo', 'clients', 'tv',
   'summary', 'result'
@@ -73,6 +73,8 @@ export function applies(id, ctx) {
   const choices = ctx.choices ?? freshChoices();
   switch (id) {
     case 'terms': return !!ctx.withTerms;
+    // First run (also after a factory reset) with no code yet: the adult's profile and code come first.
+    case 'adult': return !!ctx.withTerms && !ctx.hasCode;
     case 'revert': return ctx.intent === 'light';
     case 'shell': return ctx.intent === 'full';
     // Shell needs the lock; an install already in shell mode without one is asked too (it can say later).

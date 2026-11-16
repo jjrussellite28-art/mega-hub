@@ -1657,8 +1657,11 @@ for (const a of AREAS) assert.ok(AREA_NAME_KEYS[a] && AREA_DESC_KEYS[a], a);
   assert.ok(!W.order(ctx({ intent: 'full', lockOn: true })).includes('lock'));
   // The notice is a step on the first start only; accepted, it is skipped when going on and back.
   assert.equal(W.order(ctx({ withTerms: true, termsAccepted: false }))[1], 'terms');
-  assert.equal(W.nextOf('welcome', ctx({ withTerms: true, termsAccepted: true })), 'areas');
-  assert.equal(W.prevOf('areas', ctx({ withTerms: true, termsAccepted: true })), 'welcome');
+  assert.equal(W.nextOf('welcome', ctx({ withTerms: true, termsAccepted: true })), 'adult');
+  assert.equal(W.prevOf('areas', ctx({ withTerms: true, termsAccepted: true })), 'adult');
+  // The adult's step comes on a first run with no code yet, never once a code exists.
+  assert.equal(W.nextOf('welcome', ctx({ withTerms: true, termsAccepted: true, hasCode: true })), 'areas');
+  assert.ok(!W.order(ctx()).includes('adult'));
   // The game clients: the explanation first, the list only when "set up" was chosen, nothing without Gaming or clients.
   assert.ok(!W.order(ctx({ full: true })).includes('clients'));
   assert.ok(W.order(ctx({ full: true, choices: { ...W.freshChoices(), clients: 'adjust' } })).includes('clients'));

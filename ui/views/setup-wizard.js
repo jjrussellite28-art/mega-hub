@@ -30,7 +30,7 @@ import { iconEl } from '../core/glyph-icons.js';
 import { categoryIcon } from './settings-icons.js';
 import { setPointer } from '../components/mouse.js';
 import { confirmDialog } from '../components/overlay.js';
-import { ensureUnlocked } from '../components/passcode.js';
+import { choosePasscode, ensureUnlocked } from '../components/passcode.js';
 import { admitProtectedChange, configFaultNow } from '../core/lock-rules.js';
 import { BG_STYLES, MODE_CARDS, getLook, setLook } from '../core/look-prefs.js';
 import { SOUND_SETS, setAudioMode, setSoundSet, sound } from '../sound.js';
@@ -170,6 +170,31 @@ function steps(page) {
     terms: {
       // The existing first-start notice is this step: same texts, same accept and decline.
       enter: () => page.openTerms()
+    },
+    adult: {
+      // First run (also after a factory reset): the first profile is the adult's and gets the code. Children get limited profiles later.
+      glyph: '🔑',
+      title: () => t('wizard.adult.title'),
+      lead: () => t('wizard.adult.lead'),
+      warn: { title: () => t('wizard.adult.warnTitle'), text: () => t('wizard.adult.warnText') },
+      later: () => where('settings.cat.lock'),
+      options: () => [
+        {
+          id: 'adult', button: true, action: true, primary: true, title: t('wizard.adult.yes'), sub: t('wizard.adult.yesSub'),
+          run: async () => {
+            const code = await choosePasscode();
+            if (!code) return;
+            const done = await attempt(() => api.setPasscode(code), t('settings.lock.codeNotSaved'));
+            return done ? 'next' : undefined;
+          }
+        },
+        {
+          id: 'parent', button: true, action: true, safe: true, title: t('wizard.adult.parent'), sub: t('wizard.adult.parentSub'),
+          run: () => {
+            toast(t('wizard.adult.parentToast'), 6000);
+          }
+        }
+      ]
     },
     areas: {
       glyph: '▦',
@@ -528,6 +553,7 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
       const env = this.env;
       return {
         withTerms: this.withTerms,
+        hasCode: !!env.security?.hasPasscode,
         termsAccepted: termsAccepted(),
         intent: this.intent,
         full: isFull(env),
@@ -787,7 +813,9 @@ function wizardPage({ firstRun = false, startAt = null } = {}) {
             ? el('div', { className: 'wizard-logo' }, el('img', { src: 'assets/mega-hub-icon.png', alt: '' }), el('span', { className: 'wizard-brand' }, 'Mega ', el('b', { textContent: 'Hub' })))
             : el('span', { className: 'wizard-icon' }, def.glyph ? iconEl(def.glyph) : categoryIcon(def.icon)),
           el('h2', { textContent: def.title() }),
-          def.lead ? el('p', { className: 'wizard-lead', textContent: def.lead() }) : null),
+          def.lead ? el('p', { className: 'wizard-lead', textContent: def.lead() }) : null,
+          // A loud banner (red-orange, bold) for a step whose warning must be read.
+          def.warn ? el('div', { className: 'wizard-warn', role: 'alert' }, el('strong', { textContent: def.warn.title() }), el('p', { textContent: def.warn.text() })) : null),
         el('div', { className: 'wizard-body' }, doc, doc ? el('p', { className: 'wizard-more', textContent: `↓ ${t('wizard.doc.more')}` }) : null,
           this.loaded ? lines : el('p', { className: 'wizard-lead', textContent: t('wizard.loading') })),
         !doc && def.note?.() ? el('p', { className: 'wizard-note' }, categoryIcon('shield'), def.note()) : null,
