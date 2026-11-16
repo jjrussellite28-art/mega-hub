@@ -156,7 +156,7 @@ public static class MegaHubIndexSerial
 }
 
 $signedBytes = if ($newBytes) { $newBytes } else { $bytes }
-$prefix = [Text.Encoding]::ASCII.GetBytes("megahub-$Context-v1`n")
+$prefix = [Text.Encoding]::ASCII.GetBytes("couchhud-$Context-v1`n")
 try {
     $signature = $ecdsa.SignData([byte[]]($prefix + $signedBytes), [System.Security.Cryptography.HashAlgorithmName]::SHA256)
 
