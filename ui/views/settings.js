@@ -1868,6 +1868,16 @@ function categories() {
         )
       ]
     },
+    // Profiles: the automatic sign-in (skips the profile picker) and the profile management.
+    {
+      id: 'profiles',
+      icon: 'parental',
+      name: t('settings.cat.profiles'),
+      items: [
+        toggle('profileAutoSignIn', t('settings.profiles.auto'), t('settings.profiles.autoDesc')),
+        profilesAction()
+      ]
+    },
     {
       id: 'notifications',
       icon: 'bell',

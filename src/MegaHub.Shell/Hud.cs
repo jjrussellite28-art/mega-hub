@@ -2854,6 +2854,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             remoteEnabled = c.RemoteEnabled,
             remotePower = c.RemotePower,
             mirrorNotifications = c.MirrorNotifications,
+            profileAutoSignIn = c.ProfileAutoSignIn,
             notificationStatus = _windowsNotifications?.Status ?? "off",
             isShell = shell.IsInstalledAsShell(),
             configPath = config.FilePath,

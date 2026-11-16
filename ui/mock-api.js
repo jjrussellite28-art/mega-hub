@@ -504,7 +504,7 @@ const settings = { padGlyphs: new URLSearchParams(location.search).get('glyphs')
   aiProviders: [{ id: 'anthropic', name: 'Anthropic (Claude)', models: ['claude-sonnet-5-5', 'claude-opus-5-5', 'claude-haiku-5-5'], keySet: true }, { id: 'openai', name: 'OpenAI (GPT)', models: ['gpt-5', 'gpt-5-mini'], keySet: false }],
   mcpEnabled: true, mcpLan: true, mcpPort: 8765, mcpToken: '3f9c1e7a5b2d48e6a0c4f1b7d9e2a6c8b5f0e3d1a7c9b2e4',
   mcpUrls: ['http://localhost:8765/mcp', 'http://192.168.178.42:8765/mcp'], remoteEnabled: true, remotePower: true,
-  mirrorNotifications: true, notificationStatus: 'allowed', nightMode: 'evening', nightModeStrength: 50, soundVolume: 70, soundSet: '', uiHdr: 'auto' };
+  mirrorNotifications: true, profileAutoSignIn: false, notificationStatus: 'allowed', nightMode: 'evening', nightModeStrength: 50, soundVolume: 70, soundSet: '', uiHdr: 'auto' };
 
 // A small fake file system for the file browser and folder scan.
 const folder = (...names) => names.map((n) => ({ name: n, kind: 'folder' }));
