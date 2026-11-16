@@ -760,7 +760,7 @@ function modeDesc(s) {
 
 /** Whether the console setup is complete: the main switches, and (read in the background) every single step. */
 function consoleState(s) {
-  const switchesOn = isConsoleReady(s, security);
+  const switchesOn = isConsoleReady(s, security, { autologon: !s.autoLogonDeclined });
   // The main switches alone do not say that: a step such as the services can have failed.
   const open = switchesOn ? consoleOpen : null;
   const incomplete = !!open?.length;

@@ -698,7 +698,8 @@ function setupSteps({ pauseServices = false } = {}) {
       requires: ['lock', 'shell'],
       admin: true,
       // An account without a password signs in by itself: nothing to set up (the overview says so).
-      check: (env) => (env.security.accountPassword === false ? 'na' : env.security.autoLogon && env.security.autoLogonState === 'megahub' && !env.security.autoLogonOtherUser ? 'done' : 'todo'),
+      // Declined on purpose (the person signs in with the Windows PIN): nothing to set up either, so Shell mode counts as finished.
+      check: (env) => (env.security.accountPassword === false || env.settings.autoLogonDeclined ? 'na' : env.security.autoLogon && env.security.autoLogonState === 'megahub' && !env.security.autoLogonOtherUser ? 'done' : 'todo'),
       run: async (env, deps) => {
         const done = await deps.setupAutoLogon();
         const security = await attempt(() => api.getSecurity());
