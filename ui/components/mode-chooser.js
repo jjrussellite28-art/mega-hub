@@ -40,6 +40,9 @@ export function showModeChooser() {
     busy: false,
     // LB/RB (Page Up/Down) move Mega Hub to the next screen here; after this page they switch tabs again.
     captures: (action) => action === 'lb' || action === 'rb',
+    // The tiles, chips and Next button handle their own clicks (onclick below). Without this the app's general mouse handler counted a click on a
+    // tile a second time as "A" on whatever the first click had moved to, which opened the Display chip.
+    pointer() {},
     build(root) {
       // The original tiles by default; the picture cards (name and logo are in them) when chosen in the setup or the settings.
       const art = getLook('modeCards') === 'art';
