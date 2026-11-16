@@ -213,7 +213,7 @@ export function setBarTabsHidden(view) {
   if (!refs) return;
   // First-run setup and the start choice: no tabs; during setup also no bell or unlock button (only the clock).
   const bare = view === 'setup-wizard' || view === 'terms';
-  refs.nav.toggleAttribute('data-hidden', bare || view === 'mode-chooser');
+  refs.nav.toggleAttribute('data-hidden', bare || view === 'mode-chooser' || view === 'profile-picker');
   html.toggleAttribute('data-bare', bare);
   refs.nav.toggleAttribute('data-noshoulder', view === 'keyboard' || view === 'passcode');
 }

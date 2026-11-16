@@ -5854,6 +5854,11 @@ html[data-bare] #status > :not(#clock) {
 .mode-chooser .profile-tile.mode-card { height: auto; padding: 0; background: none; overflow: hidden; width: min(32vw, 24rem); }
 .mode-card-picture { display: block; width: 100%; height: auto; border-radius: inherit; }
 .mode-chooser .profile-tile.chosen { border-color: color-mix(in srgb, var(--accent) 80%, transparent); }
+.screen-arrows { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 0.6rem 0; }
+.screen-arrows[hidden] { display: none; }
+.screen-arrows-label { min-width: 12rem; text-align: center; opacity: 0.85; }
+.screen-arrow { background: color-mix(in srgb, var(--fg) 12%, transparent); color: var(--fg); border: 2px solid transparent; border-radius: 0.8rem; padding: 0.4rem 1.1rem; font-size: 1.1rem; cursor: pointer; }
+.screen-arrow:hover { border-color: var(--fg); }
 .mode-screens { list-style: none; display: flex; gap: 0.8rem; margin: 0; padding: 0; }
 .mode-screen {
   padding: 0.5rem 1.2rem;

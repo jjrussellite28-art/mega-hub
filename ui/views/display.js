@@ -55,7 +55,7 @@ export async function chooseScreen() {
 }
 
 /** PC screen only, the same picture on both (mirror), use both (extend) or the second screen only: Windows' own switch. */
-export async function chooseLayout() {
+export async function chooseLayout({ guard = true } = {}) {
   const pick = await chooseDialog(t('display.layout.label'), [
     { label: t('display.layout.internal'), detail: t('display.layout.internalDetail'), value: 'internal' },
     { label: t('display.layout.clone'), detail: t('display.layout.cloneDetail'), value: 'clone' },
@@ -64,7 +64,8 @@ export async function chooseLayout() {
   ]);
   if (!pick) return false;
   if (!(await confirmDialog(t('display.layout.confirm'), t('display.layout.apply')))) return false;
-  if (!(await ensureUnlocked(t('display.guard')))) return false;
+  // The start choice asks for no code (it comes only after Next); the settings still do.
+  if (guard && !(await ensureUnlocked(t('display.guard')))) return false;
   const done = await attempt(async () => { await api.setScreenLayout(pick); return true; }, t('display.layout.failed'));
   if (!done) return false;
   // Windows needs a moment to switch; ask again afterwards so the list shows what is connected now.

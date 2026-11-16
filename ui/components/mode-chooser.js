@@ -12,6 +12,7 @@ import { getLook } from '../core/look-prefs.js';
 import { chooseLayout, listScreens } from '../views/display.js';
 import { confirmDialog } from './overlay.js';
 import { ensureUnlocked } from './passcode.js';
+import { bindSideButtons, screenArrows, stepScreen } from './screen-switch.js';
 
 // i18n-used: modeask.couch modeask.couchHint modeask.pc modeask.pcHint
 const CHOICES = [
@@ -36,6 +37,8 @@ export function showModeChooser() {
     screenIndex: 1,
     screens: [],
     busy: false,
+    // LB/RB (Page Up/Down) move Mega Hub to the next screen here; after this page they switch tabs again.
+    captures: (action) => action === 'lb' || action === 'rb',
     build(root) {
       // The original tiles by default; the picture cards (name and logo are in them) when chosen in the setup or the settings.
       const art = getLook('modeCards') === 'art';
@@ -49,17 +52,24 @@ export function showModeChooser() {
       // The mouse works as well: a click takes the mode (like A) and goes down to the next row.
       this.tiles.forEach((tile, i) => { tile.onclick = () => this.pick(ROW_MODES, i); });
       this.screenRow = el('ul', { className: 'mode-screens' });
+      this.arrows = screenArrows((d) => this.step(d));
+      this.unbind = bindSideButtons((d) => this.step(d));
       this.nextBtn = el('button', { className: 'mode-next', type: 'button', textContent: t('modeask.next'), onclick: () => this.next() });
       root.append(el('div', { className: 'profile-picker mode-chooser' },
         el('h2', { textContent: t('modeask.title') }),
         el('ul', { className: 'profile-tiles' }, this.tiles),
         el('p', { className: 'profile-greeting', textContent: t('modeask.screens') }),
         this.screenRow,
+        this.arrows,
         this.nextBtn));
       this.update();
       // The list of screens comes from the host; with one screen the section stays out.
       listScreens().then((list) => {
         this.screens = list ?? [];
+        // One screen by default: the one Mega Hub is on now (else the Windows main screen); mirroring stays a choice.
+        const here = this.screens.find((s) => s.chosen) ?? this.screens.find((s) => s.primary);
+        if (here) this.screenIndex = 2 + this.screens.indexOf(here);
+        this.arrows.set(this.screens);
         this.update();
         // Several screens: every screen shows this page and its "Screen N" label, so it can be chosen from the couch.
         if (this.screens.length > 1) attempt(() => api.screenOverlay?.(true));
@@ -67,7 +77,7 @@ export function showModeChooser() {
     },
     options() {
       // The first chip is the display settings (screens together: one, same picture, both); always there, also with one screen.
-      return [{ label: `⚙ ${t('modeask.display')}`, display: true, number: 0 }, { label: t('modeask.allScreens'), number: 0 }, ...this.screens.map((s) => ({ label: t('display.screen.number', { n: s.number }), number: s.number }))];
+      return [{ label: `⚙ ${t('modeask.display')}`, display: true, number: 0 }, { label: t('modeask.allScreens'), number: 0 }, ...this.screens.map((s) => ({ label: `${t('display.screen.number', { n: s.number })}${s.primary ? ` · ${t('screens.main')}` : ''}`, number: s.number }))];
     },
     update() {
       if (!this.tiles) return;
@@ -86,11 +96,29 @@ export function showModeChooser() {
       else this.screenIndex = index;
       return this.handle('a');
     },
+    /** LB/RB, the mouse's side buttons, Page Up/Down and the arrows: Mega Hub moves to the next screen, right away and without a code. */
+    async step(d) {
+      if (this.busy) return;
+      this.busy = true;
+      try {
+        const list = await stepScreen(d);
+        if (list) {
+          this.screens = list;
+          const now = list.find((s) => s.chosen);
+          if (now) this.screenIndex = 2 + list.indexOf(now);
+          this.arrows.set(list);
+          attempt(() => api.screenOverlay?.(true));
+        }
+      } finally {
+        this.busy = false;
+        this.update();
+      }
+    },
     /** The display settings chip: how the screens work together; afterwards the list of screens is read again. */
     async changeDisplay() {
       this.busy = true;
       try {
-        if (await chooseLayout()) {
+        if (await chooseLayout({ guard: false })) {
           this.screens = (await listScreens()) ?? [];
           if (this.screenIndex >= this.options().length) this.screenIndex = 1;
         }
@@ -100,6 +128,7 @@ export function showModeChooser() {
       }
     },
     onClose() {
+      this.unbind?.();
       attempt(() => api.screenOverlay?.(false));
     },
     async next() {
@@ -154,6 +183,10 @@ export function showModeChooser() {
           sound.move?.();
           return this.update();
         }
+        case 'lb':
+          return this.step(-1);
+        case 'rb':
+          return this.step(1);
         case 'b':
           return sound.bump();
         case 'a':
@@ -167,7 +200,7 @@ export function showModeChooser() {
       }
     },
     hints() {
-      return [['A', t('modeask.hintChoose')], ['↕', t('modeask.hintRows')]];
+      return [['A', t('modeask.hintChoose')], ['↕', t('modeask.hintRows')], ...(this.screens.length > 1 ? [['LB RB', t('screens.hintSwitch')]] : [])];
     }
   };
   push(page);

@@ -321,6 +321,7 @@ public static partial class Strings
         ["hud.noUninstaller"] = "Kein Deinstallationsprogramm gefunden",
         ["hud.notInstalled"] = "{0} ist nicht installiert",
         ["screens.label"] = "Bildschirm {0}",
+        ["screens.main"] = "Hauptbildschirm",
         ["hud.offOrAllow"] = "off oder allow",
         ["hud.played"] = "{0} gespielt · insgesamt {1}",
         ["hud.range"] = "{0}: {1} bis {2}",

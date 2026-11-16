@@ -21,6 +21,8 @@ import { addQuickRows, closeQuickMenu } from './quick-menu.js';
 import { onScreensaverStop, screensaverShowing } from '../core/screensaver.js';
 import { ART_IDS, artUrl, pictureOf, randomArt } from '../core/avatar-art.js';
 import { openFileBrowser } from './file-browser.js';
+import { bindSideButtons, screenArrows, stepScreen } from './screen-switch.js';
+import { listScreens } from '../views/display.js';
 
 // The same presets as ProfileLooks in Core (the host refuses anything else).
 const AVATARS = { fox: '🦊', panda: '🐼', frog: '🐸', lion: '🦁', octopus: '🐙', rocket: '🚀', cat: '🐱', dog: '🐶', unicorn: '🦄', robot: '🤖', alien: '👽', star: '⭐' };
@@ -144,10 +146,12 @@ export async function showPicker({ required = false } = {}) {
     sticky: required,
     index: Math.max(0, data.profiles.findIndex((p) => p.active)),
     busy: false,
-    captures() {
-      return this.required;
+    // LB/RB move Mega Hub to the next screen here (and nowhere else); a required picker also keeps every other key.
+    captures(action) {
+      return this.required || action === 'lb' || action === 'rb';
     },
     onClose() {
+      this.unbind?.();
       if (picker === this) picker = null;
       state.pickerHold = false;
       screen(false);
@@ -159,12 +163,15 @@ export async function showPicker({ required = false } = {}) {
     },
     build(root) {
       this.list = profiles.data?.profiles ?? [];
+      this.arrows = screenArrows((d) => this.step(d));
+      this.unbind = bindSideButtons((d) => this.step(d));
+      listScreens().then((l) => this.arrows.set(l)).catch(() => {});
       this.index = Math.min(this.index, Math.max(0, this.list.length - 1));
       this.tiles = this.list.map((p) => {
         const tile = el('li', { className: 'profile-tile' },
           avatarEl(p, true),
           el('strong', { className: 'profile-name', textContent: nameOf(p) }),
-          el('small', { className: 'profile-role', textContent: kidProfile(p) ? t('profiles.child') : t('profiles.adult') }),
+          el('small', { className: 'profile-role', textContent: kidProfile(p) ? t('profiles.child') : '' }),
           el('small', { className: 'profile-lock', textContent: p.hasCode ? '🔒' : kidProfile(p) ? '⏳' : '' }));
         // The card takes the profile's color (one of the fixed presets, see colorOf).
         tile.style.setProperty('--profile-color', colorOf(p));
@@ -176,6 +183,7 @@ export async function showPicker({ required = false } = {}) {
         el('h2', { textContent: t('profiles.pickerTitle') }),
         el('p', { className: 'meta', textContent: d?.gameRunning ? t('profiles.gameRunningHint') : d?.exhausted ? t('profiles.exhaustedHint') : t('profiles.pickerHint') }),
         el('ul', { className: 'profile-tiles' }, this.tiles),
+        this.arrows,
         this.manageBtn = el('button', { className: 'profile-manage', type: 'button', textContent: t('profiles.managePicker'), onclick: () => this.handle('manage') }),
         // Not while a protected profile waits for its code: nothing may be changed in front of it.
         this.required ? null : this.autoBtn = el('button', { className: 'profile-manage', type: 'button', title: t('profiles.autoHint'), textContent: autoLabel(), onclick: () => this.handle('auto') })));
@@ -187,9 +195,21 @@ export async function showPicker({ required = false } = {}) {
       this.autoBtn?.classList.toggle('focused', !!this.onAuto);
       if (this.autoBtn) this.autoBtn.textContent = autoLabel();
     },
+    async step(d) {
+      if (this.busy) return;
+      this.busy = true;
+      try {
+        const list = await stepScreen(d);
+        if (list) this.arrows.set(list);
+      } finally {
+        this.busy = false;
+      }
+    },
     async handle(action) {
       if (this.busy) return;
       switch (action) {
+        case 'lb': return this.step(-1);
+        case 'rb': return this.step(1);
         case 'left': if (this.onManage || this.onAuto) return; return move(this, -1, this.list.length, true);
         case 'right': if (this.onManage || this.onAuto) return; return move(this, 1, this.list.length, true);
         case 'down':

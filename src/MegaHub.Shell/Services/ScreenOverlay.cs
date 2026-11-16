@@ -27,12 +27,12 @@ internal sealed class ScreenOverlay
         var mainMonitor = NativeMethods.MonitorFromWindow(mainWindow, NativeMethods.MonitorDefaultToNearest);
         for (var i = 0; i < screens.Count; i++)
         {
-            var (monitor, bounds) = screens[i];
+            var (monitor, bounds, primary) = screens[i];
             var isMain = monitor == mainMonitor;
             try
             {
                 if (mirror && !isMain) AddMirror(mainWindow, bounds, screens.First(s => s.Monitor == mainMonitor).Bounds);
-                if (labels) AddLabel(i + 1, bounds);
+                if (labels) AddLabel(i + 1, bounds, primary);
             }
             catch (Exception ex) when (ex is InvalidOperationException or COMException or System.ComponentModel.Win32Exception)
             {
@@ -52,13 +52,13 @@ internal sealed class ScreenOverlay
         _windows.Clear();
     }
 
-    private static List<(IntPtr Monitor, NativeMethods.Rect Bounds)> Monitors()
+    private static List<(IntPtr Monitor, NativeMethods.Rect Bounds, bool Primary)> Monitors()
     {
-        var found = new List<(IntPtr, NativeMethods.Rect)>();
+        var found = new List<(IntPtr, NativeMethods.Rect, bool)>();
         NativeMethods.EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (monitor, _, _, _) =>
         {
             var info = new NativeMethods.MonitorInfo { Size = Marshal.SizeOf<NativeMethods.MonitorInfo>() };
-            if (NativeMethods.GetMonitorInfo(monitor, ref info)) found.Add((monitor, info.Monitor));
+            if (NativeMethods.GetMonitorInfo(monitor, ref info)) found.Add((monitor, info.Monitor, (info.Flags & 1) != 0));
             return true;
         }, IntPtr.Zero);
         // The same order as DisplayService.Screens: from the left.
@@ -119,7 +119,7 @@ internal sealed class ScreenOverlay
     }
 
     /// <summary>"Screen N" in big letters at the top middle of the screen.</summary>
-    private void AddLabel(int number, NativeMethods.Rect bounds)
+    private void AddLabel(int number, NativeMethods.Rect bounds, bool primary)
     {
         var width = bounds.Right - bounds.Left;
         var label = new System.Windows.Controls.Border
@@ -132,7 +132,7 @@ internal sealed class ScreenOverlay
             Margin = new Thickness(0, 40, 0, 0),
             Child = new TextBlock
             {
-                Text = MegaHub.Core.Localization.Strings.Get("screens.label", number),
+                Text = MegaHub.Core.Localization.Strings.Get("screens.label", number) + (primary ? " · " + MegaHub.Core.Localization.Strings.Get("screens.main") : ""),
                 Foreground = System.Windows.Media.Brushes.White,
                 FontSize = Math.Max(48, width / 22.0),
                 FontWeight = FontWeights.Bold

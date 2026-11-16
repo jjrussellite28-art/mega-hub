@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { clampPaste, remoteView } from '../ui/core/paste.js';
 import { CODE_KEYS, holdsDialogs, isCodeEntry, padHelp, screenHeld, shouldShowCodeKeys, splitStack, switchOffWarning, tabClickAllowed } from '../ui/core/input-help.js';
 import { step } from '../ui/core/paging.js';
+import { stepNumber } from '../ui/core/screen-rules.js';
 import { MORE, POWER_START, SLEEP_TIMER, forMode as powerForMode, isDangerous, isSecondary, powerEntryIds, powerIndex, powerLayout } from '../ui/core/power-rules.js';
 import { DEFAULT_TIMER_ACTION, TIMER_ACTIONS, TIMER_WARN_MS, timerAction, timerTexts, timerUnlock, warnDelay } from '../ui/core/sleep-timer-rules.js';
 import { gridMove, groupRows } from '../ui/core/menu-grid.js';
@@ -4887,3 +4888,11 @@ console.log('boot input gate: ok');
   }
 }
 console.log('item locks per profile or for all children: ok');
+{
+  const two = [{ number: 1, chosen: true }, { number: 2, primary: true }];
+  assert.equal(stepNumber(two, 1), 2);
+  assert.equal(stepNumber(two, -1), 2);
+  assert.equal(stepNumber([{ number: 1 }, { number: 2, primary: true }, { number: 3 }], 1), 3);
+  assert.equal(stepNumber([{ number: 1, chosen: true }], 1), null);
+}
+console.log('start screen switching: ok');
