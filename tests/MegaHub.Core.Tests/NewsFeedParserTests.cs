@@ -25,6 +25,22 @@ public class NewsFeedParserTests
     }
 
     [Fact]
+    public void A_picture_is_found_in_an_enclosure_without_type_a_relative_address_or_a_lazy_image()
+    {
+        var xml = """
+            <rss version="2.0"><channel><title>T</title>
+            <item><title>A</title><link>https://example.org/news/a</link><enclosure url="https://example.org/pic.PNG"/></item>
+            <item><title>B</title><link>https://example.org/news/b</link><description><![CDATA[<img src="/img/b.jpg">]]></description></item>
+            <item><title>C</title><link>https://example.org/news/c</link><description><![CDATA[<img data-src="//cdn.example.org/c.jpg" src="data:x">]]></description></item>
+            </channel></rss>
+            """;
+        var items = NewsFeedParser.Parse(xml, "Example");
+        Assert.Equal("https://example.org/pic.PNG", items[0].Image);
+        Assert.Equal("https://example.org/img/b.jpg", items[1].Image);
+        Assert.Equal("https://cdn.example.org/c.jpg", items[2].Image);
+    }
+
+    [Fact]
     public void An_atom_entry_is_read_and_a_doctype_is_refused()
     {
         var atom = """<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>A</title><link rel="alternate" href="https://example.org/e"/><updated>2026-11-14T10:00:00Z</updated><summary>S</summary></entry></feed>""";

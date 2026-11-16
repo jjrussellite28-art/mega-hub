@@ -78,6 +78,8 @@ export function loadFirst(urls, onLoad) {
     if (!url) return;
     const img = new Image();
     img.decoding = 'async';
+    // Some sites refuse pictures that come with a referrer (hotlink protection).
+    img.referrerPolicy = 'no-referrer';
     img.onload = () => onLoad(url, img);
     img.onerror = next;
     img.src = url;

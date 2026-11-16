@@ -91,6 +91,7 @@ export default {
   'news.offline.text': 'Press X to reload the news.',
   'news.empty.text': 'Manage feeds under Settings › News.',
   'news.hint.read': 'Read',
+  'news.allSources': 'All sources',
   'news.hint.refresh': 'Refresh',
   'news.hint.home': 'Home',
   'news.article': 'Article',

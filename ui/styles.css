@@ -2337,6 +2337,11 @@ body.quick-open #view {
   padding-top: 1.2rem;
 }
 
+.news-body { flex: 1; min-height: 0; display: flex; gap: 1.2rem; }
+.news-sources { list-style: none; margin: 0.8rem 0 0; padding: 0; width: 13rem; flex: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.news-source-row { padding: 0.7rem 1rem; border-radius: 0.8rem; border: 2px solid transparent; background: color-mix(in srgb, var(--fg) 10%, transparent); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.news-source-row.chosen { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+.news-source-row.focused, .news-source-row:hover { border-color: var(--fg); }
 .news-grid {
   flex: 1;
   display: grid;

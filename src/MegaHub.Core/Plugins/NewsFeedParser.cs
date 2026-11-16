@@ -22,7 +22,7 @@ public static partial class NewsFeedParser
     [GeneratedRegex("<[^>]*>", RegexOptions.CultureInvariant)]
     private static partial Regex Tags();
 
-    [GeneratedRegex(@"<img[^>]+src\s*=\s*[""']([^""']+)[""']", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"<img[^>]+?(?:data-src|data-lazy-src|src)\s*=\s*[""']([^""']+)[""']", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
     private static partial Regex FirstImage();
 
     [GeneratedRegex(@"</(p|div|li|h[1-6]|br)\s*>|<br\s*/?>", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase)]
@@ -53,7 +53,7 @@ public static partial class NewsFeedParser
             var paragraphs = Paragraphs(body);
             var summary = paragraphs.Count > 0 ? paragraphs[0] : "";
             if (summary.Length > 400) summary = summary[..400].TrimEnd() + "…";
-            items.Add(new PluginNewsItem(Hash(link), feedName, title, summary, link, ImageOf(node, body), PublishedOf(node), paragraphs.Take(30).ToList()));
+            items.Add(new PluginNewsItem(Hash(link), feedName, title, summary, link, ImageOf(node, body, link), PublishedOf(node), paragraphs.Take(30).ToList()));
         }
         return items;
     }
@@ -77,16 +77,38 @@ public static partial class NewsFeedParser
         return Child(node, "guid").Trim() is { } g && g.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? g : "";
     }
 
-    private static string? ImageOf(XElement node, string body)
+    private static readonly string[] ImageEndings = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"];
+
+    private static bool LooksLikeImage(string url) =>
+        ImageEndings.Any(e => url.Split('?', '#')[0].EndsWith(e, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>The story's picture: media tags, an image enclosure (by type or file ending), or the first picture in any of its texts; relative addresses are made absolute.</summary>
+    private static string? ImageOf(XElement node, string body, string link)
     {
         foreach (var e in node.Descendants())
         {
             var name = e.Name.LocalName;
-            if (name is "thumbnail" or "content" && e.Name.Namespace == Media && (string?)e.Attribute("url") is { Length: > 0 } mediaUrl) return mediaUrl;
-            if (name == "enclosure" && ((string?)e.Attribute("type"))?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true && (string?)e.Attribute("url") is { Length: > 0 } encUrl) return encUrl;
+            var url = ((string?)e.Attribute("url") ?? (name == "link" && ((string?)e.Attribute("rel")) == "enclosure" ? (string?)e.Attribute("href") : null))?.Trim();
+            if (string.IsNullOrEmpty(url)) continue;
+            var type = (string?)e.Attribute("type") ?? "";
+            var medium = (string?)e.Attribute("medium") ?? "";
+            var media = e.Name.Namespace == Media && name is "thumbnail" or "content";
+            var enclosure = name is "enclosure" or "link";
+            if ((media && (name == "thumbnail" || medium == "image" || type.StartsWith("image/", StringComparison.OrdinalIgnoreCase) || (type.Length == 0 && medium.Length == 0)))
+                || (enclosure && (type.StartsWith("image/", StringComparison.OrdinalIgnoreCase) || (type.Length == 0 && LooksLikeImage(url))))) return Absolute(url, link);
         }
-        var m = FirstImage().Match(body ?? "");
-        return m.Success ? WebUtility.HtmlDecode(m.Groups[1].Value) : null;
+        // Every text of the story, not only the one used for the summary (the full text may have no picture while the short one has).
+        var texts = string.Concat(body, " ", Child(node, "encoded", Content), " ", Child(node, "description"), " ", Child(node, "content", Atom), " ", Child(node, "summary", Atom));
+        var m = FirstImage().Match(texts);
+        return m.Success ? Absolute(WebUtility.HtmlDecode(m.Groups[1].Value), link) : null;
+    }
+
+    private static string? Absolute(string url, string link)
+    {
+        url = url.Trim();
+        if (url.StartsWith("//", StringComparison.Ordinal)) url = "https:" + url;
+        if (Uri.TryCreate(url, UriKind.Absolute, out var abs)) return abs.Scheme is "http" or "https" ? abs.ToString() : null;
+        return Uri.TryCreate(link, UriKind.Absolute, out var page) && Uri.TryCreate(page, url, out var joined) && joined.Scheme is "http" or "https" ? joined.ToString() : null;
     }
 
     private static long PublishedOf(XElement node)

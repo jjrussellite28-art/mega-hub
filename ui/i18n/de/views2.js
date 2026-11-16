@@ -91,6 +91,7 @@ export default {
   'news.offline.text': 'Mit X lädst du die News neu.',
   'news.empty.text': 'Feeds verwaltest du unter Einstellungen › News.',
   'news.hint.read': 'Lesen',
+  'news.allSources': 'Alle Quellen',
   'news.hint.refresh': 'Aktualisieren',
   'news.hint.home': 'Home',
   'news.article': 'Artikel',

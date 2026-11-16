@@ -337,6 +337,12 @@ public sealed class AppConfig
     /// <summary>The screen Mega Hub covers, numbered from the left (1 = leftmost): 0 = automatic. Gone screens fall back to automatic.</summary>
     public int ScreenNumber { get; set; }
 
+    /// <summary>
+    /// The Windows screen layout ("extend" or "internal") from before Mega Hub first switched it (the display choice at the start). PC mode
+    /// and quitting put it back, so nobody has to fix the displays in Windows by hand. Empty: Mega Hub never changed it.
+    /// </summary>
+    public string? LayoutBeforeMegaHub { get; set; }
+
     /// <summary>Moves the whole HUD by a few pixels now and then so static parts don't burn in.</summary>
     public bool PixelShift { get; set; } = true;
 

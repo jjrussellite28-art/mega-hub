@@ -4274,7 +4274,34 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     }
 
     /// <summary>PC screen only, mirror, extend or second screen only (Windows' own switch).</summary>
-    public void SetScreenLayout(string mode) => DisplayService.SetLayout(mode);
+    public void SetScreenLayout(string mode)
+    {
+        // The first switch remembers what the layout was (two screens on = extend), so PC mode can give it back.
+        if (config.Current.LayoutBeforeMegaHub is null)
+        {
+            var before = DisplayService.Screens(0).Count >= 2 ? "extend" : "internal";
+            config.UpdateOrThrow(c => c.LayoutBeforeMegaHub ??= before);
+        }
+        DisplayService.SetLayout(mode);
+        // Asked for "extend" itself: that is the normal layout, nothing left to give back.
+        if (mode == "extend") config.UpdateOrThrow(c => c.LayoutBeforeMegaHub = null);
+    }
+
+    /// <summary>PC mode and quitting: the layout from before Mega Hub changed it comes back (best effort, never stops the exit).</summary>
+    private void RestoreLayout()
+    {
+        var before = config.Current.LayoutBeforeMegaHub;
+        if (before is not ("extend" or "internal")) return;
+        try
+        {
+            DisplayService.SetLayout(before);
+            config.Update(c => c.LayoutBeforeMegaHub = null);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or IOException)
+        {
+            Console.Error.WriteLine($"[display] layout not restored: {ex.GetType().Name}");
+        }
+    }
 
     /// <summary>
     /// Test builds: starts "Get newest Mega Hub.bat" (in the project folder) which closes Mega Hub, fetches the newest version from GitHub,
@@ -6732,6 +6759,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     private async Task EnterPcModeCoreAsync()
     {
         Console.WriteLine("[pcmode] entering");
+        RestoreLayout();
         _pcMode = true;
         EndUpgradeMouse();
         _leaveAfterEnter = false;
@@ -8580,6 +8608,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         // As the shell (or with no desktop running) the quit starts the desktop: that is the way into PC mode, without the lock.
         // The restart below comes straight back without a desktop in between, so it needs nothing extra.
         if (shell.IsInstalledAsShell() || !ShellManager.IsDesktopShellRunning()) RequireSecondFactor(SecondFactorActions.PcMode, IsUnlocked, "quit");
+        RestoreLayout();
         Quit();
     }
 

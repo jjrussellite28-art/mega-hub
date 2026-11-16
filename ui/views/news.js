@@ -24,6 +24,11 @@ export function timeAgo(ms) {
 }
 
 let failed = false;
+/** The source picked in the list on the left (null = all of them). */
+let selected = null;
+
+const shown = () => (selected ? (news ?? []).filter((i) => i.feed === selected) : (news ?? []));
+const sources = () => [...new Set((news ?? []).map((i) => i.feed))];
 
 async function load(force = false) {
   // Ten minutes are plenty; the host caches feeds as well.
@@ -95,27 +100,78 @@ export const newsView = {
         el('p', { textContent: failed ? t('news.offline.text') : t('news.empty.text') })));
       return;
     }
-    this.index = Math.min(this.index, news.length - 1);
-    this.cards = news.map(card);
+    const names = sources();
+    if (selected && !names.includes(selected)) selected = null;
+    const items = shown();
+    this.index = Math.min(this.index, items.length - 1);
+    this.cards = items.map(card);
     // The newest story gets the big spot, like on a magazine cover.
-    this.cards[0].classList.add('news-lead');
+    this.cards[0]?.classList.add('news-lead');
     this.scroller = el('div', { className: 'news-grid list-scroll' }, this.cards);
-    root.append(el('div', { className: 'news' }, this.scroller));
+    // With more than one source a list on the left picks which news to see (All, or one source).
+    this.choices = names.length > 1 ? [null, ...names] : [];
+    this.sourceRows = this.choices.map((name, i) => el('li', {
+      className: `news-source-row${name === selected ? ' chosen' : ''}`,
+      textContent: name ?? t('news.allSources'),
+      onclick: () => this.pickSource(i)
+    }));
+    this.inList = this.inList && this.choices.length > 0;
+    root.append(el('div', { className: 'news' }, el('div', { className: 'news-body' },
+      this.choices.length ? el('ul', { className: 'news-sources' }, this.sourceRows) : null,
+      this.scroller)));
     setBackground({ id: '__news', name: 'News', art: {} });
     this.update({ instant: true });
     // Refresh quietly in the background when the tab is opened again later.
     load().then(() => {});
   },
+  pickSource(i) {
+    selected = this.choices[i];
+    this.inList = true;
+    this.listIndex = i;
+    this.index = 0;
+    sound.select();
+    render();
+  },
   update({ instant = false } = {}) {
     if (!this.cards) return;
-    setFocused(this.cards, this.index);
+    const at = this.listIndex ?? Math.max(0, this.choices.indexOf(selected));
+    setFocused(this.sourceRows ?? [], this.inList ? at : -1);
+    setFocused(this.cards, this.inList ? -1 : this.index);
     keepInView(this.scroller, this.cards[this.index], { instant });
   },
   activate() {
-    if (news?.[this.index]) push(readerPage(news[this.index]));
+    const item = shown()[this.index];
+    if (item) push(readerPage(item));
   },
   handle(action) {
-    const count = news?.length ?? 0;
+    const count = shown().length;
+    // The list on the left: up and down move through the sources (the stories change right away), right or A goes back to the stories.
+    if (this.inList && this.choices?.length) {
+      const at = this.listIndex ?? Math.max(0, this.choices.indexOf(selected));
+      switch (action) {
+        case 'up':
+        case 'down': {
+          const next = at + (action === 'down' ? 1 : -1);
+          if (next < 0 || next >= this.choices.length) return sound.bump();
+          return this.pickSource(next);
+        }
+        case 'right':
+        case 'a':
+          this.inList = false;
+          sound.move?.();
+          return this.update();
+        case 'x':
+          sound.select();
+          return load(true).then(render);
+        default: return;
+      }
+    }
+    // Left on the first card of a row goes to the list.
+    if (action === 'left' && this.choices?.length && (this.index === 0 || (this.index - 1) % COLUMNS === 0)) {
+      this.inList = true;
+      sound.move?.();
+      return this.update();
+    }
     // The lead card spans the first row; moving down from it goes to the second card.
     switch (action) {
       case 'left': return move(this, -1, count);
