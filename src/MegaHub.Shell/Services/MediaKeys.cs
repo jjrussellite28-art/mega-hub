@@ -61,7 +61,16 @@ public sealed class MediaKeys : IDisposable
     private uint _threadId;
     private IntPtr _hook;
     private readonly bool _handleVolume;
-    private const int VkLWin = 0x5B, VkRWin = 0x5C;
+    private const int VkLWin = 0x5B, VkRWin = 0x5C, VkEscape = 0x1B, VkControl = 0x11, VkMenu = 0x12;
+
+    [DllImport("user32.dll")]
+    private static extern short GetAsyncKeyState(int key);
+
+    /// <summary>
+    /// While set (PC mode as the shell), Ctrl+Alt+Esc calls it once and is swallowed: the way back to Mega Hub from the desktop. A plain Esc
+    /// is left alone, Windows needs it. Called on the hook thread: hand over to the UI thread there.
+    /// </summary>
+    public volatile Action? OnReturnCombo;
 
     /// <summary>
     /// The Windows keys are swallowed (both down and up, so nothing stays pressed) while this is true: Start menu and the Win+key
@@ -119,6 +128,15 @@ public sealed class MediaKeys : IDisposable
             // KBDLLHOOKSTRUCT starts with the virtual key code.
             var vk = Marshal.ReadInt32(lParam);
             if (BlockWindowsKey && vk is VkLWin or VkRWin) return 1;
+            if (vk == VkEscape && OnReturnCombo is { } back && (GetAsyncKeyState(VkControl) & 0x8000) != 0 && (GetAsyncKeyState(VkMenu) & 0x8000) != 0)
+            {
+                if ((int)wParam is WmKeyDown or WmSysKeyDown)
+                {
+                    try { back(); }
+                    catch (Exception ex) { Console.Error.WriteLine($"[keys] {ex.Message}"); }
+                }
+                return 1;
+            }
             if (_handleVolume && vk is VkVolumeMute or VkVolumeDown or VkVolumeUp && !ShellManager.IsDesktopShellRunning())
             {
                 if ((int)wParam is WmKeyDown or WmSysKeyDown)

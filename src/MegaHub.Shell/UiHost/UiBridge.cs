@@ -630,8 +630,8 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
             case "openLauncher":
                 hud.OpenLauncher(StringArg(0));
                 return null;
-            case "openWindowsTool":
-                hud.OpenWindowsTool(StringArg(0));
+            case "openDesktop":
+                await hud.OpenDesktopAsync();
                 return null;
             case "getProfile":
                 return hud.GetProfile(StringArg(0));

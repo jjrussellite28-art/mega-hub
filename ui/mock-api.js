@@ -1797,7 +1797,7 @@ window.megahub = {
   },
   setLauncherMode: async (id, mode) => ((launchers.find((l) => l.id === id).mode = mode), structuredClone(launchers)),
   openLauncher: async (id) => log('openLauncher', id),
-  openWindowsTool: async (id) => log('openWindowsTool', id),
+  openDesktop: async () => log('openDesktop'),
   setStartupMode: async (id, mode) => ((startup.find((e) => e.id === id).mode = mode), structuredClone(startup)),
   applyStartupSuggestions: async () => (await sleep(300), startup.forEach((e) => (e.mode = e.suggested)), structuredClone(startup)),
   getServices: async () => structuredClone(services),

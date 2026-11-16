@@ -21,7 +21,7 @@ export function tilePage({ id, name, background, tiles, load }) {
         className: 'tile-card', type: 'button',
         onclick: () => { this.index = i; this.update(); item.open(); }
       },
-      el('span', { className: 'tile-icon', textContent: item.icon }),
+      item.image ? el('img', { className: 'tile-image', src: item.image, alt: '' }) : el('span', { className: 'tile-icon', textContent: item.icon }),
       el('span', { className: 'tile-name', textContent: item.name }),
       el('span', { className: 'tile-note', textContent: item.note ?? '' })));
       this.scroller = el('div', { className: 'tile-grid list-scroll' }, this.cards);

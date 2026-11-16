@@ -111,7 +111,7 @@ public static class FeatureAreas
     public static readonly IReadOnlySet<string> AlwaysMethods = new HashSet<string>(StringComparer.Ordinal)
     {
         // Library and entries (checked per entry or per added entry).
-        "openWindowsTool",
+        "openDesktop",
         "getLibrary", "getFavorites", "launch", "toggleFavorite", "toggleFavoriteSite", "getStoreInfo", "getDetails", "uninstall", "browse", "addEntries", "editLaunch",
         "getLaunchOptions", "setLaunchOverride", "getItemInfo", "setItemInfo", "editItem", "getArtworkChoices", "setArtwork", "reloadArtwork",
         "getArtworkMatch", "searchArtwork", "setArtworkMatch",

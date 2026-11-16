@@ -5914,3 +5914,6 @@ html[data-bare] #status > :not(#clock) {
 .tile-icon { font-size: 2.6rem; }
 .tile-name { font-size: 1.2rem; font-weight: 600; text-align: center; }
 .tile-note { font-size: .9rem; opacity: .7; }
+
+.tile-image { width: 11rem; height: 7rem; object-fit: contain; }
+.tile-page:has(.tile-card:only-child) .tile-grid { grid-template-columns: minmax(16rem, 22rem); justify-content: center; align-content: center; }
