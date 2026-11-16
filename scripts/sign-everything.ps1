@@ -51,6 +51,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Upload failed.' }
 Write-Host '4/5 Signing the catalog index'
 & (Join-Path $PSScriptRoot 'catalog-sign.ps1') -Index (Join-Path $root 'catalog\index.json')
 
+Remove-Item (Join-Path $root 'catalog\index.json.unsigned') -ErrorAction SilentlyContinue
 Write-Host '5/5 Committing the signed catalog'
 git add catalog
 git commit -m "Catalog: signed $Id $version with Mega Hub's own key"
