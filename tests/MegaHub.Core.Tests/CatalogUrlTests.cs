@@ -17,24 +17,24 @@ public class CatalogUrlTests
     }
 
     [Theory]
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/MAIN/index.json")]            // branch case: another path
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/INDEX.JSON")]            // file case
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/index.json?x=1")]        // query
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/index.json#a")]          // fragment
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/index.json/")]           // a file name with a slash is no file
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/index.json//")]
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalogue/main/index.json")]          // look-alike repository
-    [InlineData("https://raw.githubusercontent.com/kewe87x/CouchHUD-Catalog/main/index.json")]          // look-alike owner
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog%2F/main/index.json")]         // escapes in the repository
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub/MAIN/index.json")]            // branch case: another path
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub/main/INDEX.JSON")]            // file case
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub/main/index.json?x=1")]        // query
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub/main/index.json#a")]          // fragment
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub/main/index.json/")]           // a file name with a slash is no file
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub/main/index.json//")]
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub-catalogue/main/index.json")]          // look-alike repository
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-artx/mega-hub/main/index.json")]          // look-alike owner
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub%2F/main/index.json")]         // escapes in the repository
     [InlineData("https://raw.githubusercontent.com/%6Bewe87/CouchHUD-Catalog/main/index.json")]          // escaped owner
-    [InlineData("https://raw.githubusercontent.com./kewe87/CouchHUD-Catalog/main/index.json")]           // trailing dot in the host
-    [InlineData("https://raw.githubusercontent.com.evil.example/kewe87/CouchHUD-Catalog/main/index.json")]
-    [InlineData("https://raw.githubusercontent.com@evil.example/kewe87/CouchHUD-Catalog/main/index.json")]
-    [InlineData("https://user@raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/index.json")]
-    [InlineData("https://raw.githubusercontent.com:8443/kewe87/CouchHUD-Catalog/main/index.json")]
-    [InlineData("http://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/index.json")]
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog")]
-    [InlineData("https://raw.githubusercontent.com/kewe87")]
+    [InlineData("https://raw.githubusercontent.com./jjrussellite28-art/mega-hub/main/index.json")]           // trailing dot in the host
+    [InlineData("https://raw.githubusercontent.com.evil.example/jjrussellite28-art/mega-hub/main/index.json")]
+    [InlineData("https://raw.githubusercontent.com@evil.example/jjrussellite28-art/mega-hub/main/index.json")]
+    [InlineData("https://user@raw.githubusercontent.com/jjrussellite28-art/mega-hub/main/index.json")]
+    [InlineData("https://raw.githubusercontent.com:8443/jjrussellite28-art/mega-hub/main/index.json")]
+    [InlineData("http://raw.githubusercontent.com/jjrussellite28-art/mega-hub/main/index.json")]
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub")]
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art")]
     [InlineData("")]
     public void Look_alikes_are_not_the_official_address(string url)
     {
@@ -48,8 +48,8 @@ public class CatalogUrlTests
     {
         Assert.False(CatalogUrl.Same("https://example.org/Owner/Repo/a.json", "https://example.org/owner/repo/a.json"));
         Assert.True(CatalogUrl.Same("https://EXAMPLE.org/Owner/Repo/a.json", "https://example.org/Owner/Repo/a.json"));
-        Assert.False(CatalogUrl.Same("https://github.com/kewe87/CouchHUD-Catalog/releases/download/Wand-1.0.0/a.zip", "https://github.com/kewe87/couchhud-catalog/releases/download/wand-1.0.0/a.zip"));
-        Assert.True(CatalogUrl.Same("https://github.com/kewe87/CouchHUD-Catalog/releases/download/wand-1.0.0/a.zip", "https://github.com/kewe87/couchhud-catalog/releases/download/wand-1.0.0/a.zip"));
+        Assert.False(CatalogUrl.Same("https://github.com/jjrussellite28-art/mega-hub/releases/download/Wand-1.0.0/a.zip", "https://github.com/jjrussellite28-art/MEGA-HUB/releases/download/wand-1.0.0/a.zip"));
+        Assert.True(CatalogUrl.Same("https://github.com/jjrussellite28-art/mega-hub/releases/download/wand-1.0.0/a.zip", "https://github.com/jjrussellite28-art/MEGA-HUB/releases/download/wand-1.0.0/a.zip"));
     }
 
     [Fact]
@@ -85,13 +85,13 @@ public class CatalogUrlTests
     }
 
     [Theory]
-    [InlineData("https://raw.githubusercontent.com/kewe87/CouchHUD-Catalog/main/icons/a.png", true)]
-    [InlineData("https://github.com/kewe87/CouchHUD-Catalog/releases/download/a-1.0.0/a-1.0.0.zip", true)]
-    [InlineData("https://github.com/kewe87/CouchHUD/tree/master/plugins/X", true)]
-    [InlineData("https://raw.githubusercontent.com/kewe87/couchhud-catalog/main/icons/a.png", false)]
-    [InlineData("https://github.com/kewe87/couchhud/tree/master/plugins/X", false)]
-    [InlineData("https://GitHub.com/kewe87/CouchHUD-Catalog/releases/download/a-1.0.0/a.zip", false)]
-    [InlineData("HTTPS://github.com/kewe87/CouchHUD-Catalog/releases/download/a-1.0.0/a.zip", false)]
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/mega-hub/main/icons/a.png", true)]
+    [InlineData("https://github.com/jjrussellite28-art/mega-hub/releases/download/a-1.0.0/a-1.0.0.zip", true)]
+    [InlineData("https://github.com/jjrussellite28-art/mega-hub/tree/master/plugins/X", true)]
+    [InlineData("https://raw.githubusercontent.com/jjrussellite28-art/MEGA-HUB/main/icons/a.png", false)]
+    [InlineData("https://github.com/jjrussellite28-art/MEGA-HUB/tree/master/plugins/X", false)]
+    [InlineData("https://GitHub.com/jjrussellite28-art/mega-hub/releases/download/a-1.0.0/a.zip", false)]
+    [InlineData("HTTPS://github.com/jjrussellite28-art/mega-hub/releases/download/a-1.0.0/a.zip", false)]
     [InlineData("https://example.org/Anything/Goes", true)]
     public void New_catalog_entries_must_use_the_canonical_spelling(string url, bool canonical) =>
         Assert.Equal(canonical, CatalogUrl.NonCanonicalReason(url) is null);
