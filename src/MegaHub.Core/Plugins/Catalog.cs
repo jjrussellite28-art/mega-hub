@@ -465,8 +465,8 @@ public static class CatalogSignature
 {
     public const string PublicKeyPem = """
         -----BEGIN PUBLIC KEY-----
-        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6OoxGUWkWUyAEh+s+leP4ZfKxOYZ
-        h48/PGRXKyMj38/3t8S2FzSRONOno/He2AjYguwI5tthk83+WjqVsIorxw==
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEa+1CuuTxda44A2eiq77ZVSMWJSmL
+        puDtg9JqOL8AAlcTP0HkpiPwGbXgS4W0vex/XPT07U64kAVZ3dHcKxwTEA==
         -----END PUBLIC KEY-----
         """;
 
