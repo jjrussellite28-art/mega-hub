@@ -41,7 +41,7 @@ public sealed partial class Hud
     }
 
     /// <summary>The picker stands in front: at the start with several profiles, and after a lock for a protected profile.</summary>
-    private bool ProfilePickerPending => !_profileChosen && ProfileSwitch.PickerAtStart(config.Current);
+    private bool ProfilePickerPending => !_profileChosen && ProfileSwitch.PickerShownAtStart(config.Current);
 
     /// <summary>A protected profile waits for its code: nothing starts until it (or another one) is entered.</summary>
     public bool ProfileHeld => ProfilePickerPending && ProfileSwitch.IsProtected(config.Current, config.Current.ActiveProfile.Id);
@@ -134,6 +134,7 @@ public sealed partial class Hud
             active,
             picker = ProfilePickerPending,
             pickRequired = held,
+            autoSignIn = c.ProfileAutoSignIn,
             max = AppConfig.MaxProfiles,
             parentalEnabled = c.ParentalEnabled,
             childrenGuarded = ProfileSwitch.ChildrenGuarded(c),

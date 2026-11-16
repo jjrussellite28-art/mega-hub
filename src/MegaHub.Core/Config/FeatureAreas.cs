@@ -51,7 +51,7 @@ public static class FeatureAreas
         ["tvInGuide"] = Always, ["tvOnWithMegaHub"] = Always, ["tvOffWithPc"] = Always,
         ["bluetoothAutoOn"] = Always, ["selfUpdateCheck"] = Always, ["pixelShift"] = Always, ["reduceMotion"] = Always,
         ["pointer"] = Always, ["mouseUnlocked"] = Always, ["closeExplorerInLight"] = Always, ["acceptedTerms"] = Always,
-        ["setupWizardDone"] = Always, ["modeSwitchJournal"] = Always, ["autoLogonDeclined"] = Always, ["guideTapInGame"] = Always, ["suppressCompetitors"] = Always, ["suppressBySetup"] = Always, ["gameBarButton"] = Always,
+        ["setupWizardDone"] = Always, ["modeSwitchJournal"] = Always, ["autoLogonDeclined"] = Always, ["profileAutoSignIn"] = Always, ["guideTapInGame"] = Always, ["suppressCompetitors"] = Always, ["suppressBySetup"] = Always, ["gameBarButton"] = Always,
         ["musicVolume"] = Always, ["soundVolume"] = Always, ["soundSet"] = Always, ["uiHdr"] = Always, ["sounds"] = Always,
         ["expertMode"] = Always, ["developerMode"] = Always, ["language"] = Always, ["rumble"] = Always, ["padGlyphs"] = Always, ["runStartupApps"] = Always,
         ["killExplorerOnReturn"] = Always, ["nightMode"] = Always, ["nightModeStrength"] = Always,

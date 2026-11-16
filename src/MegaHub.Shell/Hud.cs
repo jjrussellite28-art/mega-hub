@@ -3035,6 +3035,10 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
                 var declined = Bool();
                 config.UpdateOrThrow(c => c.AutoLogonDeclined = declined);
                 break;
+            case "profileAutoSignIn":
+                var autoSignIn = Bool();
+                config.UpdateOrThrow(c => c.ProfileAutoSignIn = autoSignIn);
+                break;
             case "guideTapInGame":
                 var tap = Bool();
                 config.UpdateOrThrow(c => { c.GuideTapInGame = tap; if (tap) c.GameBarKeptOff = false; });

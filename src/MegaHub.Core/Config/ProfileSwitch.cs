@@ -92,6 +92,12 @@ public static class ProfileSwitch
     /// <summary>The profile picker comes at the start only when there is more than one profile.</summary>
     public static bool PickerAtStart(AppConfig c) => c.AllProfiles.Count > 1;
 
+    /// <summary>
+    /// The picker stands in front at the start: always (also with one profile), unless the person turned on the automatic sign-in. A profile that
+    /// needs a code is never skipped (<see cref="HeldAtStart"/>).
+    /// </summary>
+    public static bool PickerShownAtStart(AppConfig c) => HeldAtStart(c) || !c.ProfileAutoSignIn;
+
     /// <summary>At the start nobody has chosen yet: the picker waits for the profile on the couch when it is protected.</summary>
     public static bool HeldAtStart(AppConfig c) => PickerAtStart(c) && IsProtected(c, c.ActiveProfile.Id);
 

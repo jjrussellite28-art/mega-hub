@@ -55,6 +55,17 @@ public sealed class ProfileSwitchTests : IDisposable
     }
 
     [Fact]
+    public void The_picker_always_shows_at_the_start_also_with_one_profile_unless_auto_sign_in_is_on()
+    {
+        var c = new AppConfig();
+        Assert.True(ProfileSwitch.PickerShownAtStart(c));
+        c.ProfileAutoSignIn = true;
+        Assert.False(ProfileSwitch.PickerShownAtStart(c));
+        c.AddProfile("Mia");
+        Assert.False(ProfileSwitch.PickerShownAtStart(c));
+    }
+
+    [Fact]
     public void The_picker_comes_at_the_start_only_with_more_than_one_profile()
     {
         var c = new AppConfig();

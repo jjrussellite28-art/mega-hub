@@ -176,28 +176,52 @@ export async function showPicker({ required = false } = {}) {
         el('h2', { textContent: t('profiles.pickerTitle') }),
         el('p', { className: 'meta', textContent: d?.gameRunning ? t('profiles.gameRunningHint') : d?.exhausted ? t('profiles.exhaustedHint') : t('profiles.pickerHint') }),
         el('ul', { className: 'profile-tiles' }, this.tiles),
-        this.manageBtn = el('button', { className: 'profile-manage', type: 'button', textContent: t('profiles.managePicker'), onclick: () => this.handle('manage') })));
+        this.manageBtn = el('button', { className: 'profile-manage', type: 'button', textContent: t('profiles.managePicker'), onclick: () => this.handle('manage') }),
+        // Not while a protected profile waits for its code: nothing may be changed in front of it.
+        this.required ? null : this.autoBtn = el('button', { className: 'profile-manage', type: 'button', title: t('profiles.autoHint'), textContent: autoLabel(), onclick: () => this.handle('auto') })));
       this.update();
     },
     update() {
-      if (this.tiles?.length) setFocused(this.tiles, this.onManage ? -1 : this.index);
+      if (this.tiles?.length) setFocused(this.tiles, this.onManage || this.onAuto ? -1 : this.index);
       this.manageBtn?.classList.toggle('focused', !!this.onManage);
+      this.autoBtn?.classList.toggle('focused', !!this.onAuto);
+      if (this.autoBtn) this.autoBtn.textContent = autoLabel();
     },
     async handle(action) {
       if (this.busy) return;
       switch (action) {
-        case 'left': if (this.onManage) return; return move(this, -1, this.list.length, true);
-        case 'right': if (this.onManage) return; return move(this, 1, this.list.length, true);
+        case 'left': if (this.onManage || this.onAuto) return; return move(this, -1, this.list.length, true);
+        case 'right': if (this.onManage || this.onAuto) return; return move(this, 1, this.list.length, true);
         case 'down':
-          if (this.required || this.onManage) return;
-          this.onManage = true;
+          if (this.required || this.onAuto) return;
+          if (this.onManage) {
+            if (!this.autoBtn) return;
+            this.onManage = false;
+            this.onAuto = true;
+          } else this.onManage = true;
           sound.move?.();
           return this.update();
         case 'up':
-          if (!this.onManage) return;
-          this.onManage = false;
+          if (this.onAuto) {
+            this.onAuto = false;
+            this.onManage = true;
+          } else if (this.onManage) this.onManage = false;
+          else return;
           sound.move?.();
           return this.update();
+        case 'auto': {
+          if (this.required) return sound.bump();
+          sound.select();
+          const next = !profiles.data?.autoSignIn;
+          this.busy = true;
+          try {
+            const ok = (await api.setSetting('profileAutoSignIn', next))?.ok !== false;
+            if (ok) await refresh();
+          } catch { /* the label keeps what the host has */ } finally {
+            this.busy = false;
+          }
+          return this.update();
+        }
         case 'manage': {
           if (this.required) return sound.bump();
           sound.select();
@@ -207,6 +231,7 @@ export async function showPicker({ required = false } = {}) {
         }
         case 'a': {
           if (this.onManage) return this.handle('manage');
+          if (this.onAuto) return this.handle('auto');
           const p = this.list[this.index];
           if (!p) return;
           sound.select();
@@ -236,6 +261,8 @@ export async function showPicker({ required = false } = {}) {
   screen(true);
   push(page);
 }
+
+const autoLabel = () => t('profiles.autoSignIn', { state: profiles.data?.autoSignIn ? t('profiles.autoOn') : t('profiles.autoOff') });
 
 function closePicker(page) {
   if (!page) return;

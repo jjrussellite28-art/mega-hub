@@ -279,6 +279,12 @@ public sealed class AppConfig
     /// <summary>The setup assistant was told no to the automatic sign-in: its mode question then counts the shell setup as complete without it. Only decides what the assistant offers; the sign-in itself is set up or removed elsewhere.</summary>
     public bool AutoLogonDeclined { get; set; }
 
+    /// <summary>
+    /// Skip the profile picker at the start: Mega Hub goes straight to the profile on the couch. Off by default (the picker always shows, also
+    /// with one profile). A profile that needs a code never skips the picker, whatever this says.
+    /// </summary>
+    public bool ProfileAutoSignIn { get; set; }
+
     /// <summary>Guide held + Y takes a screenshot (also over a game); the Guide button's own tap then waits for its release.</summary>
     public bool ScreenshotCombo { get; set; } = true;
 
