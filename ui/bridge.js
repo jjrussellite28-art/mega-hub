@@ -329,6 +329,7 @@ window.megahub = {
   // Profiles: the picker works at the locked couch; every change asks the parents' code for exactly that change first (ensureParentGrant).
   getProfiles: () => call('getProfiles'),
   switchProfile: (id, code = null) => call('switchProfile', id, code),
+  bypassProfile: () => call('bypassProfile'),
   profileScreen: (open) => call('profileScreen', !!open),
   profileIdle: () => call('profileIdle'),
   addProfile: (name, avatar, color, restricted) => call('addProfile', name, avatar, color, !!restricted),

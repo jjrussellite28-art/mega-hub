@@ -1709,6 +1709,7 @@ window.megahub = {
   parentalAdoptZone: async () => (takeGrant(), parentalState()),
   // Profiles in the preview: one profile, so no picker at the start; created ones live until the page reloads (the switch reloads it).
   getProfiles: async () => mockProfilesView(),
+  bypassProfile: async () => ({ ok: true, switched: false }),
   switchProfile: async (id) => {
     const switched = !mockProfile(id).active;
     mockProfiles.forEach((p) => (p.active = p.id === id));

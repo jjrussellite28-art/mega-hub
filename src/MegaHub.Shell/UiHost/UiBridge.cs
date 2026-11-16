@@ -569,6 +569,8 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
                 return hud.GetProfiles();
             case "switchProfile":
                 return hud.SwitchProfile(StringArg(0), Buttons(1));
+            case "bypassProfile":
+                return hud.BypassProfile();
             case "profileScreen":
                 hud.SetProfileScreen(Arg(0).ValueKind == JsonValueKind.True);
                 return null;

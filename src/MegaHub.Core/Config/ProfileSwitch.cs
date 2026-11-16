@@ -158,7 +158,7 @@ public static class ProfileIdleClock
 /// </summary>
 public static class ProfilePolicy
 {
-    public static readonly IReadOnlySet<string> OpenWhileLocked = new HashSet<string> { "getProfiles", "switchProfile", "profileScreen", "profileIdle" };
+    public static readonly IReadOnlySet<string> OpenWhileLocked = new HashSet<string> { "getProfiles", "switchProfile", "bypassProfile", "profileScreen", "profileIdle" };
 
     public static readonly IReadOnlySet<string> All = new HashSet<string>(OpenWhileLocked)
     {

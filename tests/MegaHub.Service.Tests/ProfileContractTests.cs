@@ -11,7 +11,7 @@ public sealed class ProfileContractTests
 {
     private static readonly string[] Calls =
     [
-        "getProfiles", "switchProfile", "profileScreen", "profileIdle", "addProfile", "renameProfile", "setProfileLook",
+        "getProfiles", "switchProfile", "bypassProfile", "profileScreen", "profileIdle", "addProfile", "renameProfile", "setProfileLook",
         "setProfileRestricted", "setProfileCode", "removeProfile", "getProfileRules", "setProfileRule"
     ];
 
@@ -255,7 +255,7 @@ public sealed class ProfileContractTests
         // Not open at the locked couch: only the picker is.
         var policy = Code("src", "MegaHub.Core", "Config", "ProfileSwitch.cs");
         var open = Regex.Match(policy, @"OpenWhileLocked = new HashSet<string> \{(?<list>[^}]*)\}").Groups["list"].Value;
-        Assert.Equal(["getProfiles", "profileIdle", "profileScreen", "switchProfile"], Regex.Matches(open, "\"(\\w+)\"").Select(m => m.Groups[1].Value).Order());
+        Assert.Equal(["bypassProfile", "getProfiles", "profileIdle", "profileScreen", "switchProfile"], Regex.Matches(open, "\"(\\w+)\"").Select(m => m.Groups[1].Value).Order());
         var lockPolicy = Code("src", "MegaHub.Core", "Guard", "LockPolicy.cs");
         foreach (var call in Calls) Assert.DoesNotContain($"\"{call}\"", lockPolicy);
     }

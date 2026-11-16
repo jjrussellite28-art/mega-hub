@@ -504,6 +504,7 @@ public static partial class Strings
         ["parental.unknownAgeCode"] = "Keine Altersangabe bekannt (Grenze: ab {0}): nur mit Eltern-Code",
         ["parental.unknownAgeCodeYears"] = "Keine Altersangabe bekannt (Grenze: ab {0} Jahren): nur mit Eltern-Code",
         ["parental.unknownSetting"] = "Unbekannte Jugendschutz-Einstellung {0}",
+        ["profiles.bypassNeedsLock"] = "Überspringen braucht einen Mega-Hub-Code, hinter dem es eingeschränkt bleibt. Bitte zuerst einen Code festlegen.",
         ["profiles.unknown"] = "Dieses Profil gibt es nicht (mehr)",
         ["profiles.gameRunning"] = "Während ein Spiel läuft, ist kein Profilwechsel möglich",
         ["profiles.chooseFirst"] = "Erst ein Profil wählen",

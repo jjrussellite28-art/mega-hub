@@ -310,6 +310,21 @@ async function enterProfile(p, page) {
     sound.bump();
     return toast(t('profiles.gameRunning'), 5000);
   }
+  // A profile that needs a code: Unlock with the code (full access) or Bypass (no code, the limited mode like a child, nothing of this profile shown).
+  if ((p.need === 'parentCode' || p.need === 'profileCode') && profiles.data?.profiles?.length) {
+    const way = await chooseDialog(nameOf(p), [
+      { label: t('profiles.unlockWay'), detail: t('profiles.unlockWayDetail'), value: 'unlock' },
+      { label: t('profiles.bypassWay'), detail: t('profiles.bypassWayDetail'), value: 'bypass' }
+    ], 0);
+    if (way === undefined) return;
+    if (way === 'bypass') {
+      const done = await attempt(() => api.bypassProfile());
+      if (!done?.ok) return;
+      if (done.switched || page?.required) return reloadForProfile();
+      closePicker(page);
+      return refresh();
+    }
+  }
   let result;
   if (p.need === 'parentCode') {
     if (!(await ensureParentGrant(t('profiles.parentReason', { name: nameOf(p) }), { action: SWITCH, item: p.id }))) return;

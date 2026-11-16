@@ -120,7 +120,7 @@ public static class FeatureAreas
         "systemInfo", "setShell", "enterPcMode", "power", "sleepTimerWarning", "sleepTimerArm", "quit", "restartMegaHub", "resetMegaHub", "uninstallMegaHub", "emergencyExit", "getSettings", "setFeatureAreas", "setSetting", "setIntegrationMode",
         "displayOn", "displayOff", "screenOverlay", "getSecurity", "getServiceStatus", "repairService", "resetCodeStore", "resetServiceState", "getParental", "setParental",
         "setParentalItemLock", "resetParentalAllChildrenLocks", "parentalCheck", "parentalExtend", "parentalAuth", "confirmWindowsUnlock", "parentalReset",
-        "parentalAcceptClock", "parentalAdoptZone", "parentalCloseGame", "getProfiles", "switchProfile", "profileScreen", "profileIdle",
+        "parentalAcceptClock", "parentalAdoptZone", "parentalCloseGame", "getProfiles", "switchProfile", "bypassProfile", "profileScreen", "profileIdle",
         "addProfile", "renameProfile", "setProfileLook", "profileAvatarFromFile", "setCustomSound", "setProfileRestricted", "setProfileCode", "removeProfile", "getProfileRules",
         "setProfileRule", "unlock", "windowsSignIn", "setPasscode", "setCouchLock", "setParentCode", "readClipboard",
         "holdUnlockForSetup", "setBlockTaskManager", "openAutoLogonDialog", "enableAutoLogon", "setAutoLogon",
