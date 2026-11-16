@@ -158,8 +158,8 @@ public class CatalogTests : IDisposable
         else if (File.Exists(marker)) Assert.False(signed, "index.json is signed again: delete catalog/index.json.unsigned");
         else Assert.True(signed);
         var entries = Parse(File.ReadAllText(file));
-        // Mega Hub's own catalog starts empty: CouchHUD's plugins are not offered under Mega Hub's key.
-        Assert.Empty(entries);
+        // Mega Hub's own catalog holds only Mega Hub's own plugins, signed with its own key: CouchHUD's plugins are not offered under it.
+        Assert.All(entries, e => Assert.Equal("achievements", e.Id));
         // Every entry works with the release of this build: a local build is the pre-release 0.7.0-dev, older than the 0.7.0 that the 0.7 plugins ask for.
         var releaseVersion = CatalogRules.AppVersion with { Pre = "" };
         Assert.All(entries, e => Assert.True(CatalogRules.IsCompatible(e, releaseVersion), $"{e.Id} needs {e.MinCouchHud}"));
