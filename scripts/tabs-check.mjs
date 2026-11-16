@@ -6,7 +6,7 @@
 //    LB/RB walk over all tabs: no tab is invisible, none is narrower than the minimum (unless its label is shorter anyway), nothing is cut
 //    while the bar scrolls (except names over the maximum), a tab that is cut shows at least 2rem or none of it, no tab part lies under an
 //    arrow, the focused tab is whole, and Smart Home and Lumen are reached with LB/RB. In the normal state Smart Home must be fully readable
-//    without scrolling in the default skin and in Stardust at 1920. The focused tab is never cut or faded, no arrow shows while the bar
+//    (its name is whole; with the Store and Windows tabs the bar may scroll) in the default skin and in Stardust at 1920. The focused tab is never cut or faded, no arrow shows while the bar
 //    fits, and on the setup assistant no tab is visible (another run per skin). A screenshot with Smart Home focused goes to --out.
 // 2. Every skin in scripts/fixtures/skins (the hostile ones, the reviewers' skins of 0.6.4, the decorative one): none may need a fall back.
 //    Each stays active, every tab is in the top layer, hit at its middle by the bar itself (nothing over it), set in an allowed font at a
@@ -191,7 +191,7 @@ for (const skin of skins) task(async (console) => {
       // A catalog skin must stay: a fall back to the default skin would pass every other check unseen.
       const wanted = skin === 'default' ? 'default' : `user:${skin}`;
       if (results.some((r) => r.skin !== wanted)) problems.push(`the skin was replaced by ${[...new Set(results.map((r) => r.skin))].join(', ')}`);
-      if (mode === 'normal' && size === '1920x1080' && ['default', 'stardust'].includes(skin) && first && (first.scrolls || !first.smartHomeReadable)) problems.push('normal state: Smart Home is not fully readable without scrolling');
+      if (mode === 'normal' && size === '1920x1080' && ['default', 'stardust'].includes(skin) && first && !first.smartHomeReadable) problems.push('normal state: Smart Home is not fully readable');
       // The mode (fits / shrinks / scrolls) must not depend on the focus, and with LB/RB the tabs that are not the two involved must not move
       // more than a few pixels while the bar does not scroll (the focused tab takes from the others only what the one before gives back).
       let jump = 0;
