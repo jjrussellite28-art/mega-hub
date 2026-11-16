@@ -505,7 +505,6 @@ public static partial class Strings
         ["parental.unknownAgeCodeYears"] = "No age rating known (limit: {0}+): parent code required",
         ["parental.unknownSetting"] = "Unknown parental controls setting {0}",
         ["profiles.unknown"] = "This profile does not exist (any more)",
-        ["profiles.bypassNeedsLock"] = "Bypass needs a Mega Hub code to stay limited behind. Set a code first.",
         ["profiles.gameRunning"] = "No profile switch while a game is running",
         ["profiles.chooseFirst"] = "Choose a profile first",
         ["profiles.max"] = "At most {0} profiles",

@@ -152,10 +152,14 @@ export function showModeChooser() {
           return render();
         }
         // PC at the start: Mega Hub quits completely (no RAM used, gone from Task Manager) and the normal Windows desktop is there.
-        if (!(await ensureUnlocked(t('power.quit.label')))) return;
-        removePage(this);
-        render();
-        await attempt(() => api.quit());
+        // No code and no restart: PC mode is never locked out. Mega Hub closes at once; only when the host refuses (somebody is signed in
+        // already) the usual unlock comes first.
+        if (!(await api.leaveToPc().then(() => true, () => false))) {
+          if (!(await ensureUnlocked(t('power.quit.label')))) return;
+          removePage(this);
+          render();
+          await attempt(() => api.quit());
+        }
       } finally {
         this.busy = false;
       }

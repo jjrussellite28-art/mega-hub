@@ -8613,6 +8613,17 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
     }
 
     /// <summary>
+    /// "PC mode" from the start choice and from safe mode: no code, no restart, never locked out of the normal desktop. Only while nobody has
+    /// signed in to a profile yet; from inside Mega Hub the unlock rules of <see cref="QuitFromUi"/> still apply.
+    /// </summary>
+    public void LeaveToPc()
+    {
+        if (_profileChosen) throw new InvalidOperationException(Strings.Get("profiles.unknown"));
+        RestoreLayout();
+        Quit();
+    }
+
+    /// <summary>
     /// "Reset Mega Hub" and "Uninstall Mega Hub" in the UI (Settings › Power): behind the couch lock (the UI asks for the parents' code first),
     /// not while a game runs. Mega Hub writes a small script, starts it, and quits; the script waits for the exit and then deletes the
     /// settings (reset: and starts Mega Hub again; uninstall: runs the uninstaller or the elevated cleanup first). Only the settings folder

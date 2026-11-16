@@ -28,7 +28,7 @@ public static class LockPolicy
     public static readonly IReadOnlySet<string> OpenWhileLocked = new HashSet<string>
     {
         "getLibrary", "getFavorites", "getGuideApps", "launch", "toggleFavorite", "toggleFavoriteSite", "getStoreInfo", "getDetails", "systemInfo", "getSettings",
-        "enterPcMode", "holdUnlockForSetup", "power", "sleepTimerWarning", "sleepTimerArm", "quit", "restartMegaHub", "unlock", "confirmWindowsUnlock", "getSecurity", "setPasscode", "setCouchLock",
+        "enterPcMode", "leaveToPc", "holdUnlockForSetup", "power", "sleepTimerWarning", "sleepTimerArm", "quit", "restartMegaHub", "unlock", "confirmWindowsUnlock", "getSecurity", "setPasscode", "setCouchLock",
         // The service: its state, and the repair (Windows' UAC prompt is the gate; the way out of a fail-closed lock).
         "getServiceStatus", "repairService",
         // The reset of the service's damaged code file: UAC again (the service takes an administrator's approval only), and with a damaged

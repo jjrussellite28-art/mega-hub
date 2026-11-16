@@ -241,25 +241,6 @@ public sealed partial class Hud
         return new { ok = true, switched = !same };
     }
 
-    /// <summary>
-    /// "Bypass" at the picker: no code, but also no access. The couch goes into the locked, limited mode (the same restrictions as a child:
-    /// no settings, no power, no uninstall; the emergency exit stays) on the neutral household (default) profile, so nothing of the
-    /// protected profile is shown. Needs a lock to stay behind: with no code set up there is nothing to stay limited behind.
-    /// </summary>
-    public object BypassProfile()
-    {
-        if (!LockOn) throw new InvalidOperationException(Strings.Get("profiles.bypassNeedsLock"));
-        if (AnyGameRunning) throw new InvalidOperationException(Strings.Get("profiles.gameRunning"));
-        var switched = config.Current.ActiveProfile.Id != ProfileIds.Default;
-        if (switched) ActivateProfile(ProfileIds.Default);
-        LockNow();
-        _profileChosen = true;
-        UseLookLanguage();
-        ProfileActivity();
-        Emit("profiles", new { picker = false, switched });
-        return new { ok = true, switched };
-    }
-
     /// <summary>The parents' grant for exactly this switch (without a parents' code set up: the unlocked couch).</summary>
     private bool ParentGrantForSwitch(string id) =>
         HasParentCode ? _grant.TryConsume(ProfileSwitch.SwitchAction, id) : IsUnlocked;

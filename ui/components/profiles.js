@@ -13,7 +13,7 @@ import { sound } from '../sound.js';
 import { t } from '../core/i18n.js';
 import { activeSystem, ageChoices, ageLabels, limitText, shownLimit } from '../core/age-rating-rules.js';
 import { chooseDialog, closeOverlay, confirmDialog } from './overlay.js';
-import { choosePasscode, enterPasscode, ensureUnlocked } from './passcode.js';
+import { choosePasscode, enterPasscode, ensureUnlocked, ensureWindowsSignInOnly } from './passcode.js';
 import { admitProfileChange } from '../core/lock-rules.js';
 import { ensureParentGrant, formatRemaining, parental, refreshParental } from './parental.js';
 import { openKeyboard } from './keyboard.js';
@@ -304,26 +304,37 @@ function reloadForProfile() {
   location.reload();
 }
 
+/**
+ * Safe mode: no code needed and nothing of the protected profile shown; the only two ways out are PC mode (Mega Hub closes, the normal
+ * desktop is there, no restart) and Uninstall (asks the Windows sign-in, like in the settings).
+ */
+async function safeMode() {
+  const pick = await chooseDialog(t('profiles.safeTitle'), [
+    { label: t('profiles.safePc'), detail: t('profiles.safePcDetail'), value: 'pc' },
+    { label: t('profiles.safeUninstall'), detail: t('profiles.safeUninstallDetail'), value: 'uninstall', danger: true }
+  ], 'pc');
+  if (pick === 'pc') return attempt(() => api.leaveToPc());
+  if (pick !== 'uninstall') return;
+  if (!(await ensureWindowsSignInOnly(t('settings.power.uninstall')))) return;
+  if (!(await confirmDialog(t('settings.power.uninstallTitle'), t('settings.power.uninstall'), { danger: true, message: t('settings.power.uninstallMessage'), focusCancel: true }))) return;
+  if (!(await confirmDialog(t('settings.power.sure'), t('settings.power.sureYes'), { danger: true, message: t('settings.power.sureMessage'), focusCancel: true }))) return;
+  await attempt(() => api.uninstallMegaHub(), t('settings.power.uninstall'));
+}
+
 /** Switch to (or re-enter) one profile with what it needs: nothing, the child's own code, or the parents' code for this switch. */
 async function enterProfile(p, page) {
   if (p.need === 'gameRunning') {
     sound.bump();
     return toast(t('profiles.gameRunning'), 5000);
   }
-  // A profile that needs a code: Unlock with the code (full access) or Bypass (no code, the limited mode like a child, nothing of this profile shown).
+  // A profile that needs a code: Unlock with the code, or safe mode (no code, and nothing of the profile: only PC mode and Uninstall).
   if ((p.need === 'parentCode' || p.need === 'profileCode') && profiles.data?.profiles?.length) {
     const way = await chooseDialog(nameOf(p), [
       { label: t('profiles.unlockWay'), detail: t('profiles.unlockWayDetail'), value: 'unlock' },
-      { label: t('profiles.bypassWay'), detail: t('profiles.bypassWayDetail'), value: 'bypass' }
-    ], 0);
+      { label: t('profiles.safeWay'), detail: t('profiles.safeWayDetail'), value: 'safe' }
+    ], 'unlock');
     if (way === undefined) return;
-    if (way === 'bypass') {
-      const done = await attempt(() => api.bypassProfile());
-      if (!done?.ok) return;
-      if (done.switched || page?.required) return reloadForProfile();
-      closePicker(page);
-      return refresh();
-    }
+    if (way === 'safe') return safeMode();
   }
   let result;
   if (p.need === 'parentCode') {

@@ -235,6 +235,9 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
             case "quit":
                 hud.QuitFromUi();
                 return null;
+            case "leaveToPc":
+                hud.LeaveToPc();
+                return null;
             case "emergencyExit":
                 hud.EmergencyExit();
                 return null;
@@ -569,8 +572,6 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
                 return hud.GetProfiles();
             case "switchProfile":
                 return hud.SwitchProfile(StringArg(0), Buttons(1));
-            case "bypassProfile":
-                return hud.BypassProfile();
             case "profileScreen":
                 hud.SetProfileScreen(Arg(0).ValueKind == JsonValueKind.True);
                 return null;

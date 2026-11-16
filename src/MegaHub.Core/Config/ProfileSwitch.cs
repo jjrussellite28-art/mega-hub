@@ -158,7 +158,7 @@ public static class ProfileIdleClock
 /// </summary>
 public static class ProfilePolicy
 {
-    public static readonly IReadOnlySet<string> OpenWhileLocked = new HashSet<string> { "getProfiles", "switchProfile", "bypassProfile", "profileScreen", "profileIdle" };
+    public static readonly IReadOnlySet<string> OpenWhileLocked = new HashSet<string> { "getProfiles", "switchProfile", "profileScreen", "profileIdle" };
 
     public static readonly IReadOnlySet<string> All = new HashSet<string>(OpenWhileLocked)
     {
@@ -175,6 +175,8 @@ public static class ProfilePolicy
     public static readonly IReadOnlySet<string> OpenWhileHeld = new HashSet<string>(OpenWhileLocked)
     {
         "parentalAuth", "confirmWindowsUnlock", "getParental", "getSecurity", "getProfile", "systemInfo", "listSkins",
+        // Safe mode: the way to the normal desktop and the way to uninstall are never behind a code (uninstall asks the Windows sign-in).
+        "leaveToPc", "uninstallMegaHub", "windowsSignIn",
         "getSession", "getPads", "getBattery", "getBluetooth", "rumble", "getAudio", "setVolume", "setMute", "setAudioOutput", "power", "quit", "restartMegaHub",
         "displayOn", "displayOff",
         // The code entry and the pairing code tell the host they are on screen, so Guide + Y refuses the screenshot there too.
