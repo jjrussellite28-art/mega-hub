@@ -495,11 +495,13 @@ async function init() {
     }
   } catch { /* storage blocked: start on Home */ }
   // Several profiles: the picker in front (a protected profile waits for its code; the host refuses starts until then).
-  await startProfiles().catch(console.error);
+  // The start choice (Mega Hub mode or PC mode, and the screen) comes first; the profile picker follows it, after Next in Mega Hub mode.
+  const askMode = askModeAtStart(!!state.info?.isShell);
+  if (!askMode) await startProfiles().catch(console.error);
   // Show the HUD immediately; a slow store or plugin must not keep the screen empty.
   render();
   // Settings > Display > Ask at start: Shell mode or PC mode. On by itself while Mega Hub is the Windows shell, off otherwise.
-  if (askModeAtStart(!!state.info?.isShell)) showModeChooser();
+  if (askMode) showModeChooser();
   const bootStarted = performance.now();
   const hideBoot = () => {
     if (endBoot(document.querySelector('#boot'))) sound.boot();

@@ -360,6 +360,7 @@ export async function ensureWindowsSignIn(reason = '') {
 
 async function askForCode(reason) {
   let error = '';
+  let wrong = 0;
   for (;;) {
     const code = await enterPasscode({ title: t('passcode.enter'), hint: reason, error });
     if (!code) return false;
@@ -404,6 +405,12 @@ async function askForCode(reason) {
     // The host refuses to open while the Mega Hub service is missing or blocked (fail-closed): its reason, not "wrong code".
     // After a reset that did not open the couch the "store damaged" text is stale: the store is reset, the entry says so.
     error = resetDone ? t('passcode.resetCodesDone') : result?.blocked ? result.blocked : result?.waitSeconds ? t('passcode.wrongWait', { count: result.waitSeconds }) : t('passcode.wrong');
+    // At the start (a protected profile waits): after a few wrong codes safe mode is offered, so a broken controller never locks anyone out.
+    if (state.pickerHold && ++wrong >= 5) {
+      wrong = 0;
+      const { offerSafeMode } = await import('./safe-mode.js');
+      if (await offerSafeMode()) return false;
+    }
   }
 }
 
@@ -504,6 +511,7 @@ export async function ensureParentCode(reason = '', scope = {}) {
     return done;
   }
   let error = '';
+  let wrong = 0;
   for (;;) {
     const code = await enterPasscode({ title: t('passcode.parentCode'), hint: reason, error });
     if (!code) return false;
@@ -539,6 +547,11 @@ export async function ensureParentCode(reason = '', scope = {}) {
     }
     // The Mega Hub service checks the parents' code too: when it cannot, its reason, not "wrong code".
     error = result?.blocked ? result.blocked : result?.waitSeconds ? t('passcode.wrongWait', { count: result.waitSeconds }) : t('passcode.wrong');
+    if (state.pickerHold && ++wrong >= 5) {
+      wrong = 0;
+      const { offerSafeMode } = await import('./safe-mode.js');
+      if (await offerSafeMode()) return false;
+    }
   }
 }
 

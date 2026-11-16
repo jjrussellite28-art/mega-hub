@@ -177,6 +177,8 @@ public static class ProfilePolicy
         "parentalAuth", "confirmWindowsUnlock", "getParental", "getSecurity", "getProfile", "systemInfo", "listSkins",
         // Safe mode: the way to the normal desktop and the way to uninstall are never behind a code (uninstall asks the Windows sign-in).
         "leaveToPc", "uninstallMegaHub", "windowsSignIn",
+        // The start choice comes before the picker: the screens it shows and moves (nothing of any profile).
+        "getScreens", "setScreen", "screenOverlay", "setScreenLayout", "getDisplay",
         "getSession", "getPads", "getBattery", "getBluetooth", "rumble", "getAudio", "setVolume", "setMute", "setAudioOutput", "power", "quit", "restartMegaHub",
         "displayOn", "displayOff",
         // The code entry and the pairing code tell the host they are on screen, so Guide + Y refuses the screenshot there too.

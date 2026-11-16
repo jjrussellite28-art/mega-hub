@@ -12,6 +12,7 @@ import { getLook } from '../core/look-prefs.js';
 import { chooseLayout, listScreens } from '../views/display.js';
 import { confirmDialog } from './overlay.js';
 import { ensureUnlocked } from './passcode.js';
+import { startProfiles } from './profiles.js';
 import { bindSideButtons, screenArrows, stepScreen } from './screen-switch.js';
 
 // i18n-used: modeask.couch modeask.couchHint modeask.pc modeask.pcHint
@@ -144,12 +145,16 @@ export function showModeChooser() {
           await attempt(() => api.setScreen(number), t('display.screen.failed'));
         }
         if (choice === 'couch') {
-          // Locked: offer the unlock now; skipping keeps the limited mode (the Unlock button stays).
-          if (state.info?.locked || state.info?.codeSet) {
+          // The profile picker comes next (its profile asks for its own code). With no picker (auto sign-in, one open profile) a locked
+          // couch offers the unlock here; skipping keeps the limited mode (the Unlock button stays).
+          const willPick = !!(await attempt(() => api.getProfiles()))?.picker;
+          if (!willPick && (state.info?.locked || state.info?.codeSet)) {
             if (await confirmDialog(t('modeask.unlockNow'), t('modeask.unlock'), { cancelLabel: t('modeask.skip') })) await ensureUnlocked(t('modeask.unlock'));
           }
           removePage(this);
-          return render();
+          render();
+          if (willPick) await startProfiles().catch(console.error);
+          return;
         }
         // PC at the start: Mega Hub quits completely (no RAM used, gone from Task Manager) and the normal Windows desktop is there.
         // No code and no restart: PC mode is never locked out. Mega Hub closes at once; only when the host refuses (somebody is signed in

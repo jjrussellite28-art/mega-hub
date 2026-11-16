@@ -13,7 +13,8 @@ import { sound } from '../sound.js';
 import { t } from '../core/i18n.js';
 import { activeSystem, ageChoices, ageLabels, limitText, shownLimit } from '../core/age-rating-rules.js';
 import { chooseDialog, closeOverlay, confirmDialog } from './overlay.js';
-import { choosePasscode, enterPasscode, ensureUnlocked, ensureWindowsSignInOnly } from './passcode.js';
+import { choosePasscode, enterPasscode, ensureUnlocked } from './passcode.js';
+import { WRONG_LIMIT, offerSafeMode, safeMode } from './safe-mode.js';
 import { admitProfileChange } from '../core/lock-rules.js';
 import { ensureParentGrant, formatRemaining, parental, refreshParental } from './parental.js';
 import { openKeyboard } from './keyboard.js';
@@ -98,8 +99,12 @@ export async function startProfiles() {
   const data = await refresh();
   heldAtStart = !!data?.pickRequired;
   // A reload (switch, language) while the picker was open: the host's flag follows the screen.
-  if (data?.picker) showPicker({ required: !!data.pickRequired });
-  else api.profileScreen?.(false).catch(() => {});
+  if (data?.picker) {
+    await showPicker({ required: !!data.pickRequired });
+    return true;
+  }
+  api.profileScreen?.(false).catch(() => {});
+  return false;
 }
 
 // The page started with the picker waiting for a protected profile, so it already has the household's look.
@@ -304,23 +309,6 @@ function reloadForProfile() {
   location.reload();
 }
 
-/**
- * Safe mode: no code needed and nothing of the protected profile shown; the only two ways out are PC mode (Mega Hub closes, the normal
- * desktop is there, no restart) and Uninstall (asks the Windows sign-in, like in the settings).
- */
-async function safeMode() {
-  const pick = await chooseDialog(t('profiles.safeTitle'), [
-    { label: t('profiles.safePc'), detail: t('profiles.safePcDetail'), value: 'pc' },
-    { label: t('profiles.safeUninstall'), detail: t('profiles.safeUninstallDetail'), value: 'uninstall', danger: true }
-  ], 'pc');
-  if (pick === 'pc') return attempt(() => api.leaveToPc());
-  if (pick !== 'uninstall') return;
-  if (!(await ensureWindowsSignInOnly(t('settings.power.uninstall')))) return;
-  if (!(await confirmDialog(t('settings.power.uninstallTitle'), t('settings.power.uninstall'), { danger: true, message: t('settings.power.uninstallMessage'), focusCancel: true }))) return;
-  if (!(await confirmDialog(t('settings.power.sure'), t('settings.power.sureYes'), { danger: true, message: t('settings.power.sureMessage'), focusCancel: true }))) return;
-  await attempt(() => api.uninstallMegaHub(), t('settings.power.uninstall'));
-}
-
 /** Switch to (or re-enter) one profile with what it needs: nothing, the child's own code, or the parents' code for this switch. */
 async function enterProfile(p, page) {
   if (p.need === 'gameRunning') {
@@ -362,6 +350,7 @@ async function enterProfile(p, page) {
  */
 async function childCode(p) {
   let error = '';
+  let wrong = 0;
   const status = parental.status ?? (await refreshParental());
   const parentWay = !!status?.hasParentCode;
   for (;;) {
@@ -374,6 +363,11 @@ async function childCode(p) {
     }
     const result = await attempt(() => api.switchProfile(p.id, code));
     if (!result || result.ok) return result;
+    // The tries never run out; after a few wrong ones safe mode is offered (PC mode or Uninstall), so nobody is stuck at the picker.
+    if (state.pickerHold && ++wrong >= WRONG_LIMIT) {
+      wrong = 0;
+      if (await offerSafeMode()) return undefined;
+    }
     sound.bump();
     error = result.waitSeconds ? t('passcode.wrongWait', { count: result.waitSeconds }) : t('passcode.wrong');
   }
