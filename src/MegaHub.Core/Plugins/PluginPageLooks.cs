@@ -11,7 +11,7 @@ public static partial class PluginPageLooks
 {
     public static readonly IReadOnlyList<string> Presets = ["aurora", "sunset", "forest", "midnight", "ember", "ocean"];
 
-    [GeneratedRegex("^#[0-9a-fA-F]{6}$")]
+    [GeneratedRegex(@"^#[0-9a-fA-F]{6}\z")]
     private static partial Regex ColourPattern();
 
     /// <summary>What the page may show: null for a plugin or when nothing valid is set.</summary>
