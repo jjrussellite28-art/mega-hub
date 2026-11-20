@@ -1230,6 +1230,11 @@ function consoleItems(s) {
     { kind: 'choice', key: 'mode', label: t('settings.mode.title'), desc: modeDesc(s), value: () => modeLabel(s), run: chooseMode },
     // Which parts of Mega Hub are there at all (games, apps, browser, news): one place for both modes.
     { kind: 'choice', key: 'areas', label: t('settings.areas.title'), desc: t('settings.areas.desc'), value: areasLabel, run: chooseAreas },
+    // The Media tab (MegaWatch): installed with Mega Hub, switch off to hide the tab and close MegaWatch (no memory used).
+    toggle('mediaTab', t('settings.mediaTab'), t('settings.mediaTabDesc'), (on) => {
+      state.info.media = on;
+      window.dispatchEvent(new CustomEvent('megahub:areas', { detail: state.info.areas }));
+    }),
     // The couch lock needs the full integration (the host refuses it otherwise); the mode row above leads there.
     ...(full ? [{
       kind: 'choice',

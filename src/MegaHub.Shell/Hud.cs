@@ -2742,6 +2742,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
         weather = WeatherAvailable && WeatherPlace() is not null,
         news = NewsAvailable,
         windowsTools = !ChildNow,
+        media = config.Current.MediaTab && !ChildNow,
         assistant = AssistantConfigured,
         skin = LookProfile.Skin,
         skinRestore = SkinRestoreState(),
@@ -2796,6 +2797,7 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             screensaverStyle = c.ScreensaverStyle,
             displayOffMinutes = c.DisplayOffMinutes,
             pixelShift = c.PixelShift,
+            mediaTab = c.MediaTab,
             reduceMotion = c.ActiveProfile.ReduceMotion,
             pointer = c.Pointer,
             mouseUnlocked = c.MouseUnlocked,
@@ -2993,6 +2995,12 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
                 RequirePrivacyGrant(key);
                 config.UpdateOrThrow(c => c.SelfUpdateCheck = selfCheck);
                 ApplyNetPolicy();
+                break;
+            case "mediaTab":
+                var mediaOn = Bool();
+                config.UpdateOrThrow(c => c.MediaTab = mediaOn);
+                // Off means off: MegaWatch is closed too, so nothing of it keeps using memory.
+                if (!mediaOn) CloseMegaWatch();
                 break;
             case "pixelShift":
                 var shift = Bool();
@@ -3916,6 +3924,63 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             c.LauncherAutostart.Remove(id);
         });
         return GetLaunchers();
+    }
+
+    private System.Diagnostics.Process? _megaWatch;
+
+    /// <summary>Where MegaWatch's own installer puts it (all users or only this user); null when it is not installed.</summary>
+    private static string? MegaWatchPath()
+    {
+        var roots = new[]
+        {
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) is { Length: > 0 } local ? Path.Combine(local, "Programs") : "",
+            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+        };
+        return roots.Where(r => r.Length > 0).Select(r => Path.Combine(r, "MegaWatch", "megawatch.exe")).FirstOrDefault(File.Exists);
+    }
+
+    /// <summary>The Media tab: whether MegaWatch is installed (the tile then opens it, otherwise its download page).</summary>
+    public object GetMediaInfo() => new { installed = MegaWatchPath() is not null };
+
+    /// <summary>Opens MegaWatch, a separate app Mega Hub only starts. Not for a child's profile. Nothing the page sends is ever run.</summary>
+    public void OpenMegaWatch()
+    {
+        if (ChildNow || !config.Current.MediaTab) throw new LockedException(Strings.Get("lock.unlockFirst"));
+        var path = MegaWatchPath() ?? throw new InvalidOperationException(Strings.Get("hud.notInstalled", "MegaWatch"));
+        // Already open: nothing to start twice.
+        if (_megaWatch is { HasExited: false }) return;
+        try
+        {
+            _megaWatch = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = false, WorkingDirectory = Path.GetDirectoryName(path)! });
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            Console.Error.WriteLine($"[media] MegaWatch: {ex.Message}");
+            throw new InvalidOperationException(Strings.Get("hud.notInstalled", "MegaWatch"));
+        }
+        _mouse?.Start();
+    }
+
+    /// <summary>Closes the MegaWatch that Mega Hub started (asks it to close first, ends it after a few seconds). Never throws.</summary>
+    private void CloseMegaWatch()
+    {
+        var process = _megaWatch;
+        _megaWatch = null;
+        if (process is null) return;
+        try
+        {
+            if (!process.HasExited && process.CloseMainWindow()) process.WaitForExit(3000);
+            if (!process.HasExited) process.Kill();
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException)
+        {
+            Console.Error.WriteLine($"[media] MegaWatch not closed: {ex.GetType().Name}");
+        }
+        finally
+        {
+            process.Dispose();
+        }
     }
 
     /// <summary>

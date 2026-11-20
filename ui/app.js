@@ -37,6 +37,7 @@ import { checkInterruptedSwitch, settingsView } from './views/settings.js';
 import { newsView } from './views/news.js';
 import { storeView } from './views/store.js';
 import { windowsView } from './views/windows.js';
+import { mediaView } from './views/media.js';
 import { loadPluginTabs } from './views/plugin-tab.js';
 import { arrangeTabs } from './core/plugin-tabs.js';
 import { downloadsView, onDownloadsChanged, startDownloads } from './views/downloads.js';
@@ -97,7 +98,7 @@ export function updateTabs() {
 let pluginTabViews = [];
 const tabList = () => arrangeTabs(
   // News comes from its plugin (0.7): without one there is no tab.
-  shownTabs([homeView, gamesView, storeView, appsView, downloadsView, ...(state.info.news ? [newsView] : []), browserView, ...(state.info.windowsTools !== false ? [windowsView] : [])]),
+  shownTabs([homeView, gamesView, storeView, ...(state.info.media ? [mediaView] : []), appsView, downloadsView, ...(state.info.news ? [newsView] : []), browserView, ...(state.info.windowsTools !== false ? [windowsView] : [])]),
   pluginTabViews.filter((v) => areaOn(v.tabArea)),
   [...(state.info.assistant ? [assistantView] : []), settingsView]);
 
