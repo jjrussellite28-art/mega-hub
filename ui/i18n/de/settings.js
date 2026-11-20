@@ -300,6 +300,8 @@ export default {
   'settings.hdr.autoDetail': 'HDR-Effekte, wenn Windows-HDR an ist',
   'settings.hdr.onDetail': 'Windows-HDR einschalten, solange Mega Hub läuft',
   'settings.hdr.offDetail': 'Immer SDR-Darstellung',
+  'settings.mediaTab': 'Medien-Tab',
+  'settings.mediaTabDesc': 'Zeigt den Medien-Tab (MegaWatch). Aus blendet ihn aus und schließt MegaWatch, es braucht dann keinen Speicher',
   'settings.pixelShift': 'Pixel-Shift',
   'settings.pixelShiftDesc': 'Verschiebt das HUD alle paar Minuten um wenige Pixel, damit Kopfzeile und Hinweise nicht einbrennen',
   'settings.audio.title': 'Sounds und Musik',

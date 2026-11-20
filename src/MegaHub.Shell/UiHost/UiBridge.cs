@@ -630,6 +630,11 @@ public sealed class UiBridge(Hud hud, CoreWebView2 web)
             case "openLauncher":
                 hud.OpenLauncher(StringArg(0));
                 return null;
+            case "openMegaWatch":
+                hud.OpenMegaWatch();
+                return null;
+            case "getMediaInfo":
+                return hud.GetMediaInfo();
             case "openDesktop":
                 await hud.OpenDesktopAsync();
                 return null;

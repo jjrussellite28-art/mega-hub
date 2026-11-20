@@ -12,3 +12,7 @@ The selected Mega Hub logo was generated with ChatGPT and supplied by jjrusselli
 See [logo provenance](ui/assets/MEGA-HUB-LOGO.md) for the original files and what was made from them.
 Remaining inherited branding variants and installer artwork must be replaced before release.
 Refer to THIRD-PARTY-NOTICES.md for dependencies, data and services.
+
+## MegaWatch (Media tab)
+
+The Media tab only starts MegaWatch, a separate app that is not part of Mega Hub and is installed on its own. MegaWatch is an independent fork of [Debrify](https://github.com/varunsalian/debrify) by Varun Salian and contributors (AGPL-3.0); see its own CREDITS.md. Mega Hub contains none of its code and brings no videos, add-ons or sources.

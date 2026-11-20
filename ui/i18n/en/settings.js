@@ -300,6 +300,8 @@ export default {
   'settings.hdr.autoDetail': 'HDR effects when Windows HDR is on',
   'settings.hdr.onDetail': 'Turn on Windows HDR while Mega Hub runs',
   'settings.hdr.offDetail': 'Always SDR',
+  'settings.mediaTab': 'Media tab',
+  'settings.mediaTabDesc': 'Shows the Media tab (MegaWatch). Off hides it and closes MegaWatch, so it uses no memory',
   'settings.pixelShift': 'Pixel shift',
   'settings.pixelShiftDesc': 'Moves the HUD by a few pixels every few minutes so the header and hints do not burn in',
   'settings.audio.title': 'Sound and music',

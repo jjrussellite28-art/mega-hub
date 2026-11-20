@@ -176,7 +176,7 @@ for (const skin of skins) task(async (console) => {
   const segs = combos.map(({ mode, size }) => {
       const shot = `tabs4-${mode === 'normal' ? 'normal-' : ''}${skin}-${size}`;
       const steps = [DEFS, `eval:(window.__check = ${CHECK_FN}, 1)`, ...(skin === 'default' ? [] : [`skin:user:${skin}`]), settled(700), `eval:${mode === 'stress' ? SHOW_STATUS : NORMAL_STATUS}`, settled(500), 'eval:window.__check()'];
-      for (let i = 0; i < 9; i++) steps.push('key:e', settled(250), 'eval:window.__check()', ...(i === 5 ? [`shot:${shot}`] : []));
+      for (let i = 0; i < 10; i++) steps.push('key:e', settled(250), 'eval:window.__check()', ...(i === 5 ? [`shot:${shot}`] : []));
       return { id: `${mode} ${size}`, size, steps };
   });
   const done = await runSegments({ catalog: opt.catalog }, segs);
@@ -283,7 +283,7 @@ for (const size of ['1280x720', '1920x1080']) for (const group of chunks((fixtur
     if (name === 'hostile') {
       // Both checks are put on the page once and called by name: eighteen copies would not fit on a Windows command line.
       steps.splice(2, 0, `eval:(window.__read = ${READ_FN}, window.__check = ${CHECK_FN}, 1)`);
-      for (let i = 0; i < 9; i++) steps.push('key:e', settled(250), 'eval:window.__read()', 'eval:window.__check()');
+      for (let i = 0; i < 10; i++) steps.push('key:e', settled(250), 'eval:window.__read()', 'eval:window.__check()');
     }
     return { id: name, size, steps };
   });

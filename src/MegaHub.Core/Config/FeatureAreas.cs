@@ -49,7 +49,7 @@ public static class FeatureAreas
         // Everything else is shared by all areas.
         ["audioMode"] = Always, ["screensaverMinutes"] = Always, ["screensaverStyle"] = Always, ["displayOffMinutes"] = Always,
         ["tvInGuide"] = Always, ["tvOnWithMegaHub"] = Always, ["tvOffWithPc"] = Always,
-        ["bluetoothAutoOn"] = Always, ["selfUpdateCheck"] = Always, ["pixelShift"] = Always, ["reduceMotion"] = Always,
+        ["bluetoothAutoOn"] = Always, ["selfUpdateCheck"] = Always, ["pixelShift"] = Always, ["reduceMotion"] = Always, ["mediaTab"] = Always,
         ["pointer"] = Always, ["mouseUnlocked"] = Always, ["closeExplorerInLight"] = Always, ["acceptedTerms"] = Always,
         ["setupWizardDone"] = Always, ["modeSwitchJournal"] = Always, ["autoLogonDeclined"] = Always, ["profileAutoSignIn"] = Always, ["guideTapInGame"] = Always, ["suppressCompetitors"] = Always, ["suppressBySetup"] = Always, ["gameBarButton"] = Always,
         ["musicVolume"] = Always, ["soundVolume"] = Always, ["soundSet"] = Always, ["uiHdr"] = Always, ["sounds"] = Always,
@@ -111,7 +111,7 @@ public static class FeatureAreas
     public static readonly IReadOnlySet<string> AlwaysMethods = new HashSet<string>(StringComparer.Ordinal)
     {
         // Library and entries (checked per entry or per added entry).
-        "openDesktop",
+        "openDesktop", "openMegaWatch", "getMediaInfo",
         "getLibrary", "getFavorites", "launch", "toggleFavorite", "toggleFavoriteSite", "getStoreInfo", "getDetails", "uninstall", "browse", "addEntries", "editLaunch",
         "getLaunchOptions", "setLaunchOverride", "getItemInfo", "setItemInfo", "editItem", "getArtworkChoices", "setArtwork", "reloadArtwork",
         "getArtworkMatch", "searchArtwork", "setArtworkMatch",

@@ -343,6 +343,9 @@ public sealed class AppConfig
     /// </summary>
     public string? LayoutBeforeMegaHub { get; set; }
 
+    /// <summary>The Media tab (opens MegaWatch, if installed). On by default; off hides the tab and closes MegaWatch, so it uses no memory.</summary>
+    public bool MediaTab { get; set; } = true;
+
     /// <summary>Moves the whole HUD by a few pixels now and then so static parts don't burn in.</summary>
     public bool PixelShift { get; set; } = true;
 
