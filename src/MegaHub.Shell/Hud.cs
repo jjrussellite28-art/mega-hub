@@ -4296,6 +4296,14 @@ public sealed partial class Hud(ConfigStore config, LibraryService library, Artw
             var before = DisplayService.Screens(0).Count >= 2 ? "extend" : "internal";
             config.UpdateOrThrow(c => c.LayoutBeforeMegaHub ??= before);
         }
+        // "tv:3" = TV mode with screen 3 as the TV: only that screen stays on, the others are switched off.
+        if (mode.StartsWith("tv:", StringComparison.Ordinal) && int.TryParse(mode.AsSpan(3), out var tvScreen))
+        {
+            DisplayService.TvOnly(tvScreen);
+            // The other screens are gone, so the window follows to the TV.
+            Ui(() => _window?.MoveToScreen());
+            return;
+        }
         DisplayService.SetLayout(mode);
         // Asked for "extend" itself: that is the normal layout, nothing left to give back.
         if (mode == "extend") config.UpdateOrThrow(c => c.LayoutBeforeMegaHub = null);
