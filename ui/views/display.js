@@ -74,6 +74,38 @@ export async function chooseLayout({ guard = true } = {}) {
   return true;
 }
 
+/**
+ * TV mode: pick which connected screen is the TV; only that one stays on and the others go off (no more games on a hidden screen).
+ * PC mode is "Use both screens" of the layout choice. Resolves true when it changed.
+ */
+export async function chooseTvMode() {
+  await loadScreens();
+  if (screens.length < 2) {
+    toast(t('display.tv.single'), 4000);
+    return false;
+  }
+  const pick = await chooseDialog(t('display.tv.pick'), screens.map((s) => ({ label: screenName(s), value: s.number })));
+  if (!pick) return false;
+  if (!(await confirmDialog(t('display.tv.confirm'), t('display.layout.apply')))) return false;
+  if (!(await ensureUnlocked(t('display.guard')))) return false;
+  const done = await attempt(async () => { await api.setScreenLayout(`tv:${pick}`); return true; }, t('display.layout.failed'));
+  if (!done) return false;
+  await new Promise((resolve) => setTimeout(resolve, 2500));
+  await loadDisplay();
+  return true;
+}
+
+/** PC mode: all screens back on, laid out side by side again. */
+export async function choosePcMode() {
+  if (!(await confirmDialog(t('display.pc.confirm'), t('display.layout.apply')))) return false;
+  if (!(await ensureUnlocked(t('display.guard')))) return false;
+  const done = await attempt(async () => { await api.setScreenLayout('extend'); return true; }, t('display.layout.failed'));
+  if (!done) return false;
+  await new Promise((resolve) => setTimeout(resolve, 2500));
+  await loadDisplay();
+  return true;
+}
+
 const label = (m) => (m ? `${m.width} × ${m.height}` : '–');
 
 /** Resolves true if the user keeps the new mode within 15 seconds. */
@@ -180,6 +212,27 @@ export function displayItems(refresh) {
       value: () => t('display.layout.change'),
       run: async () => {
         if (await chooseLayout()) refresh();
+      }
+    });
+  }
+  // TV mode / PC mode: one tap to the TV alone, one tap back to all the PC screens.
+  if (api.setScreenLayout) {
+    items.push({
+      kind: 'choice',
+      label: t('display.tv.label'),
+      desc: t('display.tv.desc'),
+      value: () => t('display.layout.change'),
+      run: async () => {
+        if (await chooseTvMode()) refresh();
+      }
+    });
+    items.push({
+      kind: 'choice',
+      label: t('display.pc.label'),
+      desc: t('display.pc.desc'),
+      value: () => t('display.layout.change'),
+      run: async () => {
+        if (await choosePcMode()) refresh();
       }
     });
   }

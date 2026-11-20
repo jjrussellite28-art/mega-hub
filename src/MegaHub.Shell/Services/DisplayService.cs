@@ -110,6 +110,81 @@ public static class DisplayService
         if (process is null) throw new InvalidOperationException(Strings.Get("display.layoutFailed"));
     }
 
+    /// <summary>
+    /// TV mode: only the chosen screen (numbered like the picker, from the left) stays on, every other screen is switched off. The TV becomes the
+    /// main screen at the top left first, because Windows will not switch off the main screen. "Use both screens" (PC mode) brings the rest back.
+    /// Throws, and leaves the screens as they are, when that screen number does not exist or it is the only screen.
+    /// </summary>
+    public static void TvOnly(int number)
+    {
+        var found = new List<(int Left, int Top, string Device)>();
+        MonitorEnumProcEx collect = (monitor, _, _, _) =>
+        {
+            var info = new MonitorInfoEx { Size = Marshal.SizeOf<MonitorInfoEx>(), Device = "" };
+            if (GetMonitorInfoW(monitor, ref info)) found.Add((info.Monitor.Left, info.Monitor.Top, info.Device));
+            return true;
+        };
+        EnumDisplayMonitorsEx(IntPtr.Zero, IntPtr.Zero, collect, IntPtr.Zero);
+        GC.KeepAlive(collect);
+        SortScreens(found, s => (s.Left, s.Top));
+        if (found.Count < 2 || number < 1 || number > found.Count) throw new InvalidOperationException(Strings.Get("display.layoutFailed"));
+        var tv = found[number - 1].Device;
+
+        // 1. The TV is the main screen, at 0,0 (written to the registry, applied below with everything else).
+        var main = NewDevMode();
+        main.dmFields = DmPosition;
+        if (ChangeDisplaySettingsExW(tv, ref main, IntPtr.Zero, CdsSetPrimary | CdsUpdateRegistry | CdsNoReset, IntPtr.Zero) != DispChangeSuccessful)
+        {
+            throw new InvalidOperationException(Strings.Get("display.layoutFailed"));
+        }
+        // 2. Every other screen gets size 0 x 0: that is how Windows takes a screen out of the desktop.
+        foreach (var other in found.Where(f => f.Device != tv))
+        {
+            var off = NewDevMode();
+            off.dmFields = DmPosition | DmPelsWidth | DmPelsHeight;
+            if (ChangeDisplaySettingsExW(other.Device, ref off, IntPtr.Zero, CdsUpdateRegistry | CdsNoReset, IntPtr.Zero) != DispChangeSuccessful)
+            {
+                // Better all screens back than a half switched state.
+                SetLayout("extend");
+                throw new InvalidOperationException(Strings.Get("display.layoutFailed"));
+            }
+        }
+        // 3. Apply everything at once.
+        if (ChangeDisplaySettingsExNull(null, IntPtr.Zero, IntPtr.Zero, 0, IntPtr.Zero) != DispChangeSuccessful)
+        {
+            SetLayout("extend");
+            throw new InvalidOperationException(Strings.Get("display.layoutFailed"));
+        }
+    }
+
+    private const int DmPosition = 0x20;
+    private const int CdsSetPrimary = 0x10;
+    private const int CdsNoReset = 0x10000000;
+
+    private delegate bool MonitorEnumProcEx(IntPtr monitor, IntPtr hdc, IntPtr rect, IntPtr data);
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    private struct MonitorInfoEx
+    {
+        public int Size;
+        public NativeMethods.Rect Monitor;
+        public NativeMethods.Rect Work;
+        public uint Flags;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string Device;
+    }
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetMonitorInfoW(IntPtr monitor, ref MonitorInfoEx info);
+
+    [DllImport("user32.dll", EntryPoint = "EnumDisplayMonitors")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool EnumDisplayMonitorsEx(IntPtr hdc, IntPtr clip, MonitorEnumProcEx proc, IntPtr data);
+
+    /// <summary>The same call with no mode: "apply what was written to the registry".</summary>
+    [DllImport("user32.dll", EntryPoint = "ChangeDisplaySettingsExW", CharSet = CharSet.Unicode)]
+    private static extern int ChangeDisplaySettingsExNull(string? deviceName, IntPtr devMode, IntPtr hwnd, int flags, IntPtr param);
+
     public static void SetHdr(bool on)
     {
         if (!Hdr.Set(on)) throw new InvalidOperationException(Strings.Get("display.hdrFailed"));
